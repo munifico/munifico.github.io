@@ -1,2 +1,2 @@
 # munifico의 잡다한 블로그
-- [read a book!](/books/Learning_Javascript/progressCheck.md)
+- [책 읽기](/books)
