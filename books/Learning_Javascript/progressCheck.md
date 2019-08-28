@@ -161,7 +161,7 @@
 - [ ]  8.8 요약
 
 ## CHAPTER 9 객체와 객체지향 프로그래밍
-- [ ]  [9.0 PREVIEW](CHAPTER_9/preview.md)
+- [ ]  [PREVIEW](CHAPTER_9/preview.md)
 - [ ]  [9.1 프로퍼티 나열](CHAPTER_9/9.1.md)
     - [ ]  [9.1.1 for...in](CHAPTER_9/9.1.1.md)
     - [ ]  [9.1.2 Object.keys](CHAPTER_9/9.1.2.md)
