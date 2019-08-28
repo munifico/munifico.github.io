@@ -1,3 +1,3 @@
 # 2019
 ## 09
-### [Learning JAVASCRIPT](/Learning_Javascript/progressCheck.md)
+### [Learning Javascript](Learning_Javascript/progressCheck.md)
