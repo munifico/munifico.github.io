@@ -161,14 +161,14 @@
 - [ ]  8.8 요약
 
 ## CHAPTER 9 객체와 객체지향 프로그래밍
-- [ ]  [PREVIEW](CHAPTER_9/preview.md)
-- [ ]  [9.1 프로퍼티 나열](CHAPTER_9/9.1.md)
-    - [ ]  [9.1.1 for...in](CHAPTER_9/9.1.1.md)
-    - [ ]  [9.1.2 Object.keys](CHAPTER_9/9.1.2.md)
-- [ ]  [9.2 객체지향 프로그래밍](CHAPTER_9/9.2.md)
-    - [ ]  [9.2.1 클래스와 인스턴스 생성](CHAPTER_9/9.2.1.md)
-    - [ ]  [9.2.2 클래스는 함수다](CHAPTER_9/9.2.2.md)
-    - [ ]  [9.2.3 프로토타입](CHAPTER_9/9.2.3.md)
+- [x]  [PREVIEW](CHAPTER_9/preview.md)
+- [x]  [9.1 프로퍼티 나열](CHAPTER_9/9.1.md)
+    - [x]  [9.1.1 for...in](CHAPTER_9/9.1.1.md)
+    - [x]  [9.1.2 Object.keys](CHAPTER_9/9.1.2.md)
+- [x]  [9.2 객체지향 프로그래밍](CHAPTER_9/9.2.md)
+    - [x]  [9.2.1 클래스와 인스턴스 생성](CHAPTER_9/9.2.1.md)
+    - [x]  [9.2.2 클래스는 함수다](CHAPTER_9/9.2.2.md)
+    - [x]  [9.2.3 프로토타입](CHAPTER_9/9.2.3.md)
     - [ ]  9.2.4 정적 메서드
     - [ ]  9.2.5 상속
     - [ ]  9.2.6 다형성
