@@ -1,0 +1,6 @@
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+.books/Learning_Javascript/running.js
