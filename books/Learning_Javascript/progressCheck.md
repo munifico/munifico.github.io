@@ -181,13 +181,14 @@
 - [x]  [PREVIEW](CHAPTER_10/preview.md)
 - [x]  [10.1 맵](CHAPTER_10/10.1.md)
 - [x]  [10.2 위크맵](CHAPTER_10/10.2.md)
-- [ ]  10.3 셋
-- [ ]  10.4 위크셋
-- [ ]  10.5 요약
+- [x]  [10.3 셋](CHAPTER_10/10.3.md)
+- [x]  [10.4 위크셋](CHAPTER_10/10.4.md)
+- [x]  [10.5 요약](CHAPTER_10/10.5.md)
 
 ## CHAPTER 11 예외와 에러 처리
-- [ ]  11.1 Error 객체
-- [ ]  11.2 try/catch와 예외 처리
+- [x] [PREVIEW](CHAPTER_11/preview.md)
+- [x]  [11.1 Error 객체](CHAPTER_11/11.1.md)
+- [x]  [11.2 try/catch와 예외 처리](CHAPTER_11/11.2.md)
 - [ ]  11.3 에러 일으키기
 - [ ]  11.4 예외 처리와 호출 스택
 - [ ]  11.5 try...catch...finally
