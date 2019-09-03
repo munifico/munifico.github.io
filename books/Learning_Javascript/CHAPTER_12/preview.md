@@ -5,12 +5,12 @@ ES6에서는 매우 중요한 새로운 개념 이터레이터<sup>Iterator</sup
 
 ~~~javascript
 const book = [
-    'Twinkle, twinkle, little bat!',
-    'How I wonder what you\'re at! ',
-    'Up above the world you fly',
-    'Like a tea tray in the sky.',
-    'Twinkle, twinkle, little bat!',
-    'How I wonder what you\'re at! ',
+    "Twinkle, twinkle, little bat!",
+    "How I wonder what you're at! ",
+    "Up above the world you fly",
+    "Like a tea tray in the sky.",
+    "Twinkle, twinkle, little bat!",
+    "How I wonder what you're at! ",
 ]
 ~~~
 
