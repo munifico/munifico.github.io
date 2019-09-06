@@ -3,5 +3,8 @@
 .DS_Store
 .AppleDouble
 .LSOverride
-.books/Learning_Javascript/running.js
 books/Learning_Javascript/running.js
+books/Learning_Javascript/running.js
+node_modules
+books/Learning_Javascript/node_modules
+books/Learning_Javascript/package-lock.json
