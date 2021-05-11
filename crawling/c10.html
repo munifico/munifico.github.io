@@ -1,0 +1,31 @@
+<html>
+<body>
+Doc!
+<p id="test">test</p>
+<script>
+function getApiKey() {
+   
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function() {
+        if(this.readyState === 4) {
+            returnData = JSON.parse(this.responseText);
+            document.getElementById('test').value = returnData.access_token;
+        }
+    });
+
+    xhr.open("GET", "https://invictus.pseudonym.org.uk/api/v1/auth");
+    xhr.setRequestHeader("User-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.272 Whale/2.9.117.22 Safari/537.36");
+    //xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+    xhr.setRequestHeader("Access-Control-Allow-Headers", "*");
+
+    xhr.send();
+};
+
+getApiKey();
+
+</script>
+</body>
+</html>
