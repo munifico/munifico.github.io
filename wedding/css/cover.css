@@ -559,3 +559,24 @@ etc
 .kakaopy-button > a > span {
   color:black;
 }
+
+.videoplayer {
+  position: relative;
+  margin: 0px auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+.videoplayer.bg > img {
+  width: 100%;
+}
+
+.videoplayer .player_btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -2.5em;
+  margin-left: -1.75em;
+  width: 3.5em;
+  height: 3.5em;
+}
