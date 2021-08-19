@@ -1,0 +1,12 @@
+.swiper-container {
+    padding-bottom:6vw;
+    width: 100%;
+}
+.swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 47.4vw;
+    height: 83vw;
+    background: #000;
+    background:rgba(0,0,0,0);
+}
