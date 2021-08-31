@@ -270,7 +270,7 @@ $(document).ready(function() {
     };
 
 
-    setGuestBookList();
+    //setGuestBookList();
 
 });
 
