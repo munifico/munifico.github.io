@@ -16,5 +16,12 @@ var swiper = new Swiper('.swiper-container', {
     },
     zoom : {
         maxRatio : 1.3,
+    },
+    lazy : {
+        loadPrevNext: true
+    },
+    autoplay : {
+        delay: 5000,
+        disableOnInteraction : false,
     }
 });
