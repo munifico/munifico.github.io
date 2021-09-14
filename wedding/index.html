@@ -917,8 +917,9 @@
         function paginationButtonToggle(paginationEntry) {
             let pageNumber = parseInt(paginationEntry.pageNumber);
             let pageRange = parseInt(paginationEntry.pageRange);
-            let totalNumber= parseInt(paginationEntry.totalNumber); 
-            if (pageNumber * pageRange < totalNumber) {
+            let totalNumber= parseInt(paginationEntry.totalNumber);
+            let pageSize = parseInt(paginationEntry.pageSize);
+            if ((pageNumber * pageSize) < totalNumber) {
                 $('.guest-books-list-more-button').removeClass('hidden');
             } else {
                 $('.guest-books-list-more-button').addClass('hidden');
