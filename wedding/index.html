@@ -762,8 +762,11 @@
             if (posting || !isPostFormValid()) {
                 return;
             }
-            let postData = getPostFormValues();
-            postGuestBook(postData);
+
+            if(confirm('해당 방명록은 등록 후 수정 및 삭제가 되지 않습니다... \n등록 전 확인 부탁드려요! ')) {
+                let postData = getPostFormValues();
+                postGuestBook(postData);
+            }
         };
     
         function escapeHtml (string) {
