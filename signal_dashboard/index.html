@@ -46,6 +46,29 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
 .aggtbl th{color:var(--muted);font-size:12px;cursor:pointer}
 .aggtbl td.l,.aggtbl th.l{text-align:left}
 .bar{display:inline-block;height:8px;border-radius:4px;background:var(--accent);opacity:.55;vertical-align:middle}
+#aggBody tr{cursor:pointer}
+#aggBody tr:hover td{background:rgba(124,58,237,.08)}
+/* 모바일 반응형 (≤640px): 표 → 종목별 카드, 조합표 가로 스크롤 */
+.controls{overflow-x:auto}
+@media(max-width:640px){
+ header{padding:12px 14px}
+ h1{font-size:16px}
+ .cards{padding:12px 14px;gap:8px}
+ .card{min-width:0;flex:1 1 calc(50% - 4px);padding:10px 12px}
+ .card .v{font-size:18px}
+ details.agg{margin:0 14px 10px}
+ .aggtbl{display:block;overflow-x:auto;white-space:nowrap}
+ .wrap{padding:0 14px 40px}
+ table{border:none;background:transparent}
+ thead{display:none}
+ tbody,tr,td{display:block}
+ tr{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:4px 12px}
+ td{border:none;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;white-space:normal;padding:7px 0;text-align:right}
+ tr td:last-child{border-bottom:none}
+ td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-weight:600;text-align:left;flex-shrink:0}
+ td:empty,td.num.pending:empty{display:none}
+ .pager{padding:14px 0}
+}
 </style>
 </head>
 <body>
@@ -56,7 +79,7 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
 </header>
 <div class="cards" id="cards"></div>
 <details class="agg" id="aggBox" open>
-  <summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 개별 추격 X, 조합 우위 보기용</span></summary>
+  <summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 행 클릭 → 해당 종목 목록. 개별 추격 X, 조합 우위 보기용</span></summary>
   <table class="aggtbl"><thead><tr id="aggHead"></tr></thead><tbody id="aggBody"></tbody></table>
 </details>
 <div class="controls">
@@ -65,6 +88,7 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
   <select id="fRegime"><option value="">전체 regime</option></select>
   <label><input type="checkbox" id="fHit"> 🚀 hit만</label>
   <label><input type="checkbox" id="fDone"> 평가완료만</label>
+  <label><input type="checkbox" id="fGroup"> 🔁 종목 묶기(최신)</label>
   <span class="gen" id="cnt"></span>
 </div>
 <div class="wrap">
@@ -103,23 +127,23 @@ const COLS=[
 let DATA=[],view=[],sortK="date",sortDir=-1,page=0;const PER=100;
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function fmtDate(d){return d&&d.length===8?d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6):esc(d)}
-function numCell(v){if(v==null)return '<td class="num pending">–</td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'">'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
+function numCell(v,lab){const L=lab?' data-label="'+lab+'"':'';if(v==null)return '<td class="num pending"'+L+'>–</td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'"'+L+'>'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
 function badge(v,pre){return v?'<span class="badge b-'+esc(v)+'">'+esc(LAB[v]||v)+'</span>':''}
 function render(){
  const tb=document.getElementById("tb");
  const start=page*PER,pg=view.slice(start,start+PER);
  tb.innerHTML=pg.map(r=>{
   return '<tr>'+
-   '<td>'+fmtDate(r.date)+'</td>'+
-   '<td>'+esc(r.name)+'</td>'+
-   '<td>'+esc(r.code)+'</td>'+
-   '<td>'+sigKo(r.type)+'</td>'+
-   '<td>'+badge(r.conf)+'</td>'+
-   '<td>'+badge(r.regime)+'</td>'+
-   '<td class="num">'+(r.tech==null?"":r.tech)+'</td>'+
-   numCell(r.d1)+numCell(r.d5)+numCell(r.max)+
-   '<td>'+(r.hit?"🚀":"")+'</td>'+
-   '<td>'+(r.status==="done"?"":'<span class="pending">대기</span>')+'</td>'+
+   '<td data-label="일자">'+fmtDate(r.date)+'</td>'+
+   '<td data-label="종목">'+esc(r.name)+'</td>'+
+   '<td data-label="코드">'+esc(r.code)+'</td>'+
+   '<td data-label="신호">'+sigKo(r.type)+'</td>'+
+   '<td data-label="등급">'+badge(r.conf)+'</td>'+
+   '<td data-label="장세">'+badge(r.regime)+'</td>'+
+   '<td class="num" data-label="tech">'+(r.tech==null?"":r.tech)+'</td>'+
+   numCell(r.d1,"D+1%")+numCell(r.d5,"D+5%")+numCell(r.max,"최고%")+
+   '<td data-label="🚀">'+(r.hit?"🚀":"")+'</td>'+
+   '<td data-label="상태">'+(r.status==="done"?"":'<span class="pending">대기</span>')+'</td>'+
   '</tr>'}).join("");
  const sc=(COLS.find(c=>c.k===sortK)||{}).t||sortK;
  document.getElementById("cnt").textContent=view.length+"건 (정렬: "+sc+")";
@@ -134,6 +158,7 @@ function apply(){
  const q=document.getElementById("q").value.trim().toLowerCase();
  const ft=document.getElementById("fType").value,fr=document.getElementById("fRegime").value;
  const fh=document.getElementById("fHit").checked,fd=document.getElementById("fDone").checked;
+ const fg=document.getElementById("fGroup").checked;
  view=DATA.filter(r=>{
   if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.code).includes(q)))return false;
   if(ft&&r.type!==ft)return false;
@@ -141,6 +166,7 @@ function apply(){
   if(fh&&!r.hit)return false;
   if(fd&&r.status!=="done")return false;
   return true});
+ if(fg){const byCode={};view.forEach(r=>{const p=byCode[r.code];if(!p||r.date>p.date)byCode[r.code]=r});view=Object.values(byCode);}
  view.sort((a,b)=>{let x=a[sortK],y=b[sortK];if(x==null)x=-1e9;if(y==null)y=-1e9;
   if(typeof x==="string")return sortDir*x.localeCompare(y);return sortDir*((x>y)-(x<y))});
  page=0;render();
@@ -184,6 +210,7 @@ function aggRender(){
    '<td class="'+c5+'">'+(g.avg5>0?"+":"")+g.avg5.toFixed(1)+'</td>'+
    '<td class="'+cm+'">'+(g.avgmax>0?"+":"")+g.avgmax.toFixed(1)+'</td>'+
    '<td>'+g.hr.toFixed(0)+'%</td></tr>'}).join("");
+ document.querySelectorAll("#aggBody tr").forEach((tr,i)=>{tr.title="클릭 → 이 조합 종목 목록 보기";tr.onclick=()=>drill(AGG[i].type,AGG[i].regime)});
 }
 function theme(){const d=document.documentElement;const dark=d.getAttribute("data-theme")==="dark";
  d.setAttribute("data-theme",dark?"light":"dark");
@@ -191,7 +218,15 @@ function theme(){const d=document.documentElement;const dark=d.getAttribute("dat
  localStorage.setItem("sd_theme",dark?"light":"dark")}
 document.getElementById("themeBtn").onclick=theme;
 if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
-["q","fType","fRegime","fHit","fDone"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+["q","fType","fRegime","fHit","fDone","fGroup"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+// 조합표 행 클릭 → 해당 신호×장세 로 메인 표 필터(드릴다운)
+function drill(t,r){
+ document.getElementById("fType").value=t;
+ document.getElementById("fRegime").value=(r==="-"?"":r);
+ document.getElementById("fGroup").checked=false;
+ apply();
+ const c=document.querySelector(".controls");if(c)c.scrollIntoView({behavior:"smooth",block:"start"});
+}
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  DATA=j.rows;document.getElementById("gen").textContent="갱신 "+j.generated+" · D+"+j.fwd_days+" 평가 · hit ≥"+j.surge_pct+"%";
  cards(j.stats);aggregate();buildHead();fillFilters();apply();
