@@ -74,6 +74,13 @@ h1{font-size:19px;margin:0}
 .wx{display:flex;align-items:center;gap:14px}
 .wx-emoji{font-size:38px}.wx-temp{font-size:26px;font-weight:800}
 .wx-desc{font-size:12px;color:var(--muted)}
+.wx-fc{display:flex;gap:10px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.wx-fc::-webkit-scrollbar{display:none}
+.wx-fc-item{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;flex-shrink:0}
+.wx-fc-day{font-size:11px;color:var(--muted)}.wx-fc-emoji{font-size:18px}
+.wx-fc-temp{font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.clocks{display:flex;gap:18px;justify-content:center;padding:6px 16px 0;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.clocks b{color:var(--fg);font-weight:700}
 .note{color:var(--muted);font-size:12px;line-height:1.6;margin-top:6px}
 .empty{color:var(--muted);text-align:center;padding:16px}
 details.help{margin-top:8px}
@@ -89,6 +96,7 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   <span class="gen" id="gen"></span>
   <button class="toggle" id="themeBtn">🌙 다크</button>
 </header>
+<div class="clocks" id="clocks"></div>
 <div class="wrap">
   <div class="err" id="err" style="display:none"></div>
 
@@ -139,6 +147,12 @@ function theme(){const d=document.documentElement,dark=d.getAttribute("data-them
 document.getElementById("themeBtn").onclick=theme;
 if(localStorage.getItem("hub_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
 
+/* 시계 (서울 + 뉴욕, DST 자동) */
+function tick(){const now=new Date();
+ const f=tz=>new Intl.DateTimeFormat("ko-KR",{timeZone:tz,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(now);
+ document.getElementById("clocks").innerHTML='🇰🇷 서울 <b>'+f("Asia/Seoul")+'</b> · 🇺🇸 뉴욕 <b>'+f("America/New_York")+'</b>';}
+tick();setInterval(tick,1000);
+
 /* 미장 페인지수 */
 function renderPain(p){
  const card=document.getElementById("painCard");
@@ -186,10 +200,16 @@ fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_cur
 /* 서울 날씨 (Open-Meteo 실시간) */
 const WMO={0:"☀️",1:"🌤️",2:"⛅",3:"☁️",45:"🌫️",48:"🌫️",51:"🌦️",53:"🌦️",55:"🌧️",61:"🌧️",63:"🌧️",65:"🌧️",71:"🌨️",73:"🌨️",75:"❄️",80:"🌦️",81:"🌧️",82:"⛈️",95:"⛈️",96:"⛈️",99:"⛈️"};
 const WD={0:"맑음",1:"대체로 맑음",2:"구름 조금",3:"흐림",45:"안개",48:"안개",51:"이슬비",53:"이슬비",55:"이슬비",61:"비",63:"비",65:"강한 비",71:"눈",73:"눈",75:"강한 눈",80:"소나기",81:"강한 소나기",82:"폭우",95:"천둥번개",96:"뇌우",99:"뇌우"};
-fetch("https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.978&current=temperature_2m,weathercode&timezone=Asia%2FSeoul")
- .then(r=>r.json()).then(d=>{const c=d.current,code=c.weathercode;
+const WDAY=["일","월","화","수","목","금","토"];
+fetch("https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.978&current=temperature_2m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min&forecast_days=5&timezone=Asia%2FSeoul")
+ .then(r=>r.json()).then(d=>{const c=d.current,code=c.weathercode,dl=d.daily;
+  let fc="";
+  if(dl&&dl.time){for(let i=0;i<dl.time.length;i++){const dt=new Date(dl.time[i]);const day=i===0?"오늘":WDAY[dt.getDay()];
+   fc+='<div class="wx-fc-item"><span class="wx-fc-day">'+day+'</span><span class="wx-fc-emoji">'+(WMO[dl.weathercode[i]]||"🌡️")+
+    '</span><span class="wx-fc-temp">'+Math.round(dl.temperature_2m_max[i])+'°/'+Math.round(dl.temperature_2m_min[i])+'°</span></div>';}}
   document.getElementById("wxBox").innerHTML='<div class="mkt-group-title">서울 날씨</div><div class="wx"><span class="wx-emoji">'+(WMO[code]||"🌡️")+
-   '</span><div><div class="wx-temp">'+Math.round(c.temperature_2m)+'°C</div><div class="wx-desc">'+(WD[code]||"")+'</div></div></div>';
+   '</span><div><div class="wx-temp">'+Math.round(c.temperature_2m)+'°C</div><div class="wx-desc">'+(WD[code]||"")+'</div></div></div>'+
+   (fc?'<div class="wx-fc">'+fc+'</div>':"");
  }).catch(()=>{});
 
 /* 신호 성과 미리보기 */
