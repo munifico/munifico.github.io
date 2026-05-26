@@ -89,6 +89,7 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
   <select id="fRegime"><option value="">전체 regime</option></select>
   <label><input type="checkbox" id="fHit"> 🚀 hit만</label>
   <label><input type="checkbox" id="fDone"> 평가완료만</label>
+  <label><input type="checkbox" id="fPending"> ⏳ 대기만</label>
   <label><input type="checkbox" id="fGroup"> 🔁 종목 묶기(최신)</label>
   <span class="gen" id="cnt"></span>
 </div>
@@ -159,6 +160,7 @@ function apply(){
  const q=document.getElementById("q").value.trim().toLowerCase();
  const ft=document.getElementById("fType").value,fr=document.getElementById("fRegime").value;
  const fh=document.getElementById("fHit").checked,fd=document.getElementById("fDone").checked;
+ const fp=document.getElementById("fPending").checked;
  const fg=document.getElementById("fGroup").checked;
  view=DATA.filter(r=>{
   if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.code).includes(q)))return false;
@@ -166,6 +168,7 @@ function apply(){
   if(fr&&r.regime!==fr)return false;
   if(fh&&!r.hit)return false;
   if(fd&&r.status!=="done")return false;
+  if(fp&&r.status==="done")return false;
   return true});
  if(fg){const byCode={};view.forEach(r=>{const p=byCode[r.code];if(!p||r.date>p.date)byCode[r.code]=r});view=Object.values(byCode);}
  view.sort((a,b)=>{let x=a[sortK],y=b[sortK];if(x==null)x=-1e9;if(y==null)y=-1e9;
@@ -219,7 +222,7 @@ function theme(){const d=document.documentElement;const dark=d.getAttribute("dat
  localStorage.setItem("sd_theme",dark?"light":"dark")}
 document.getElementById("themeBtn").onclick=theme;
 if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
-["q","fType","fRegime","fHit","fDone","fGroup"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+["q","fType","fRegime","fHit","fDone","fPending","fGroup"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
 // 조합표 행 클릭 → 해당 신호×장세 로 메인 표 필터(드릴다운)
 function drill(t,r){
  document.getElementById("fType").value=t;
