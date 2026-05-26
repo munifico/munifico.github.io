@@ -48,6 +48,17 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
 .bar{display:inline-block;height:8px;border-radius:4px;background:var(--accent);opacity:.55;vertical-align:middle}
 #aggBody tr{cursor:pointer}
 #aggBody tr:hover td{background:rgba(124,58,237,.08)}
+.help-btn{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;z-index:200;padding:20px;overflow-y:auto}
+.modal.open{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:560px;width:100%;padding:18px 22px 24px;margin:auto 0;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.modal-box h2{font-size:16px;margin:0 0 6px}
+.modal-box h3{font-size:13px;margin:16px 0 6px;color:var(--accent)}
+.modal-box p,.modal-box li{font-size:13px;line-height:1.65}
+.modal-box ul{margin:4px 0;padding-left:18px}
+.modal-box .muted{color:var(--muted)}
+.modal-close{float:right;font-size:18px;color:var(--muted);cursor:pointer;line-height:1;border:none;background:none;padding:2px 6px}
+.modal-close:hover{color:var(--fg)}
 /* 모바일 반응형 (≤640px): 표 → 종목별 카드, 조합표 가로 스크롤 */
 .controls{overflow-x:auto}
 @media(max-width:640px){
@@ -76,6 +87,7 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
 <header>
   <h1>📈 신호 성과 대시보드</h1>
   <span class="gen" id="gen"></span>
+  <button class="help-btn" id="helpBtn">❓ 도움말</button>
   <button class="toggle" id="themeBtn">🌙 다크</button>
 </header>
 <div class="cards" id="cards"></div>
@@ -101,6 +113,39 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
   <div class="pager" id="pager"></div>
 </div>
 <div class="err" id="err" style="display:none"></div>
+<div class="modal" id="helpModal">
+ <div class="modal-box">
+  <button class="modal-close" id="helpClose" aria-label="닫기">✕</button>
+  <h2>📖 대시보드 도움말</h2>
+  <p class="muted">운영 신호의 단기 성과를 사후 추적하는 대시보드입니다. 개별 종목 추격용이 아니라, 신호 × 장세 조합의 통계적 경향을 보기 위한 것입니다.</p>
+
+  <h3>장세(regime) 분류 — KOSPI 기준</h3>
+  <ul>
+   <li><b>강세장 (BULL)</b> : KOSPI 종가가 20일 이동평균선 <b>위</b> 그리고 20일선이 5거래일 전보다 <b>상승</b></li>
+   <li><b>약세장 (BEAR)</b> : KOSPI 종가가 20일선 <b>아래</b> 그리고 20일선이 5거래일 전보다 <b>하락</b></li>
+   <li><b>횡보장 (RANGE)</b> : 그 외 — 위 둘 중 하나만 충족하는 혼합 상태</li>
+  </ul>
+  <p class="muted">신호가 발생한 <b>당일의 KOSPI 상태</b>로 라벨링합니다 (사후 예측 아님).</p>
+
+  <h3>평가 상태</h3>
+  <ul>
+   <li><b>평가완료</b> : 신호일로부터 <b>5거래일(D+5)</b>이 지나 성과 측정이 끝난 신호 (성공·실패 무관)</li>
+   <li><b>⏳ 대기</b> : 아직 5거래일이 지나지 않아 성과를 확정할 수 없는 신호</li>
+   <li><b>🚀 hit</b> : 평가완료 신호 중 <b>D+5 내 최고가가 +15% 이상</b> 오른 것 (평가완료의 부분집합)</li>
+  </ul>
+
+  <h3>왜 평가완료까지 5거래일이 걸리나요?</h3>
+  <p>이 대시보드는 신호 다음날 진입을 가정하고 <b>5거래일(약 1주일)간의 단기 스윙 성과</b>를 측정합니다. 5거래일이 모두 지나야 그 구간의 종가·최고가가 확정되므로, 그 전에는 '대기'로 두고 매일 다시 계산합니다.</p>
+
+  <h3>성과 컬럼</h3>
+  <ul>
+   <li><b>D+1%</b> : 신호일 종가 대비 다음 거래일 종가 수익률</li>
+   <li><b>D+5%</b> : 신호일 종가 대비 5거래일째 종가 수익률</li>
+   <li><b>최고%</b> : 신호일 종가 대비 D+5 내 장중 최고가 수익률 (🚀 hit 판정 기준)</li>
+   <li><b>tech</b> : 신호 발생 시점의 기술적 점수(tech_score)</li>
+  </ul>
+ </div>
+</div>
 <script>
 // 신호 타입 → 한글 이름 (내부값은 영문 유지, 표시만 한글)
 const SIG={
@@ -221,6 +266,12 @@ function theme(){const d=document.documentElement;const dark=d.getAttribute("dat
  document.getElementById("themeBtn").textContent=dark?"🌙 다크":"☀️ 라이트";
  localStorage.setItem("sd_theme",dark?"light":"dark")}
 document.getElementById("themeBtn").onclick=theme;
+// 도움말 모달
+const _hm=document.getElementById("helpModal");
+document.getElementById("helpBtn").onclick=()=>_hm.classList.add("open");
+document.getElementById("helpClose").onclick=()=>_hm.classList.remove("open");
+_hm.onclick=e=>{if(e.target===_hm)_hm.classList.remove("open")};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")_hm.classList.remove("open")});
 if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
 ["q","fType","fRegime","fHit","fDone","fPending","fGroup"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
 // 조합표 행 클릭 → 해당 신호×장세 로 메인 표 필터(드릴다운)
