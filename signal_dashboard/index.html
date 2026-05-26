@@ -56,7 +56,7 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
 </header>
 <div class="cards" id="cards"></div>
 <details class="agg" id="aggBox" open>
-  <summary>📊 조합별 성과 <span class="hint">— signal_type × regime (평가완료 N≥3, 평균 D+5 정렬). 개별 추격 X, 조합 우위 보기용</span></summary>
+  <summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 개별 추격 X, 조합 우위 보기용</span></summary>
   <table class="aggtbl"><thead><tr id="aggHead"></tr></thead><tbody id="aggBody"></tbody></table>
 </details>
 <div class="controls">
@@ -76,16 +76,35 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
 </div>
 <div class="err" id="err" style="display:none"></div>
 <script>
+// 신호 타입 → 한글 이름 (내부값은 영문 유지, 표시만 한글)
+const SIG={
+ "UP_REVERSAL":"추세전환(초기)","UP_REVERSAL_CONFIRM":"추세전환 확인",
+ "BREAKOUT":"추세선 돌파","BREAKOUT_TRENDLINE_UP":"추세선 돌파(MTS)",
+ "HORIZ_BREAKOUT":"전고점 돌파","FIB_BOUNCE":"피보나치 반등",
+ "BREAKOUT_RETEST":"돌파 후 재테스트","LOWER_TL_RETEST":"하단 추세선 재테스트",
+ "SUPPLY_DIVERGENCE_BUY":"수급 다이버전스(매수)","SUPPLY_DIVERGENCE_STRONG":"수급 다이버전스(강)",
+ "SUPPLY_DIVERGENCE_TOP1":"수급 다이버전스(TOP1)","PROGRAM_DIVERGENCE":"프로그램 다이버전스",
+ "SURGE_PRE_CATCH":"급등 선포착","SURGE_PRE_CATCH_TOP1":"급등 선포착(TOP1)",
+ "SURGE_PRE_CATCH_TOP5":"급등 선포착(TOP5)","ANT_SHAKEOUT":"개미털기",
+ "ENVELOPE_BREAK_BEAR_REVERSION":"엔벨로프 하단 반등(약세장)","BEAR_SURGE_FOLLOW":"약세장 급등 추종",
+ "RANGE_OBV_STOCH":"박스권 OBV+스토캐스틱",
+ "ETF_INFLOW_TOP1":"ETF 자금유입(TOP1)","ETF_INFLOW_BUY":"ETF 자금유입(매수)",
+ "ETF_INFLOW_LEADING":"ETF 자금유입(선도)","UP_REVERSAL_ETF_BUY":"추세전환+ETF매수",
+ "UP_REVERSAL_ETF_TOP1":"추세전환+ETF(TOP1)"};
+// 등급·regime → 한글 (badge class 는 영문값 유지, 텍스트만 치환)
+const LAB={"HIGH":"높음","MED":"중간","LOW":"낮음","WARN":"주의",
+ "BULL":"강세장","RANGE":"횡보장","BEAR":"약세장"};
+function sigKo(v){return esc(SIG[v]||v)}
 const COLS=[
  {k:"date",t:"일자",n:0},{k:"name",t:"종목",n:0},{k:"code",t:"코드",n:0},
- {k:"type",t:"신호",n:0},{k:"conf",t:"등급",n:0},{k:"regime",t:"regime",n:0},
+ {k:"type",t:"신호",n:0},{k:"conf",t:"등급",n:0},{k:"regime",t:"장세",n:0},
  {k:"tech",t:"tech",n:1},{k:"d1",t:"D+1%",n:1},{k:"d5",t:"D+5%",n:1},
  {k:"max",t:"최고%",n:1},{k:"hit",t:"🚀",n:0},{k:"status",t:"상태",n:0}];
 let DATA=[],view=[],sortK="date",sortDir=-1,page=0;const PER=100;
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function fmtDate(d){return d&&d.length===8?d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6):esc(d)}
 function numCell(v){if(v==null)return '<td class="num pending">–</td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'">'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
-function badge(v,pre){return v?'<span class="badge b-'+esc(v)+'">'+esc(v)+'</span>':''}
+function badge(v,pre){return v?'<span class="badge b-'+esc(v)+'">'+esc(LAB[v]||v)+'</span>':''}
 function render(){
  const tb=document.getElementById("tb");
  const start=page*PER,pg=view.slice(start,start+PER);
@@ -94,7 +113,7 @@ function render(){
    '<td>'+fmtDate(r.date)+'</td>'+
    '<td>'+esc(r.name)+'</td>'+
    '<td>'+esc(r.code)+'</td>'+
-   '<td>'+esc(r.type)+'</td>'+
+   '<td>'+sigKo(r.type)+'</td>'+
    '<td>'+badge(r.conf)+'</td>'+
    '<td>'+badge(r.regime)+'</td>'+
    '<td class="num">'+(r.tech==null?"":r.tech)+'</td>'+
@@ -102,7 +121,8 @@ function render(){
    '<td>'+(r.hit?"🚀":"")+'</td>'+
    '<td>'+(r.status==="done"?"":'<span class="pending">대기</span>')+'</td>'+
   '</tr>'}).join("");
- document.getElementById("cnt").textContent=view.length+"건 (정렬: "+sortK+")";
+ const sc=(COLS.find(c=>c.k===sortK)||{}).t||sortK;
+ document.getElementById("cnt").textContent=view.length+"건 (정렬: "+sc+")";
  const pages=Math.ceil(view.length/PER)||1;
  document.getElementById("pager").innerHTML=
   '<button '+(page<=0?"disabled":"")+' onclick="go(-1)">◀ 이전</button>'+
@@ -133,8 +153,8 @@ function buildHead(){
 function fillFilters(){
  const types=[...new Set(DATA.map(r=>r.type))].sort();
  const regs=[...new Set(DATA.map(r=>r.regime).filter(Boolean))].sort();
- document.getElementById("fType").innerHTML='<option value="">전체 타입</option>'+types.map(t=>'<option>'+esc(t)+'</option>').join("");
- document.getElementById("fRegime").innerHTML='<option value="">전체 regime</option>'+regs.map(t=>'<option>'+esc(t)+'</option>').join("");
+ document.getElementById("fType").innerHTML='<option value="">전체 신호</option>'+types.map(t=>'<option value="'+esc(t)+'">'+sigKo(t)+'</option>').join("");
+ document.getElementById("fRegime").innerHTML='<option value="">전체 장세</option>'+regs.map(t=>'<option value="'+esc(t)+'">'+esc(LAB[t]||t)+'</option>').join("");
 }
 function cards(s){
  const c=[["총 신호",s.total],["평가완료",s.done],["대기",s.pending],
@@ -149,7 +169,7 @@ function aggregate(){
   g.n++;g.s5+=r.d5||0;g.sm+=r.max||0;if(r.hit)g.hit++});
  AGG=Object.values(m).filter(g=>g.n>=3);
  AGG.forEach(g=>{g.avg5=g.s5/g.n;g.avgmax=g.sm/g.n;g.hr=g.hit/g.n*100});
- const cols=[["type","신호",1],["regime","regime",1],["n","N",0],["avg5","평균D+5%",0],["avgmax","평균최고%",0],["hr","hit%",0]];
+ const cols=[["type","신호",1],["regime","장세",1],["n","N",0],["avg5","평균D+5%",0],["avgmax","평균최고%",0],["hr","hit%",0]];
  document.getElementById("aggHead").innerHTML=cols.map(c=>'<th class="'+(c[2]?"l":"")+'" data-k="'+c[0]+'">'+c[1]+'</th>').join("");
  document.querySelectorAll("#aggHead th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(AGGSORT===k)AGGDIR*=-1;else{AGGSORT=k;AGGDIR=-1}aggRender()});
  aggRender();
@@ -159,7 +179,7 @@ function aggRender(){
  const maxn=Math.max.apply(null,AGG.map(g=>g.n).concat(1));
  document.getElementById("aggBody").innerHTML=AGG.map(g=>{
   const c5=g.avg5>0?"up":(g.avg5<0?"dn":""),cm=g.avgmax>0?"up":"";
-  return '<tr><td class="l">'+esc(g.type)+'</td><td class="l">'+badge(g.regime)+'</td>'+
+  return '<tr><td class="l">'+sigKo(g.type)+'</td><td class="l">'+badge(g.regime)+'</td>'+
    '<td>'+g.n+' <span class="bar" style="width:'+(g.n/maxn*40).toFixed(0)+'px"></span></td>'+
    '<td class="'+c5+'">'+(g.avg5>0?"+":"")+g.avg5.toFixed(1)+'</td>'+
    '<td class="'+cm+'">'+(g.avgmax>0?"+":"")+g.avgmax.toFixed(1)+'</td>'+
