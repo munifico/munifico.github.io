@@ -38,6 +38,14 @@ tr:hover td{background:rgba(124,58,237,.06)}
 .pager button:disabled{opacity:.4;cursor:default}
 .toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
 .err{padding:40px;text-align:center;color:var(--muted)}
+details.agg{margin:0 20px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 14px}
+details.agg summary{cursor:pointer;font-weight:600;padding:6px 0;user-select:none}
+details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
+.aggtbl{width:100%;border-collapse:collapse;margin:6px 0 10px}
+.aggtbl th,.aggtbl td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-size:13px}
+.aggtbl th{color:var(--muted);font-size:12px;cursor:pointer}
+.aggtbl td.l,.aggtbl th.l{text-align:left}
+.bar{display:inline-block;height:8px;border-radius:4px;background:var(--accent);opacity:.55;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -47,6 +55,10 @@ tr:hover td{background:rgba(124,58,237,.06)}
   <button class="toggle" id="themeBtn">🌙 다크</button>
 </header>
 <div class="cards" id="cards"></div>
+<details class="agg" id="aggBox" open>
+  <summary>📊 조합별 성과 <span class="hint">— signal_type × regime (평가완료 N≥3, 평균 D+5 정렬). 개별 추격 X, 조합 우위 보기용</span></summary>
+  <table class="aggtbl"><thead><tr id="aggHead"></tr></thead><tbody id="aggBody"></tbody></table>
+</details>
 <div class="controls">
   <input id="q" placeholder="🔎 종목명·코드 검색" size="18">
   <select id="fType"><option value="">전체 타입</option></select>
@@ -129,6 +141,30 @@ function cards(s){
   ["🚀 hit",s.hits+" ("+s.hit_rate+"%)"],["평균 D+5",(s.avg_d5>0?"+":"")+s.avg_d5+"%"]];
  document.getElementById("cards").innerHTML=c.map(x=>'<div class="card"><div class="v">'+x[1]+'</div><div class="l">'+x[0]+'</div></div>').join("");
 }
+let AGG=[],AGGSORT="avg5",AGGDIR=-1;
+function aggregate(){
+ const m={};
+ DATA.forEach(r=>{if(r.status!=="done")return;const k=r.type+"|"+(r.regime||"-");
+  const g=m[k]||(m[k]={type:r.type,regime:r.regime||"-",n:0,s5:0,sm:0,hit:0});
+  g.n++;g.s5+=r.d5||0;g.sm+=r.max||0;if(r.hit)g.hit++});
+ AGG=Object.values(m).filter(g=>g.n>=3);
+ AGG.forEach(g=>{g.avg5=g.s5/g.n;g.avgmax=g.sm/g.n;g.hr=g.hit/g.n*100});
+ const cols=[["type","신호",1],["regime","regime",1],["n","N",0],["avg5","평균D+5%",0],["avgmax","평균최고%",0],["hr","hit%",0]];
+ document.getElementById("aggHead").innerHTML=cols.map(c=>'<th class="'+(c[2]?"l":"")+'" data-k="'+c[0]+'">'+c[1]+'</th>').join("");
+ document.querySelectorAll("#aggHead th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(AGGSORT===k)AGGDIR*=-1;else{AGGSORT=k;AGGDIR=-1}aggRender()});
+ aggRender();
+}
+function aggRender(){
+ AGG.sort((a,b)=>{let x=a[AGGSORT],y=b[AGGSORT];if(typeof x==="string")return AGGDIR*x.localeCompare(y);return AGGDIR*((x>y)-(x<y))});
+ const maxn=Math.max.apply(null,AGG.map(g=>g.n).concat(1));
+ document.getElementById("aggBody").innerHTML=AGG.map(g=>{
+  const c5=g.avg5>0?"up":(g.avg5<0?"dn":""),cm=g.avgmax>0?"up":"";
+  return '<tr><td class="l">'+esc(g.type)+'</td><td class="l">'+badge(g.regime)+'</td>'+
+   '<td>'+g.n+' <span class="bar" style="width:'+(g.n/maxn*40).toFixed(0)+'px"></span></td>'+
+   '<td class="'+c5+'">'+(g.avg5>0?"+":"")+g.avg5.toFixed(1)+'</td>'+
+   '<td class="'+cm+'">'+(g.avgmax>0?"+":"")+g.avgmax.toFixed(1)+'</td>'+
+   '<td>'+g.hr.toFixed(0)+'%</td></tr>'}).join("");
+}
 function theme(){const d=document.documentElement;const dark=d.getAttribute("data-theme")==="dark";
  d.setAttribute("data-theme",dark?"light":"dark");
  document.getElementById("themeBtn").textContent=dark?"🌙 다크":"☀️ 라이트";
@@ -138,7 +174,7 @@ if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttrib
 ["q","fType","fRegime","fHit","fDone"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  DATA=j.rows;document.getElementById("gen").textContent="갱신 "+j.generated+" · D+"+j.fwd_days+" 평가 · hit ≥"+j.surge_pct+"%";
- cards(j.stats);buildHead();fillFilters();apply();
+ cards(j.stats);aggregate();buildHead();fillFilters();apply();
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요 (python -m http.server). "+e});
 </script>
