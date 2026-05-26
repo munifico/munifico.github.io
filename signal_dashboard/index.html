@@ -59,14 +59,15 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
  details.agg{margin:0 14px 10px}
  .aggtbl{display:block;overflow-x:auto;white-space:nowrap}
  .wrap{padding:0 14px 40px}
- table{border:none;background:transparent}
- thead{display:none}
- tbody,tr,td{display:block}
- tr{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:4px 12px}
- td{border:none;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;white-space:normal;padding:7px 0;text-align:right}
- tr td:last-child{border-bottom:none}
- td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-weight:600;text-align:left;flex-shrink:0}
- td:empty,td.num.pending:empty{display:none}
+ /* 메인 표만 종목별 카드로 변환 (조합표 .aggtbl 은 제외 — 가로 스크롤 표 유지) */
+ .wrap table{border:none;background:transparent}
+ .wrap thead{display:none}
+ .wrap tbody,.wrap tr,.wrap td{display:block}
+ .wrap tr{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:4px 12px}
+ .wrap td{border:none;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;white-space:normal;padding:7px 0;text-align:right}
+ .wrap tr td:last-child{border-bottom:none}
+ .wrap td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-weight:600;text-align:left;flex-shrink:0}
+ .wrap td:empty{display:none}
  .pager{padding:14px 0}
 }
 </style>
