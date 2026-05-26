@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>신호 성과 대시보드</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--up:#dc2626;--dn:#2563eb;--accent:#7c3aed;--hit:#f59e0b}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2d3138;--up:#f87171;--dn:#60a5fa;--accent:#a78bfa;--hit:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+header{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+h1{font-size:18px;margin:0}
+.gen{color:var(--muted);font-size:12px}
+.cards{display:flex;gap:12px;flex-wrap:wrap;padding:16px 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:120px}
+.card .v{font-size:22px;font-weight:700}
+.card .l{color:var(--muted);font-size:12px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 12px;align-items:center}
+.controls select,.controls input{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
+.controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.wrap{padding:0 20px 40px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);cursor:pointer;user-select:none;font-size:12px;color:var(--muted)}
+th:hover{color:var(--fg)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:hover td{background:rgba(124,58,237,.06)}
+.up{color:var(--up);font-weight:600}.dn{color:var(--dn);font-weight:600}
+.badge{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:600}
+.b-HIGH{background:#fee2e2;color:#b91c1c}.b-MED{background:#ffedd5;color:#c2410c}.b-LOW{background:#f3f4f6;color:#6b7280}
+[data-theme=dark] .b-HIGH{background:#7f1d1d;color:#fecaca}[data-theme=dark] .b-MED{background:#7c2d12;color:#fed7aa}[data-theme=dark] .b-LOW{background:#374151;color:#d1d5db}
+.b-BULL{background:#dcfce7;color:#15803d}.b-RANGE{background:#fef9c3;color:#a16207}.b-BEAR{background:#fee2e2;color:#b91c1c}
+[data-theme=dark] .b-BULL{background:#14532d;color:#bbf7d0}[data-theme=dark] .b-RANGE{background:#713f12;color:#fef08a}[data-theme=dark] .b-BEAR{background:#7f1d1d;color:#fecaca}
+.pending{color:var(--muted);font-style:italic}
+.pager{display:flex;gap:8px;align-items:center;justify-content:center;padding:16px}
+.pager button{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.pager button:disabled{opacity:.4;cursor:default}
+.toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.err{padding:40px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>📈 신호 성과 대시보드</h1>
+  <span class="gen" id="gen"></span>
+  <button class="toggle" id="themeBtn">🌙 다크</button>
+</header>
+<div class="cards" id="cards"></div>
+<div class="controls">
+  <input id="q" placeholder="🔎 종목명·코드 검색" size="18">
+  <select id="fType"><option value="">전체 타입</option></select>
+  <select id="fRegime"><option value="">전체 regime</option></select>
+  <label><input type="checkbox" id="fHit"> 🚀 hit만</label>
+  <label><input type="checkbox" id="fDone"> 평가완료만</label>
+  <span class="gen" id="cnt"></span>
+</div>
+<div class="wrap">
+  <table>
+    <thead><tr id="hrow"></tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <div class="pager" id="pager"></div>
+</div>
+<div class="err" id="err" style="display:none"></div>
+<script>
+const COLS=[
+ {k:"date",t:"일자",n:0},{k:"name",t:"종목",n:0},{k:"code",t:"코드",n:0},
+ {k:"type",t:"신호",n:0},{k:"conf",t:"등급",n:0},{k:"regime",t:"regime",n:0},
+ {k:"tech",t:"tech",n:1},{k:"d1",t:"D+1%",n:1},{k:"d5",t:"D+5%",n:1},
+ {k:"max",t:"최고%",n:1},{k:"hit",t:"🚀",n:0},{k:"status",t:"상태",n:0}];
+let DATA=[],view=[],sortK="date",sortDir=-1,page=0;const PER=100;
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function fmtDate(d){return d&&d.length===8?d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6):esc(d)}
+function numCell(v){if(v==null)return '<td class="num pending">–</td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'">'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
+function badge(v,pre){return v?'<span class="badge b-'+esc(v)+'">'+esc(v)+'</span>':''}
+function render(){
+ const tb=document.getElementById("tb");
+ const start=page*PER,pg=view.slice(start,start+PER);
+ tb.innerHTML=pg.map(r=>{
+  return '<tr>'+
+   '<td>'+fmtDate(r.date)+'</td>'+
+   '<td>'+esc(r.name)+'</td>'+
+   '<td>'+esc(r.code)+'</td>'+
+   '<td>'+esc(r.type)+'</td>'+
+   '<td>'+badge(r.conf)+'</td>'+
+   '<td>'+badge(r.regime)+'</td>'+
+   '<td class="num">'+(r.tech==null?"":r.tech)+'</td>'+
+   numCell(r.d1)+numCell(r.d5)+numCell(r.max)+
+   '<td>'+(r.hit?"🚀":"")+'</td>'+
+   '<td>'+(r.status==="done"?"":'<span class="pending">대기</span>')+'</td>'+
+  '</tr>'}).join("");
+ document.getElementById("cnt").textContent=view.length+"건 (정렬: "+sortK+")";
+ const pages=Math.ceil(view.length/PER)||1;
+ document.getElementById("pager").innerHTML=
+  '<button '+(page<=0?"disabled":"")+' onclick="go(-1)">◀ 이전</button>'+
+  '<span>'+(page+1)+' / '+pages+'</span>'+
+  '<button '+(page>=pages-1?"disabled":"")+' onclick="go(1)">다음 ▶</button>';
+}
+function go(d){page=Math.max(0,page+d);render();scrollTo(0,0)}
+function apply(){
+ const q=document.getElementById("q").value.trim().toLowerCase();
+ const ft=document.getElementById("fType").value,fr=document.getElementById("fRegime").value;
+ const fh=document.getElementById("fHit").checked,fd=document.getElementById("fDone").checked;
+ view=DATA.filter(r=>{
+  if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.code).includes(q)))return false;
+  if(ft&&r.type!==ft)return false;
+  if(fr&&r.regime!==fr)return false;
+  if(fh&&!r.hit)return false;
+  if(fd&&r.status!=="done")return false;
+  return true});
+ view.sort((a,b)=>{let x=a[sortK],y=b[sortK];if(x==null)x=-1e9;if(y==null)y=-1e9;
+  if(typeof x==="string")return sortDir*x.localeCompare(y);return sortDir*((x>y)-(x<y))});
+ page=0;render();
+}
+function buildHead(){
+ document.getElementById("hrow").innerHTML=COLS.map(c=>'<th data-k="'+c.k+'">'+c.t+'</th>').join("");
+ document.querySelectorAll("th").forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=-1}apply()});
+}
+function fillFilters(){
+ const types=[...new Set(DATA.map(r=>r.type))].sort();
+ const regs=[...new Set(DATA.map(r=>r.regime).filter(Boolean))].sort();
+ document.getElementById("fType").innerHTML='<option value="">전체 타입</option>'+types.map(t=>'<option>'+esc(t)+'</option>').join("");
+ document.getElementById("fRegime").innerHTML='<option value="">전체 regime</option>'+regs.map(t=>'<option>'+esc(t)+'</option>').join("");
+}
+function cards(s){
+ const c=[["총 신호",s.total],["평가완료",s.done],["대기",s.pending],
+  ["🚀 hit",s.hits+" ("+s.hit_rate+"%)"],["평균 D+5",(s.avg_d5>0?"+":"")+s.avg_d5+"%"]];
+ document.getElementById("cards").innerHTML=c.map(x=>'<div class="card"><div class="v">'+x[1]+'</div><div class="l">'+x[0]+'</div></div>').join("");
+}
+function theme(){const d=document.documentElement;const dark=d.getAttribute("data-theme")==="dark";
+ d.setAttribute("data-theme",dark?"light":"dark");
+ document.getElementById("themeBtn").textContent=dark?"🌙 다크":"☀️ 라이트";
+ localStorage.setItem("sd_theme",dark?"light":"dark")}
+document.getElementById("themeBtn").onclick=theme;
+if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
+["q","fType","fRegime","fHit","fDone"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
+ DATA=j.rows;document.getElementById("gen").textContent="갱신 "+j.generated+" · D+"+j.fwd_days+" 평가 · hit ≥"+j.surge_pct+"%";
+ cards(j.stats);buildHead();fillFilters();apply();
+}).catch(e=>{document.getElementById("err").style.display="block";
+ document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요 (python -m http.server). "+e});
+</script>
+</body>
+</html>
