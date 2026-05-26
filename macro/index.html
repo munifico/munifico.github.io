@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>미장 매크로 · 트럼프 페인 인덱스</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--up:#dc2626;--dn:#2563eb;--accent:#7c3aed;--ok:#16a34a;--warn:#d97706;--bad:#dc2626}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2d3138;--up:#f87171;--dn:#60a5fa;--accent:#a78bfa;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+
+header{padding:14px 16px 6px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:18px;margin:0}
+.gen{color:var(--muted);font-size:12px}
+.toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.wrap{padding:8px 16px 48px;max-width:760px;margin:0 auto}
+.sec-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:20px 2px 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.pain-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.pain-sigma{font-size:34px;font-weight:800;line-height:1}
+.pain-level{font-size:14px;font-weight:700;padding:4px 12px;border-radius:9999px}
+.lvl-ok{background:rgba(22,163,74,.14);color:var(--ok)}
+.lvl-warn{background:rgba(217,119,6,.16);color:var(--warn)}
+.lvl-bad{background:rgba(220,38,38,.16);color:var(--bad)}
+.pain-sub{color:var(--muted);font-size:12px;margin-top:4px}
+.item{margin-top:14px}
+.item-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;margin-bottom:5px}
+.item-name{font-weight:600}
+.item-sig{font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar-track{height:9px;background:var(--line);border-radius:9999px;overflow:hidden}
+.bar-fill{height:100%;border-radius:9999px;background:var(--accent)}
+.bar-fill.warn{background:var(--warn)}.bar-fill.bad{background:var(--bad)}
+.flag{font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;margin-left:6px}
+.flag.near{background:rgba(217,119,6,.16);color:var(--warn)}
+.flag.alert{background:rgba(220,38,38,.16);color:var(--bad)}
+.sector{display:flex;flex-direction:column;gap:4px}
+.sector-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sector-name{font-size:15px;font-weight:700}
+.sector-etf{color:var(--muted);font-weight:600;font-size:12px}
+.sector-pct{font-variant-numeric:tabular-nums;font-weight:700}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.sector-meta{font-size:12px;color:var(--muted)}
+.sector-reason{font-size:13px;margin-top:2px}
+.sector-kr{font-size:12px;color:var(--muted);margin-top:3px;word-break:break-all}
+.note{color:var(--muted);font-size:12px;line-height:1.6;margin-top:6px}
+.empty{color:var(--muted);text-align:center;padding:20px}
+details.help{margin-top:8px}
+details.help summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
+details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6px}
+.err{padding:40px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호</a><a class="hubnav-item active" href="../macro/">🇺🇸 미장</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a><a class="hubnav-item" href="../jdash/">🌐 마켓</a></nav>
+<header>
+  <h1>🇺🇸 미장 매크로</h1>
+  <span class="gen" id="gen"></span>
+  <button class="toggle" id="themeBtn">🌙 다크</button>
+</header>
+<div class="wrap" id="wrap">
+  <div class="err" id="err" style="display:none"></div>
+
+  <div class="sec-title">트럼프 페인 인덱스</div>
+  <div class="card" id="painCard"></div>
+
+  <div class="sec-title">미국 섹터 모멘텀 <span style="font-weight:400;text-transform:none">(5일 누적 · 거래량 1.5배+)</span></div>
+  <div id="sectors"></div>
+</div>
+<script>
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function lvlClass(sa){if(sa==null)return"";return sa>=2?"lvl-bad":(sa>=1?"lvl-warn":"lvl-ok")}
+function barClass(f){return f==="alert"?"bad":(f==="near"?"warn":"")}
+function pctCell(v){const c=v>0?"up":(v<0?"dn":"");return '<span class="sector-pct '+c+'">'+(v>0?"+":"")+v.toFixed(2)+'%</span>'}
+
+function renderPain(p){
+ const card=document.getElementById("painCard");
+ if(!p||p.sigma_avg==null){card.innerHTML='<div class="empty">페인 인덱스 데이터 없음 (FRED_API_KEY 또는 네트워크 확인)</div>';return}
+ let items="";
+ const det=p.details||{};
+ for(const name in det){
+  const d=det[name],sig=d.sigma,w=Math.min(sig/3*100,100);
+  const fl=d.flag==="alert"?'<span class="flag alert">⚠️ 이상</span>':(d.flag==="near"?'<span class="flag near">⚠ 근접</span>':"");
+  items+='<div class="item"><div class="item-row"><span class="item-name">'+esc(name)+' '+esc(d.dir||"")+fl+'</span>'+
+   '<span class="item-sig">σ '+sig.toFixed(2)+'</span></div>'+
+   '<div class="bar-track"><div class="bar-fill '+barClass(d.flag)+'" style="width:'+w.toFixed(0)+'%"></div></div></div>';
+ }
+ card.innerHTML=
+  '<div class="pain-head"><span class="pain-sigma">σ '+p.sigma_avg.toFixed(2)+'</span>'+
+  '<span class="pain-level '+lvlClass(p.sigma_avg)+'">'+esc(p.level)+'</span></div>'+
+  '<div class="pain-sub">'+p.n_items+'/5 항목 (FRED + FDR) · 최근 1개월 변동을 6개월 표준편차로 정규화</div>'+
+  items+
+  '<details class="help"><summary>📖 항목·σ 설명</summary><div>'+
+  '• S&amp;P 500 — 미 증시 1개월 변동 (시장 충격)<br>'+
+  '• 10Y 국채 — 장기 금리 변동 (인플레/경기)<br>'+
+  '• 30Y 모기지 — 부동산 금융 압박<br>'+
+  '• 가솔린 — 에너지·연료비 부담<br>'+
+  '• 인플레 기대 — 5Y Breakeven<br>'+
+  'σ &lt; 1 정상 / 1~2 경계 / ≥ 2 고경계. 개별 항목은 평균과 별개(평균이 단일 급등을 희석). ↑/↓ = 1개월 변동 방향(σ는 폭만).'+
+  '</div></details>';
+}
+
+function renderSectors(list,asof){
+ const box=document.getElementById("sectors");
+ if(!list||!list.length){box.innerHTML='<div class="card empty">모멘텀 + 거래량 1.5배 통과 섹터 없음</div>';return}
+ box.innerHTML=list.map(s=>
+  '<div class="card sector"><div class="sector-top">'+
+   '<span class="sector-name">'+esc(s.name_kr)+' <span class="sector-etf">'+esc(s.etf)+'</span></span>'+
+   '<span>'+pctCell(s.pct_change)+'</span></div>'+
+   '<div class="sector-meta">1일 '+(s.pct_change_1d>0?"+":"")+s.pct_change_1d.toFixed(2)+'% · 거래량 '+s.volume_ratio.toFixed(2)+'배'+(asof?(' · '+esc(asof)):"")+'</div>'+
+   '<div class="sector-reason">'+esc(s.reason)+'</div>'+
+   '<div class="sector-kr">KR 연관: '+esc((s.kr_stocks||[]).join(", "))+'</div>'+
+  '</div>').join("");
+}
+
+function theme(){const d=document.documentElement;const dark=d.getAttribute("data-theme")==="dark";
+ d.setAttribute("data-theme",dark?"light":"dark");
+ document.getElementById("themeBtn").textContent=dark?"🌙 다크":"☀️ 라이트";
+ localStorage.setItem("hub_theme",dark?"light":"dark")}
+document.getElementById("themeBtn").onclick=theme;
+if(localStorage.getItem("hub_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
+
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
+ document.getElementById("gen").textContent="갱신 "+j.generated;
+ renderPain(j.pain);renderSectors(j.sectors,j.asof);
+}).catch(e=>{document.getElementById("err").style.display="block";
+ document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
+</script>
+</body>
+</html>
