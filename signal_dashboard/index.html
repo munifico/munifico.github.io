@@ -217,13 +217,14 @@ const SIG={
  "ETF_INFLOW_TOP1":"ETF 자금유입(TOP1)","ETF_INFLOW_BUY":"ETF 자금유입(매수)",
  "ETF_INFLOW_LEADING":"ETF 자금유입(선도)","UP_REVERSAL_ETF_BUY":"추세전환+ETF매수",
  "UP_REVERSAL_ETF_TOP1":"추세전환+ETF(TOP1)",
- "PRE_BREAKOUT_52W":"52주 전고점 직전+동반매수"};
+ "PRE_BREAKOUT_52W":"52주 전고점 직전+동반매수","TARGET_UP":"목표가 상향"};
 // 등급·regime → 한글 (badge class 는 영문값 유지, 텍스트만 치환)
 const LAB={"HIGH":"높음","MED":"중간","LOW":"낮음","WARN":"주의","OBSERVING":"관찰중",
  "BULL":"강세장","RANGE":"횡보장","BEAR":"약세장"};
 // 출처(source_seq 정규화) → 한글 + 시점 뉘앙스
 const SRC={"screen":"조건검색 ⏱오전","close_bet":"종가베팅 ⏱장마감","supply":"수급 다이버전스 ⏱장후",
- "ant":"개미털기 ⏱장중","prog":"프로그램 ⏱장중","pre_breakout_52w":"52주돌파직전(동반매수) ⏱종가"};
+ "ant":"개미털기 ⏱장중","prog":"프로그램 ⏱장중","pre_breakout_52w":"52주돌파직전(동반매수) ⏱종가",
+ "target_up":"목표가 상향"};
 function sigKo(v){return esc(SIG[v]||v)}
 function srcKo(v){return esc(SRC[v]||v||"")}
 function themeCell(ts){ts=ts||[];if(!ts.length)return '<td data-label="테마"></td>';
@@ -233,7 +234,7 @@ function themeCell(ts){ts=ts||[];if(!ts.length)return '<td data-label="테마"><
 const COLS=[
  {k:"date",t:"일자",n:0},{k:"name",t:"종목",n:0},{k:"code",t:"코드",n:0},
  {k:"src",t:"출처",n:0},{k:"stime",t:"시각",n:0},
- {k:"type",t:"신호",n:0},{k:"theme",t:"테마",n:0},{k:"conf",t:"등급",n:0},{k:"regime",t:"장세",n:0},
+ {k:"type",t:"신호",n:0},{k:"supply",t:"비고",n:0},{k:"theme",t:"테마",n:0},{k:"conf",t:"등급",n:0},{k:"regime",t:"장세",n:0},
  {k:"tech",t:"tech",n:1},{k:"d1",t:"D+1%",n:1},{k:"d5",t:"D+5%",n:1},
  {k:"max",t:"최고%",n:1},{k:"hit",t:"🚀",n:0},{k:"status",t:"상태",n:0}];
 let DATA=[],view=[],sortK="date",sortDir=-1,page=0;const PER=100;
@@ -252,6 +253,7 @@ function render(){
    '<td data-label="출처"><span class="src-tag">'+srcKo(r.src)+'</span></td>'+
    '<td data-label="시각">'+esc(r.stime||"")+'</td>'+
    '<td data-label="신호">'+sigKo(r.type)+'</td>'+
+   '<td data-label="비고" class="muted" style="font-size:12px">'+esc(r.supply||"")+'</td>'+
    themeCell(r.themes)+
    '<td data-label="등급">'+badge(r.conf)+'</td>'+
    '<td data-label="장세">'+badge(r.regime)+'</td>'+
