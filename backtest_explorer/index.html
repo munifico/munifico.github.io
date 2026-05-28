@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>백테 what-if 탐색기</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--accent:#7c3aed;
+ --up:#d1453b;--dn:#2563eb;--good:#16a34a;--bad:#dc2626}
+[data-theme=dark]{--bg:#0f1116;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2b2f38;
+ --accent:#a78bfa;--up:#f87171;--dn:#60a5fa;--good:#4ade80;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ background:var(--bg);color:var(--fg)}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--card);
+ border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;flex-wrap:wrap}
+h1{font-size:16px;margin:0}
+.sub{font-size:12px;color:var(--muted)}
+.spacer{flex:1}
+button.ghost{background:none;border:1px solid var(--line);color:var(--fg);border-radius:8px;
+ padding:5px 10px;cursor:pointer;font-size:13px}
+.tabs{display:flex;gap:6px;padding:10px 16px}
+.tab{padding:7px 15px;border-radius:9999px;border:1px solid var(--line);background:var(--card);
+ color:var(--muted);cursor:pointer;font-weight:600;font-size:13px}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.wrap{padding:0 16px 40px;max-width:1100px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.ctl label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.ctl .val{color:var(--accent);font-weight:700}
+input[type=range]{width:100%}
+.regbtns{display:flex;gap:6px;flex-wrap:wrap}
+.regbtns .rb{padding:5px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);
+ color:var(--muted);cursor:pointer;font-size:13px}
+.regbtns .rb.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:4px}
+.metric{background:var(--bg);border-radius:10px;padding:12px}
+.metric .k{font-size:12px;color:var(--muted)}
+.metric .v{font-size:22px;font-weight:700;margin-top:2px}
+.metric .d{font-size:12px;margin-top:2px}
+.pos{color:var(--good)}.neg{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:nth-child(-n+3),td:nth-child(-n+3){text-align:left}
+th{color:var(--muted);font-weight:600;cursor:pointer;user-select:none}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--bg)}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+canvas{width:100%;display:block}
+.chartwrap{position:relative;background:var(--bg);border-radius:10px;padding:8px}
+.cinfo{font-size:13px;color:var(--muted);margin:8px 0}
+.hide{display:none}
+.tag{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:600}
+.tB{background:#fee2e2;color:#b91c1c}.tR{background:#fef3c7;color:#92400e}.tU{background:#dcfce7;color:#15803d}
+[data-theme=dark] .tB{background:#7f1d1d;color:#fecaca}[data-theme=dark] .tR{background:#78350f;color:#fde68a}
+[data-theme=dark] .tU{background:#14532d;color:#bbf7d0}
+select,input[type=search]{padding:6px 9px;border:1px solid var(--line);border-radius:8px;
+ background:var(--card);color:var(--fg);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 백테 what-if 탐색기</h1>
+  <span class="sub" id="meta"></span>
+  <span class="spacer"></span>
+  <button class="ghost" id="themeBtn">🌙 다크</button>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="agg">집계 슬라이더</div>
+  <div class="tab" data-tab="candle">단일 종목 캔들</div>
+</div>
+
+<!-- ───────── 집계 탭 ───────── -->
+<div class="wrap" id="tab-agg">
+  <div class="card">
+    <div class="controls">
+      <div class="ctl">
+        <label>엔벨로프 하단 기준 (close ≤ MA15×<span class="val" id="envV">0.85</span>)</label>
+        <input type="range" id="env" min="0.80" max="0.90" step="0.005" value="0.85">
+      </div>
+      <div class="ctl">
+        <label>RSI 컷 (≤ <span class="val" id="rsiV">해제</span>)</label>
+        <input type="range" id="rsi" min="20" max="100" step="5" value="100">
+      </div>
+      <div class="ctl">
+        <label>거래량 z (≥ <span class="val" id="volzV">해제</span>)</label>
+        <input type="range" id="volz" min="0" max="3" step="0.5" value="0">
+      </div>
+      <div class="ctl">
+        <label>장세 (regime)</label>
+        <div class="regbtns" id="regs">
+          <div class="rb" data-r="ALL">전체</div>
+          <div class="rb on" data-r="B">BEAR</div>
+          <div class="rb" data-r="R">RANGE</div>
+          <div class="rb" data-r="U">BULL</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="metrics" id="metrics"></div>
+    <div class="note" id="mnote"></div>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead><tr id="thead"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="note" id="listnote"></div>
+  </div>
+</div>
+
+<!-- ───────── 캔들 탭 ───────── -->
+<div class="wrap hide" id="tab-candle">
+  <div class="card">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input type="search" id="csearch" placeholder="🔎 종목명·코드" list="clist" size="20">
+      <datalist id="clist"></datalist>
+      <select id="cselect"></select>
+      <span class="sub" id="cnote"></span>
+    </div>
+    <div class="chartwrap" style="margin-top:12px"><canvas id="chart" height="360"></canvas></div>
+    <div class="cinfo" id="cinfo"></div>
+    <table>
+      <thead><tr><th>신호일</th><th>장세</th><th>엔벨로프</th><th>RSI</th><th>vol z</th><th>D+5%</th><th>D+20%</th></tr></thead>
+      <tbody id="csig"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+let DATA=null, COST=0.4, SPLIT="20250101";
+const f={env:0.85,rsi:null,volz:null,reg:"B"};
+let sortKey=7, sortDesc=true;  // d5 desc 기본
+
+const $=id=>document.getElementById(id);
+const fmt=(v,d=2)=>v==null||isNaN(v)?"–":(v>=0?"+":"")+v.toFixed(d);
+const REGNM={B:"BEAR",R:"RANGE",U:"BULL"};
+
+fetch("data.json").then(r=>r.json()).then(d=>{
+  DATA=d; COST=d.params.cost; SPLIT=d.params.split;
+  $("meta").textContent=`${d.signal} · 생성 ${d.generated} · 후보 ${d.rows.length.toLocaleString()}행`;
+  buildHead(); buildCandleList(); recalc();
+}).catch(e=>{$("meta").textContent="data.json 로드 실패 (로컬은 http 서버 필요)";});
+
+// ── 필터 ──
+function filtered(){
+  return DATA.rows.filter(r=>
+    r[3]<=f.env
+    && (f.rsi==null || (r[4]!=null && r[4]<=f.rsi))
+    && (f.volz==null|| (r[5]!=null && r[5]>=f.volz))
+    && (f.reg=="ALL"|| r[6]==f.reg));
+}
+
+// ── 집계 지표 ──
+function recalc(){
+  const rows=filtered();
+  const done=rows.filter(r=>r[7]!=null);
+  const N=done.length;
+  const mean=(a,i)=>{const v=a.map(r=>r[i]).filter(x=>x!=null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null;};
+  const win=N?done.filter(r=>r[7]>0).length/N*100:null;
+  const avg5=mean(done,7), avg20=mean(done,8);
+  let gain=0,loss=0; for(const r of done){const n=r[7]-COST; if(n>0)gain+=n; else loss+=-n;}
+  const pf=loss>0?gain/loss:(gain>0?Infinity:null);
+  const is=done.filter(r=>r[0]<SPLIT), oos=done.filter(r=>r[0]>=SPLIT);
+  const isA=mean(is,7), oosA=mean(oos,7);
+  const b=DATA.baseline;
+  const dd=(v,base)=>v==null?"":`<span class="${v-base>=0?'pos':'neg'}">Δ${fmt(v-base)}</span>`;
+  $("metrics").innerHTML=[
+    ["평가완료 N",N.toLocaleString(),""],
+    ["승률 D+5",win==null?"–":win.toFixed(0)+"%",`<span class="${win>=b.win5?'pos':'neg'}">vs base ${b.win5}%</span>`],
+    ["평균 D+5",fmt(avg5)+"%",dd(avg5,b.d5)],
+    ["평균 D+20",fmt(avg20)+"%",dd(avg20,b.d20)],
+    ["PF_net",pf==null?"–":(pf===Infinity?"∞":pf.toFixed(2)),`<span class="sub">비용 ${COST}%</span>`],
+    ["IS 평균 D+5",fmt(isA)+"%",`<span class="sub">~2024 · N${is.length}</span>`],
+    ["OOS 평균 D+5",fmt(oosA)+"%",`<span class="sub">2025~ · N${oos.length}</span>`],
+  ].map(([k,v,d])=>`<div class="metric"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+  $("mnote").innerHTML=`baseline(fdr_all 전체) D+5 ${b.d5}% · D+20 ${b.d20}% · 승률 ${b.win5}%. `+
+    `IS/OOS 둘 다 + 이고 PF_net&gt;1.5 일 때 시간안정 알파에 가깝습니다.`;
+  renderList(done);
+}
+
+// ── 리스트 ──
+const HEAD=[["date","신호일"],["name","종목"],["code","코드"],["env","엔벨로프"],["rsi","RSI"],["volz","vol z"],["reg","장세"],["d5","D+5%"],["d20","D+20%"]];
+function buildHead(){
+  $("thead").innerHTML=HEAD.map((h,i)=>`<th data-i="${i}">${h[1]}</th>`).join("");
+  $("thead").querySelectorAll("th").forEach(th=>th.onclick=()=>{
+    const i=+th.dataset.i; if(sortKey==i)sortDesc=!sortDesc; else{sortKey=i;sortDesc=true;} recalc();});
+}
+function renderList(done){
+  const rows=[...done].sort((a,b)=>{
+    let x=a[sortKey],y=b[sortKey];
+    if(x==null)return 1; if(y==null)return -1;
+    if(typeof x=="string")return sortDesc?y.localeCompare(x):x.localeCompare(y);
+    return sortDesc?y-x:x-y;});
+  const top=rows.slice(0,200);
+  $("tbody").innerHTML=top.map(r=>`<tr data-code="${r[1]}" data-date="${r[0]}">
+    <td>${r[0].slice(0,4)}-${r[0].slice(4,6)}-${r[0].slice(6)}</td>
+    <td>${r[2]}</td><td>${r[1]}</td>
+    <td>${r[3].toFixed(3)}</td><td>${r[4]==null?"–":r[4].toFixed(0)}</td>
+    <td>${r[5]==null?"–":fmt(r[5])}</td>
+    <td><span class="tag t${r[6]}">${REGNM[r[6]]}</span></td>
+    <td class="${r[7]>0?'pos':'neg'}">${fmt(r[7])}</td>
+    <td class="${r[8]>0?'pos':'neg'}">${fmt(r[8])}</td></tr>`).join("");
+  $("tbody").querySelectorAll("tr").forEach(tr=>tr.onclick=()=>openCandle(tr.dataset.code,tr.dataset.date));
+  $("listnote").textContent=`통과 ${done.length.toLocaleString()}건 중 상위 ${top.length} 표시 (행 클릭 → 캔들). 정렬: ${HEAD[sortKey][1]} ${sortDesc?"▼":"▲"}`;
+}
+
+// ── 컨트롤 바인딩 ──
+$("env").oninput=e=>{f.env=+e.target.value;$("envV").textContent=f.env.toFixed(3);recalc();};
+$("rsi").oninput=e=>{const v=+e.target.value;f.rsi=v>=100?null:v;$("rsiV").textContent=v>=100?"해제":v;recalc();};
+$("volz").oninput=e=>{const v=+e.target.value;f.volz=v<=0?null:v;$("volzV").textContent=v<=0?"해제":"+"+v;recalc();};
+$("regs").querySelectorAll(".rb").forEach(b=>b.onclick=()=>{
+  f.reg=b.dataset.r;$("regs").querySelectorAll(".rb").forEach(x=>x.classList.toggle("on",x==b));recalc();});
+
+// ── 캔들 ──
+function buildCandleList(){
+  const codes=Object.keys(DATA.ohlcv);
+  const nm={}; for(const r of DATA.rows)nm[r[1]]=r[2];
+  codes.sort((a,b)=>(nm[a]||a).localeCompare(nm[b]||b));
+  $("cselect").innerHTML=codes.map(c=>`<option value="${c}">${nm[c]||c} (${c})</option>`).join("");
+  $("clist").innerHTML=codes.map(c=>`<option value="${nm[c]||c} ${c}">`).join("");
+  $("cselect").onchange=()=>openCandle($("cselect").value);
+  $("csearch").oninput=e=>{const q=e.target.value.trim();const m=q.match(/(\d{6})/);
+    if(m&&DATA.ohlcv[m[1]])openCandle(m[1]);};
+  $("cnote").textContent=`캔들 제공: 최근 신호 ${codes.length}종목 (용량 가드). 집계 탭 행 클릭으로도 진입.`;
+  if(codes.length)openCandle(codes[0]);
+}
+function openCandle(code,focusDate){
+  switchTab("candle");
+  if($("cselect").value!=code)$("cselect").value=code;
+  const bars=DATA.ohlcv[code];
+  const nm={};for(const r of DATA.rows)nm[r[1]]=r[2];
+  if(!bars){$("cinfo").textContent="이 종목 캔들 데이터는 PoC 범위 밖 (최근 신호 종목만 제공).";
+    drawChart([],[]); $("csig").innerHTML=""; return;}
+  drawChart(bars,DATA.marks[code]||[],focusDate);
+  // 해당 종목 신호 행
+  const sig=DATA.rows.filter(r=>r[1]==code).sort((a,b)=>b[0].localeCompare(a[0]));
+  $("cinfo").innerHTML=`<b>${nm[code]||code}</b> (${code}) · 캔들 ${bars.length}봉 · ▲=신호일`;
+  $("csig").innerHTML=sig.map(r=>`<tr>
+    <td>${r[0].slice(0,4)}-${r[0].slice(4,6)}-${r[0].slice(6)}</td>
+    <td><span class="tag t${r[6]}">${REGNM[r[6]]}</span></td>
+    <td>${r[3].toFixed(3)}</td><td>${r[4]==null?"–":r[4].toFixed(0)}</td>
+    <td>${r[5]==null?"–":fmt(r[5])}</td>
+    <td class="${r[7]>0?'pos':'neg'}">${fmt(r[7])}</td>
+    <td class="${r[8]>0?'pos':'neg'}">${fmt(r[8])}</td></tr>`).join("");
+}
+function drawChart(bars,marks,focusDate){
+  const cv=$("chart"),dpr=window.devicePixelRatio||1;
+  const W=cv.clientWidth,H=360; cv.width=W*dpr;cv.height=H*dpr;
+  const x=cv.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  bars=bars.filter(b=>b[3]>0&&b[2]>=b[3]);  // 거래정지/이상봉 방어
+  if(!bars.length)return;
+  const PADL=52,PADR=10,PADT=12,PADB=22, cw=W-PADL-PADR, ch=H-PADT-PADB;
+  let lo=Infinity,hi=-Infinity; for(const b of bars){lo=Math.min(lo,b[3]);hi=Math.max(hi,b[2]);}
+  const pad=(hi-lo)*0.05; lo-=pad; hi+=pad;
+  const yOf=p=>PADT+ch-(p-lo)/(hi-lo)*ch;
+  const n=bars.length, bw=Math.max(1.5,cw/n*0.6), step=cw/n;
+  const css=getComputedStyle(document.body);
+  const up=css.getPropertyValue("--up").trim(),dn=css.getPropertyValue("--dn").trim();
+  const line=css.getPropertyValue("--line").trim(),muted=css.getPropertyValue("--muted").trim();
+  // y축 그리드
+  x.strokeStyle=line;x.fillStyle=muted;x.font="11px sans-serif";x.textAlign="right";
+  for(let i=0;i<=4;i++){const p=lo+(hi-lo)*i/4,yy=yOf(p);
+    x.beginPath();x.moveTo(PADL,yy);x.lineTo(W-PADR,yy);x.stroke();
+    x.fillText(Math.round(p).toLocaleString(),PADL-5,yy+3);}
+  // x축 날짜 (5개)
+  x.textAlign="center";
+  for(let i=0;i<5;i++){const idx=Math.floor((n-1)*i/4),d=bars[idx][0];
+    x.fillText(d.slice(2,4)+"/"+d.slice(4,6),PADL+step*(idx+0.5),H-7);}
+  // 캔들
+  const mset=new Set(marks);
+  bars.forEach((b,i)=>{const cx=PADL+step*(i+0.5),[dt,o,h,l,c]=b,col=c>=o?up:dn;
+    x.strokeStyle=col;x.fillStyle=col;
+    x.beginPath();x.moveTo(cx,yOf(h));x.lineTo(cx,yOf(l));x.stroke();
+    const y1=yOf(Math.max(o,c)),y2=yOf(Math.min(o,c));
+    x.fillRect(cx-bw/2,y1,bw,Math.max(1,y2-y1));
+    if(mset.has(dt)){x.fillStyle=css.getPropertyValue("--accent").trim();
+      const my=yOf(l)+10;x.beginPath();x.moveTo(cx,my-7);x.lineTo(cx-5,my);x.lineTo(cx+5,my);x.closePath();x.fill();}
+  });
+}
+
+// ── 탭/테마 ──
+function switchTab(t){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab==t));
+  $("tab-agg").classList.toggle("hide",t!="agg");
+  $("tab-candle").classList.toggle("hide",t!="candle");
+  window.scrollTo(0,0);
+  if(t=="candle"&&DATA)setTimeout(()=>{const c=$("cselect").value;if(c)drawChart(DATA.ohlcv[c]||[],DATA.marks[c]||[]);},0);
+}
+document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>switchTab(x.dataset.tab));
+$("themeBtn").onclick=()=>{const d=document.body.getAttribute("data-theme")=="dark";
+  document.body.setAttribute("data-theme",d?"":"dark");$("themeBtn").textContent=d?"🌙 다크":"☀️ 라이트";
+  if(!$("tab-candle").classList.contains("hide")){const c=$("cselect").value;if(c)drawChart(DATA.ohlcv[c]||[],DATA.marks[c]||[]);}};
+window.addEventListener("resize",()=>{if(DATA&&!$("tab-candle").classList.contains("hide")){
+  const c=$("cselect").value;if(c)drawChart(DATA.ohlcv[c]||[],DATA.marks[c]||[]);}});
+</script>
+</body>
+</html>
