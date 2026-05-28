@@ -122,6 +122,16 @@ select,input[type=search]{padding:6px 9px;border:1px solid var(--line);border-ra
       <select id="cselect"></select>
       <span class="sub" id="cnote"></span>
     </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px">
+      <div class="ctl" style="flex:1;min-width:150px">
+        <label>구간 길이(줌): <span class="val" id="zoomV"></span>봉</label>
+        <input type="range" id="zoom">
+      </div>
+      <div class="ctl" style="flex:1;min-width:150px">
+        <label>구간 위치: <span class="val" id="posV">최근</span> <span class="sub">(←과거 / 최근→)</span></label>
+        <input type="range" id="pos">
+      </div>
+    </div>
     <div class="chartwrap" style="margin-top:12px"><canvas id="chart" height="360"></canvas></div>
     <div class="cinfo" id="cinfo"></div>
     <table>
@@ -229,17 +239,20 @@ function buildCandleList(){
   $("cnote").textContent=`캔들 제공: 최근 신호 ${codes.length}종목 (용량 가드). 집계 탭 행 클릭으로도 진입.`;
   if(codes.length)openCandle(codes[0]);
 }
+let gBars=[], gMarks=[], vLen=0, vEnd=0;  // 캔들 뷰 상태(전체 봉 / 마커 / 표시길이 / 끝인덱스)
+
 function openCandle(code,focusDate){
   switchTab("candle");
   if($("cselect").value!=code)$("cselect").value=code;
   const bars=DATA.ohlcv[code];
   const nm={};for(const r of DATA.rows)nm[r[1]]=r[2];
   if(!bars){$("cinfo").textContent="이 종목 캔들 데이터는 PoC 범위 밖 (최근 신호 종목만 제공).";
-    drawChart([],[]); $("csig").innerHTML=""; return;}
-  drawChart(bars,DATA.marks[code]||[],focusDate);
-  // 해당 종목 신호 행
+    gBars=[];gMarks=[];redraw();$("csig").innerHTML="";return;}
+  gBars=bars.filter(b=>b[3]>0&&b[2]>=b[3]);  // 거래정지/이상봉 방어
+  gMarks=DATA.marks[code]||[];
+  setupView();
   const sig=DATA.rows.filter(r=>r[1]==code).sort((a,b)=>b[0].localeCompare(a[0]));
-  $("cinfo").innerHTML=`<b>${nm[code]||code}</b> (${code}) · 캔들 ${bars.length}봉 · ▲=신호일`;
+  $("cinfo").innerHTML=`<b>${nm[code]||code}</b> (${code}) · 캔들 ${gBars.length}봉 · ▲=신호일`;
   $("csig").innerHTML=sig.map(r=>`<tr>
     <td>${r[0].slice(0,4)}-${r[0].slice(4,6)}-${r[0].slice(6)}</td>
     <td><span class="tag t${r[6]}">${REGNM[r[6]]}</span></td>
@@ -248,31 +261,48 @@ function openCandle(code,focusDate){
     <td class="${r[7]>0?'pos':'neg'}">${fmt(r[7])}</td>
     <td class="${r[8]>0?'pos':'neg'}">${fmt(r[8])}</td></tr>`).join("");
 }
-function drawChart(bars,marks,focusDate){
+function setupView(){
+  const n=gBars.length; vLen=n; vEnd=n-1;
+  const z=$("zoom"); z.min=Math.min(40,n); z.max=n; z.step=1; z.value=vLen;
+  const p=$("pos"); p.min=Math.max(0,vLen-1); p.max=Math.max(0,n-1); p.step=1; p.value=vEnd;
+  syncLabels(); redraw();
+}
+function syncLabels(){
+  $("zoomV").textContent=vLen;
+  $("posV").textContent=(vEnd>=gBars.length-1)?"최근"
+    :(gBars.length?gBars[vEnd][0].slice(2,4)+"/"+gBars[vEnd][0].slice(4,6):"–");
+}
+function redraw(){
+  if(!gBars.length){paint([],new Set());return;}
+  const s=Math.max(0,vEnd-vLen+1);
+  paint(gBars.slice(s,vEnd+1), new Set(gMarks));
+}
+$("zoom").oninput=e=>{vLen=+e.target.value;
+  const p=$("pos");p.min=Math.max(0,vLen-1);if(vEnd<vLen-1)vEnd=vLen-1;p.value=vEnd;
+  syncLabels();redraw();};
+$("pos").oninput=e=>{vEnd=+e.target.value;syncLabels();redraw();};
+
+function paint(bars,mset){
   const cv=$("chart"),dpr=window.devicePixelRatio||1;
   const W=cv.clientWidth,H=360; cv.width=W*dpr;cv.height=H*dpr;
   const x=cv.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
-  bars=bars.filter(b=>b[3]>0&&b[2]>=b[3]);  // 거래정지/이상봉 방어
   if(!bars.length)return;
-  const PADL=52,PADR=10,PADT=12,PADB=22, cw=W-PADL-PADR, ch=H-PADT-PADB;
+  const PADL=52,PADR=14,PADT=12,PADB=22, cw=W-PADL-PADR, ch=H-PADT-PADB;
   let lo=Infinity,hi=-Infinity; for(const b of bars){lo=Math.min(lo,b[3]);hi=Math.max(hi,b[2]);}
-  const pad=(hi-lo)*0.05; lo-=pad; hi+=pad;
+  const pad=(hi-lo)*0.05||1; lo-=pad; hi+=pad;
   const yOf=p=>PADT+ch-(p-lo)/(hi-lo)*ch;
   const n=bars.length, bw=Math.max(1.5,cw/n*0.6), step=cw/n;
   const css=getComputedStyle(document.body);
   const up=css.getPropertyValue("--up").trim(),dn=css.getPropertyValue("--dn").trim();
   const line=css.getPropertyValue("--line").trim(),muted=css.getPropertyValue("--muted").trim();
-  // y축 그리드
   x.strokeStyle=line;x.fillStyle=muted;x.font="11px sans-serif";x.textAlign="right";
   for(let i=0;i<=4;i++){const p=lo+(hi-lo)*i/4,yy=yOf(p);
     x.beginPath();x.moveTo(PADL,yy);x.lineTo(W-PADR,yy);x.stroke();
     x.fillText(Math.round(p).toLocaleString(),PADL-5,yy+3);}
-  // x축 날짜 (5개)
-  x.textAlign="center";
+  // x축 날짜 (엣지는 좌/우 정렬로 클리핑 방지)
   for(let i=0;i<5;i++){const idx=Math.floor((n-1)*i/4),d=bars[idx][0];
-    x.fillText(d.slice(2,4)+"/"+d.slice(4,6),PADL+step*(idx+0.5),H-7);}
-  // 캔들
-  const mset=new Set(marks);
+    x.textAlign=i==0?"left":(i==4?"right":"center");
+    x.fillText(d.slice(2,4)+"/"+d.slice(4,6), i==0?PADL:(i==4?W-PADR:PADL+step*(idx+0.5)), H-7);}
   bars.forEach((b,i)=>{const cx=PADL+step*(i+0.5),[dt,o,h,l,c]=b,col=c>=o?up:dn;
     x.strokeStyle=col;x.fillStyle=col;
     x.beginPath();x.moveTo(cx,yOf(h));x.lineTo(cx,yOf(l));x.stroke();
@@ -289,14 +319,13 @@ function switchTab(t){
   $("tab-agg").classList.toggle("hide",t!="agg");
   $("tab-candle").classList.toggle("hide",t!="candle");
   window.scrollTo(0,0);
-  if(t=="candle"&&DATA)setTimeout(()=>{const c=$("cselect").value;if(c)drawChart(DATA.ohlcv[c]||[],DATA.marks[c]||[]);},0);
+  if(t=="candle"&&DATA)setTimeout(redraw,0);
 }
 document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>switchTab(x.dataset.tab));
 $("themeBtn").onclick=()=>{const d=document.body.getAttribute("data-theme")=="dark";
   document.body.setAttribute("data-theme",d?"":"dark");$("themeBtn").textContent=d?"🌙 다크":"☀️ 라이트";
-  if(!$("tab-candle").classList.contains("hide")){const c=$("cselect").value;if(c)drawChart(DATA.ohlcv[c]||[],DATA.marks[c]||[]);}};
-window.addEventListener("resize",()=>{if(DATA&&!$("tab-candle").classList.contains("hide")){
-  const c=$("cselect").value;if(c)drawChart(DATA.ohlcv[c]||[],DATA.marks[c]||[]);}});
+  if(!$("tab-candle").classList.contains("hide"))redraw();};
+window.addEventListener("resize",()=>{if(DATA&&!$("tab-candle").classList.contains("hide"))redraw();});
 </script>
 </body>
 </html>
