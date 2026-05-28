@@ -56,6 +56,17 @@ canvas{width:100%;display:block}
 [data-theme=dark] .tU{background:#14532d;color:#bbf7d0}
 select,input[type=search]{padding:6px 9px;border:1px solid var(--line);border-radius:8px;
  background:var(--card);color:var(--fg);font-size:13px}
+/* 모바일: 표 → 종목별 카드 (.wrap table 로 스코프 한정 — 다른 표/그리드 미영향) */
+@media (max-width:640px){
+  .wrap table thead{display:none}
+  .wrap table,.wrap table tbody,.wrap table tr,.wrap table td{display:block;width:auto}
+  .wrap table tr{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;
+   padding:4px 12px;background:var(--bg)}
+  .wrap table td{display:flex;justify-content:space-between;gap:12px;text-align:right;
+   border:none;border-bottom:1px solid var(--line);padding:7px 0;white-space:normal}
+  .wrap table tr td:last-child{border-bottom:none}
+  .wrap table td::before{content:attr(data-label);color:var(--muted);font-weight:600;text-align:left}
+}
 </style>
 </head>
 <body>
@@ -208,13 +219,13 @@ function renderList(done){
     return sortDesc?y-x:x-y;});
   const top=rows.slice(0,200);
   $("tbody").innerHTML=top.map(r=>`<tr data-code="${r[1]}" data-date="${r[0]}">
-    <td>${r[0].slice(0,4)}-${r[0].slice(4,6)}-${r[0].slice(6)}</td>
-    <td>${r[2]}</td><td>${r[1]}</td>
-    <td>${r[3].toFixed(3)}</td><td>${r[4]==null?"–":r[4].toFixed(0)}</td>
-    <td>${r[5]==null?"–":fmt(r[5])}</td>
-    <td><span class="tag t${r[6]}">${REGNM[r[6]]}</span></td>
-    <td class="${r[7]>0?'pos':'neg'}">${fmt(r[7])}</td>
-    <td class="${r[8]>0?'pos':'neg'}">${fmt(r[8])}</td></tr>`).join("");
+    <td data-label="신호일">${r[0].slice(0,4)}-${r[0].slice(4,6)}-${r[0].slice(6)}</td>
+    <td data-label="종목">${r[2]}</td><td data-label="코드">${r[1]}</td>
+    <td data-label="엔벨로프">${r[3].toFixed(3)}</td><td data-label="RSI">${r[4]==null?"–":r[4].toFixed(0)}</td>
+    <td data-label="vol z">${r[5]==null?"–":fmt(r[5])}</td>
+    <td data-label="장세"><span class="tag t${r[6]}">${REGNM[r[6]]}</span></td>
+    <td data-label="D+5%" class="${r[7]>0?'pos':'neg'}">${fmt(r[7])}</td>
+    <td data-label="D+20%" class="${r[8]>0?'pos':'neg'}">${fmt(r[8])}</td></tr>`).join("");
   $("tbody").querySelectorAll("tr").forEach(tr=>tr.onclick=()=>openCandle(tr.dataset.code,tr.dataset.date));
   $("listnote").textContent=`통과 ${done.length.toLocaleString()}건 중 상위 ${top.length} 표시 (행 클릭 → 캔들). 정렬: ${HEAD[sortKey][1]} ${sortDesc?"▼":"▲"}`;
 }
@@ -254,12 +265,12 @@ function openCandle(code,focusDate){
   const sig=DATA.rows.filter(r=>r[1]==code).sort((a,b)=>b[0].localeCompare(a[0]));
   $("cinfo").innerHTML=`<b>${nm[code]||code}</b> (${code}) · 캔들 ${gBars.length}봉 · ▲=신호일`;
   $("csig").innerHTML=sig.map(r=>`<tr>
-    <td>${r[0].slice(0,4)}-${r[0].slice(4,6)}-${r[0].slice(6)}</td>
-    <td><span class="tag t${r[6]}">${REGNM[r[6]]}</span></td>
-    <td>${r[3].toFixed(3)}</td><td>${r[4]==null?"–":r[4].toFixed(0)}</td>
-    <td>${r[5]==null?"–":fmt(r[5])}</td>
-    <td class="${r[7]>0?'pos':'neg'}">${fmt(r[7])}</td>
-    <td class="${r[8]>0?'pos':'neg'}">${fmt(r[8])}</td></tr>`).join("");
+    <td data-label="신호일">${r[0].slice(0,4)}-${r[0].slice(4,6)}-${r[0].slice(6)}</td>
+    <td data-label="장세"><span class="tag t${r[6]}">${REGNM[r[6]]}</span></td>
+    <td data-label="엔벨로프">${r[3].toFixed(3)}</td><td data-label="RSI">${r[4]==null?"–":r[4].toFixed(0)}</td>
+    <td data-label="vol z">${r[5]==null?"–":fmt(r[5])}</td>
+    <td data-label="D+5%" class="${r[7]>0?'pos':'neg'}">${fmt(r[7])}</td>
+    <td data-label="D+20%" class="${r[8]>0?'pos':'neg'}">${fmt(r[8])}</td></tr>`).join("");
 }
 function setupView(){
   const n=gBars.length; vLen=n; vEnd=n-1;
