@@ -196,6 +196,7 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
   <ul>
    <li><b>D+1%</b> : 신호일 종가 대비 다음 거래일 종가 수익률</li>
    <li><b>D+5%</b> : 신호일 종가 대비 5거래일째 종가 수익률</li>
+   <li><b>D+20%</b> : 중기 신호(BULL 모멘텀 등) 전용 — 신호일 종가 대비 20거래일째 종가 수익률. <b>🚀 hit 판정에는 포함되지 않습니다</b>(hit·평가완료는 D+5 기준 고정). 일반 신호엔 표시되지 않으며, 중기 신호가 없으면 컬럼 자체가 숨겨집니다</li>
    <li><b>최고%</b> : 신호일 종가 대비 D+5 내 장중 최고가 수익률 (🚀 hit 판정 기준)</li>
    <li><b>tech</b> : 신호 발생 시점의 기술적 점수(tech_score)</li>
   </ul>
@@ -217,14 +218,16 @@ const SIG={
  "ETF_INFLOW_TOP1":"ETF 자금유입(TOP1)","ETF_INFLOW_BUY":"ETF 자금유입(매수)",
  "ETF_INFLOW_LEADING":"ETF 자금유입(선도)","UP_REVERSAL_ETF_BUY":"추세전환+ETF매수",
  "UP_REVERSAL_ETF_TOP1":"추세전환+ETF(TOP1)",
- "PRE_BREAKOUT_52W":"52주 전고점 직전+동반매수","TARGET_UP":"목표가 상향"};
+ "PRE_BREAKOUT_52W":"52주 전고점 직전+동반매수","TARGET_UP":"목표가 상향",
+ "BULL_MOMENTUM":"BULL 모멘텀(중기 D+20)"};
 // 등급·regime → 한글 (badge class 는 영문값 유지, 텍스트만 치환)
 const LAB={"HIGH":"높음","MED":"중간","LOW":"낮음","WARN":"주의","OBSERVING":"관찰중",
  "BULL":"강세장","RANGE":"횡보장","BEAR":"약세장"};
 // 출처(source_seq 정규화) → 한글 + 시점 뉘앙스
 const SRC={"screen":"조건검색 ⏱오전","close_bet":"종가베팅 ⏱장마감","supply":"수급 다이버전스 ⏱장후",
  "ant":"개미털기 ⏱장중","prog":"프로그램 ⏱장중","pre_breakout_52w":"52주돌파직전(동반매수) ⏱종가",
- "target_up":"목표가 상향"};
+ "target_up":"목표가 상향","screen_close":"조건검색(종가) ⏱장마감",
+ "bull_momentum":"BULL 모멘텀 ⏱장후"};
 function sigKo(v){return esc(SIG[v]||v)}
 function srcKo(v){return esc(SRC[v]||v||"")}
 function themeCell(ts){ts=ts||[];if(!ts.length)return '<td data-label="테마"></td>';
@@ -236,11 +239,14 @@ const COLS=[
  {k:"src",t:"출처",n:0},{k:"stime",t:"시각",n:0},
  {k:"type",t:"신호",n:0},{k:"supply",t:"비고",n:0},{k:"theme",t:"테마",n:0},{k:"conf",t:"등급",n:0},{k:"regime",t:"장세",n:0},
  {k:"tech",t:"tech",n:1},{k:"d1",t:"D+1%",n:1},{k:"d5",t:"D+5%",n:1},
+ {k:"dext",t:"D+20%",n:1},
  {k:"max",t:"최고%",n:1},{k:"hit",t:"🚀",n:0},{k:"status",t:"상태",n:0}];
-let DATA=[],view=[],sortK="date",sortDir=-1,page=0;const PER=100;
+let DATA=[],view=[],sortK="date",sortDir=-1,page=0,HAS_EXT=false;const PER=100;
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function fmtDate(d){return d&&d.length===8?d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6):esc(d)}
 function numCell(v,lab){const L=lab?' data-label="'+lab+'"':'';if(v==null)return '<td class="num pending"'+L+'>–</td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'"'+L+'>'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
+// 중기(D+20) 보조 셀: 값 없으면 빈 td (모바일에서 숨김, hit 무관 신호 한정)
+function extCell(v){if(v==null)return '<td class="num" data-label="D+20%"></td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'" data-label="D+20%">'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
 function badge(v,pre){return v?'<span class="badge b-'+esc(v)+'">'+esc(LAB[v]||v)+'</span>':''}
 function render(){
  const tb=document.getElementById("tb");
@@ -258,7 +264,7 @@ function render(){
    '<td data-label="등급">'+badge(r.conf)+'</td>'+
    '<td data-label="장세">'+badge(r.regime)+'</td>'+
    '<td class="num" data-label="tech">'+(r.tech==null?"":r.tech)+'</td>'+
-   numCell(r.d1,"D+1%")+numCell(r.d5,"D+5%")+numCell(r.max,"최고%")+
+   numCell(r.d1,"D+1%")+numCell(r.d5,"D+5%")+(HAS_EXT?extCell(r.dext):"")+numCell(r.max,"최고%")+
    '<td data-label="🚀">'+(r.hit?"🚀":"")+'</td>'+
    '<td data-label="상태">'+(r.status==="done"?"":'<span class="pending">대기</span>')+'</td>'+
   '</tr>'}).join("");
@@ -296,7 +302,7 @@ function apply(){
  page=0;render();
 }
 function buildHead(){
- document.getElementById("hrow").innerHTML=COLS.map(c=>'<th data-k="'+c.k+'">'+c.t+'</th>').join("");
+ document.getElementById("hrow").innerHTML=COLS.filter(c=>HAS_EXT||c.k!=="dext").map(c=>'<th data-k="'+c.k+'">'+c.t+'</th>').join("");
  document.querySelectorAll("th").forEach(th=>th.onclick=()=>{
   const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=-1}apply()});
 }
@@ -380,7 +386,8 @@ function aggTheme(){
    const c=document.querySelector(".controls");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})}}});
 }
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
- DATA=j.rows;document.getElementById("gen").textContent="갱신 "+j.generated+" · D+"+j.fwd_days+" 평가 · hit ≥"+j.surge_pct+"%";
+ DATA=j.rows;HAS_EXT=DATA.some(r=>r.dext_days!=null);
+ document.getElementById("gen").textContent="갱신 "+j.generated+" · D+"+j.fwd_days+" 평가 · hit ≥"+j.surge_pct+"%";
  cards(j.stats);aggregate();aggTheme();buildHead();fillFilters();apply();
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요 (python -m http.server). "+e});
