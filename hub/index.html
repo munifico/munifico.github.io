@@ -112,6 +112,10 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
     </a>
   </div>
 
+  <!-- 버블 경계 신호 (KB 2026 하반기 전략) -->
+  <div class="sec-title">🚨 버블 경계 신호 <span class="sub">KB 2026 하반기 전략 · 알람용(검증 알파 아님)</span></div>
+  <div class="card" id="bubbleCard"><div class="empty">불러오는 중…</div></div>
+
   <!-- 미장 + 페인지수 -->
   <div class="sec-title">🇺🇸 미장 · 트럼프 페인 인덱스 <span class="sub" id="usAsof"></span></div>
   <div class="card" id="painCard"><div class="empty">불러오는 중…</div></div>
@@ -178,6 +182,26 @@ function renderSectors(list){
   '<span class="meta">'+(s.volume_ratio.toFixed(2))+'배</span></div>').join("");
 }
 
+/* 버블 경계 신호 (KB 2026 하반기 전략) */
+function renderBubble(b){
+ const card=document.getElementById("bubbleCard");
+ if(!b||!b.items){card.innerHTML='<div class="empty">버블 신호 데이터 없음</div>';return}
+ const cls=s=>s==="위험"?"lvl-bad":(s==="주의"?"lvl-warn":(s==="안전"?"lvl-ok":""));
+ const rows=b.items.map(it=>{
+  const val=it.auto?(it.value==null?"–":it.value+esc(it.unit)):"수동 점검";
+  return '<div class="item"><div class="item-row"><span class="item-name">'+esc(it.name)+
+   (it.auto?"":' <span class="flag near">수동</span>')+'</span>'+
+   '<span class="item-sig '+cls(it.status)+'">'+esc(val)+'</span></div>'+
+   '<div class="pain-sub">임계: '+esc(it.threshold)+(it.asof?' · 기준 '+esc(it.asof):"")+'</div></div>';
+ }).join("");
+ card.innerHTML='<div class="pain-head"><span class="pain-level '+cls(b.overall)+'">'+esc(b.overall)+'</span>'+
+  '<span class="pain-sub" style="margin-left:8px">3대 시그널 종합</span></div>'+rows+
+  '<details class="help"><summary>📖 설명</summary><div>'+
+  'KB증권 2026 하반기 전략: 미 10년물 5.0~5.3% + Core sticky CPI(ex shelter) 3%중반 + 오픈AI IPO 실패·지연 = 버블 붕괴 시그널. '+
+  '셋 다 미충족이면 강세장 지속 전망. <b>⚠ 검증된 알파가 아니라 정성 임계값 알람</b> — '+
+  '천장 예측 지표는 동행지표일 수 있음(우리 ADR breadth 검증 전례).</div></details>';
+}
+
 /* 마켓 (서버 FDR) */
 function renderMarket(groups){
  const card=document.getElementById("marketCard");
@@ -225,7 +249,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderPain(j.pain);renderSectors(j.sectors);renderMarket(j.market);
+ renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderMarket(j.market);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 </script>
