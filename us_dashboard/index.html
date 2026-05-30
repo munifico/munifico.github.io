@@ -18,6 +18,8 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
 .pos{color:var(--pos)}.neg{color:var(--neg)}.mut{color:var(--mut)}
 .badge{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;background:#22303f}
 .strong{background:#1f3a26;color:var(--pos)}
+.tklink{color:var(--acc);text-decoration:none;font-variant-numeric:tabular-nums}
+.tklink:hover{text-decoration:underline}
 .help{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--acc);border-radius:7px;padding:4px 10px;font-size:13px;margin-left:8px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9;padding:16px;overflow:auto}
 .modal.on{display:block}
@@ -26,7 +28,7 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
 .mbox p{margin:4px 0;color:var(--txt)}.mbox .t{color:var(--mut);font-size:12px}
 .mbox b.sig{color:var(--acc)}
 .mclose{float:right;cursor:pointer;color:var(--mut);font-size:20px;line-height:1}
-@media(max-width:680px){.wrap{padding:10px}th:nth-child(6),td:nth-child(6){display:none}}
+@media(max-width:680px){.wrap{padding:10px}th:nth-child(4),td:nth-child(4),th:nth-child(7),td:nth-child(7){display:none}}
 </style></head><body><div class="wrap">
 <h1>🇺🇸 미국 핫섹터 스캐너 성과 <button class="help" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button></h1>
 <div class="sub" id="gen"></div>
@@ -39,7 +41,7 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
 <input id="fTxt" placeholder="티커 검색">
 </div>
 <table><thead><tr>
-<th data-k="date">날짜</th><th data-k="ticker">티커</th><th data-k="sector">섹터</th>
+<th data-k="date">날짜</th><th data-k="name">종목</th><th data-k="ticker">티커</th><th data-k="sector">섹터</th>
 <th data-k="signal">신호</th><th data-k="grade">등급</th><th data-k="regime">regime</th>
 <th data-k="d5_ret">D+5 %</th><th data-k="hit">hit</th><th data-k="status">상태</th>
 </tr></thead><tbody id="tb"></tbody></table>
@@ -94,6 +96,7 @@ function render(){
   const hit=r.hit==null?'<span class="mut">–</span>':(r.hit?'🔥':'·');
   const gr=`<span class="badge ${String(r.grade).startsWith('핵심')?'strong':''}">${r.grade}</span>`;
   const st=r.status==='done'?'평가완료':'<span class="mut">대기</span>';
-  return `<tr><td>${r.date}</td><td><b>${r.ticker}</b></td><td>${r.sector}</td><td>${sigL(r.signal)}</td><td>${gr}</td><td>${regL(r.regime)}</td><td>${d5}</td><td>${hit}</td><td>${st}</td></tr>`;
- }).join("")||'<tr><td colspan="9" class="mut">해당 신호 없음</td></tr>';}
+  const tklink=`<a class="tklink" href="https://finance.yahoo.com/quote/${r.ticker}/" target="_blank" rel="noopener"><b>${r.ticker}</b></a>`;
+  return `<tr><td>${r.date}</td><td>${r.name||r.ticker}</td><td>${tklink}</td><td>${r.sector}</td><td>${sigL(r.signal)}</td><td>${gr}</td><td>${regL(r.regime)}</td><td>${d5}</td><td>${hit}</td><td>${st}</td></tr>`;
+ }).join("")||'<tr><td colspan="10" class="mut">해당 신호 없음</td></tr>';}
 </script></body></html>
