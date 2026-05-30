@@ -18,9 +18,17 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
 .pos{color:var(--pos)}.neg{color:var(--neg)}.mut{color:var(--mut)}
 .badge{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;background:#22303f}
 .strong{background:#1f3a26;color:var(--pos)}
+.help{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--acc);border-radius:7px;padding:4px 10px;font-size:13px;margin-left:8px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9;padding:16px;overflow:auto}
+.modal.on{display:block}
+.mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.mbox h2{font-size:16px;margin:14px 0 6px}.mbox h2:first-child{margin-top:0}
+.mbox p{margin:4px 0;color:var(--txt)}.mbox .t{color:var(--mut);font-size:12px}
+.mbox b.sig{color:var(--acc)}
+.mclose{float:right;cursor:pointer;color:var(--mut);font-size:20px;line-height:1}
 @media(max-width:680px){.wrap{padding:10px}th:nth-child(6),td:nth-child(6){display:none}}
 </style></head><body><div class="wrap">
-<h1>🇺🇸 미국 핫섹터 스캐너 성과</h1>
+<h1>🇺🇸 미국 핫섹터 스캐너 성과 <button class="help" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button></h1>
 <div class="sub" id="gen"></div>
 <div class="cards" id="cards"></div>
 <div class="filters">
@@ -35,23 +43,47 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
 <th data-k="signal">신호</th><th data-k="grade">등급</th><th data-k="regime">regime</th>
 <th data-k="d5_ret">D+5 %</th><th data-k="hit">hit</th><th data-k="status">상태</th>
 </tr></thead><tbody id="tb"></tbody></table>
+<div class="modal" id="m"><div class="mbox">
+<span class="mclose" onclick="document.getElementById('m').classList.remove('on')">×</span>
+<h2>이 화면은?</h2>
+<p>미국 핫섹터 141종목을 매일 종가 기준으로 훑어 <b>3가지 자리</b>를 찾아 기록합니다. 매수 추천이 아니라 <b>관찰 기록</b>이며, 5거래일 뒤 성과(D+5)가 자동으로 채워집니다.</p>
+<h2>신호 (어떤 자리인가)</h2>
+<p><b class="sig">과매도 바닥</b> — 주가가 15일 평균선보다 15% 아래로 빠진 깊은 과매도. 바닥에서 튕기는 반등을 노립니다. <b>하락장에서 강함</b>.</p>
+<p><b class="sig">상승 눌림목</b> — 상승 추세(단기·중기 평균선 정배열) 종목이 15일 평균선 근처로 잠깐 눌린 자리. 쉬고 재출발하는 구간. <b>상승장에서 가장 강함</b>(이번 4년 백테 최강 신호).</p>
+<p><b class="sig">강세 돌파</b> — 80일 볼린저밴드 상단을 위로 뚫는 강한 모멘텀. "가던 게 더 간다". <b>상승장 보조</b>.</p>
+<h2>등급 (지금 봐야 하나)</h2>
+<p><b>핵심</b> — 지금 장세에 통계적으로 잘 맞는 신호. 우선 보기.</p>
+<p><b>참고</b> — 지금 장세엔 약한 신호(다른 장세용). 참고만.</p>
+<p><b>⚠떨어지는칼날</b> — 과매도지만 약체 섹터(소비재·순수AI·AI데이터·양자)라 더 빠질 위험. 주의.</p>
+<h2>장세 (regime) — SPY(미국 대표지수) 20일 평균선 기준</h2>
+<p><b>BULL 상승장</b> / <b>BEAR 하락장</b> / <b>RANGE 횡보장</b>. 신호별로 잘 맞는 장세가 달라 등급이 갈립니다.</p>
+<h2>성과 컬럼</h2>
+<p class="t">D+5 = 신호 후 5거래일 종가 수익률 · hit🔥 = 5일 내 최고가가 +10% 도달 · 대기 = 아직 5일 미경과</p>
+</div></div>
 </div><script>
 let ROWS=[],SORT={k:"date",dir:-1};
+const SIG={"하단터치":"과매도 바닥","A3눌림":"상승 눌림목","BB80돌파":"강세 돌파"};
+const REG={"BULL":"상승장","BEAR":"하락장","RANGE":"횡보장"};
+const sigL=s=>SIG[s]||s, regL=r=>(REG[r]?REG[r]+"("+r+")":r);
 const $=s=>document.querySelector(s);
+window.addEventListener("click",e=>{if(e.target.id==="m")e.target.classList.remove("on");});
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
  ROWS=d.rows;$("#gen").textContent="생성 "+d.generated+" · 총 "+d.stats.total+"건(평가완료 "+d.stats.done+"/대기 "+d.stats.pending+")";
  renderCards(d.stats.by_signal);
- fill("#fSig",[...new Set(ROWS.map(r=>r.signal))]);
+ fillSig("#fSig",[...new Set(ROWS.map(r=>r.signal))]);
  fill("#fSec",[...new Set(ROWS.map(r=>r.sector))]);
- fill("#fReg",[...new Set(ROWS.map(r=>r.regime))]);
+ fillReg("#fReg",[...new Set(ROWS.map(r=>r.regime))]);
  ["#fSig","#fSec","#fReg","#fStat","#fTxt"].forEach(s=>$(s).addEventListener("input",render));
  document.querySelectorAll("th").forEach(th=>th.addEventListener("click",()=>{
    const k=th.dataset.k;SORT.dir=(SORT.k===k)?-SORT.dir:1;SORT.k=k;render();}));
  render();
 });
-function fill(sel,vals){vals.filter(Boolean).sort().forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;$(sel).appendChild(o);});}
+function opt(sel,val,txt){const o=document.createElement("option");o.value=val;o.textContent=txt;$(sel).appendChild(o);}
+function fill(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,v));}
+function fillSig(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,sigL(v)));}
+function fillReg(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,regL(v)));}
 function renderCards(by){let h="";for(const[s,v]of Object.entries(by)){
- h+=`<div class="card"><div class="k">${s} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
+ h+=`<div class="card"><div class="k">${sigL(s)} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
  $("#cards").innerHTML=h||'<div class="card"><div class="k">평가완료 신호 없음</div><div class="v mut">대기중</div></div>';}
 function render(){
  const sig=$("#fSig").value,sec=$("#fSec").value,reg=$("#fReg").value,stat=$("#fStat").value,txt=$("#fTxt").value.toUpperCase();
@@ -60,8 +92,8 @@ function render(){
  $("#tb").innerHTML=rows.map(r=>{
   const d5=r.d5_ret==null?'<span class="mut">–</span>':`<span class="${r.d5_ret>=0?'pos':'neg'}">${r.d5_ret>=0?'+':''}${r.d5_ret}</span>`;
   const hit=r.hit==null?'<span class="mut">–</span>':(r.hit?'🔥':'·');
-  const gr=`<span class="badge ${String(r.grade).startsWith('강')?'strong':''}">${r.grade}</span>`;
+  const gr=`<span class="badge ${String(r.grade).startsWith('핵심')?'strong':''}">${r.grade}</span>`;
   const st=r.status==='done'?'평가완료':'<span class="mut">대기</span>';
-  return `<tr><td>${r.date}</td><td><b>${r.ticker}</b></td><td>${r.sector}</td><td>${r.signal}</td><td>${gr}</td><td>${r.regime}</td><td>${d5}</td><td>${hit}</td><td>${st}</td></tr>`;
+  return `<tr><td>${r.date}</td><td><b>${r.ticker}</b></td><td>${r.sector}</td><td>${sigL(r.signal)}</td><td>${gr}</td><td>${regL(r.regime)}</td><td>${d5}</td><td>${hit}</td><td>${st}</td></tr>`;
  }).join("")||'<tr><td colspan="9" class="mut">해당 신호 없음</td></tr>';}
 </script></body></html>
