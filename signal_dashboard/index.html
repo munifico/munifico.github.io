@@ -41,6 +41,8 @@ tr:hover td{background:rgba(124,58,237,.06)}
 details.agg{margin:0 20px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 14px}
 details.agg summary{cursor:pointer;font-weight:600;padding:6px 0;user-select:none}
 details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
+td a.codelink{color:var(--accent);text-decoration:none;font-variant-numeric:tabular-nums}
+td a.codelink:hover{text-decoration:underline}
 .aggtbl{width:100%;border-collapse:collapse;margin:6px 0 10px}
 .aggtbl th,.aggtbl td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-size:13px}
 .aggtbl th{color:var(--muted);font-size:12px;cursor:pointer}
@@ -107,7 +109,7 @@ details.agg .hint{color:var(--muted);font-weight:400;font-size:12px}
   <button class="toggle" id="themeBtn">🌙 다크</button>
 </header>
 <div class="cards" id="cards"></div>
-<details class="agg" id="aggBox" open>
+<details class="agg" id="aggBox">
   <summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 행 클릭 → 해당 종목 목록. 개별 추격 X, 조합 우위 보기용</span></summary>
   <table class="aggtbl"><thead><tr id="aggHead"></tr></thead><tbody id="aggBody"></tbody></table>
 </details>
@@ -255,7 +257,7 @@ function render(){
   return '<tr>'+
    '<td data-label="일자">'+fmtDate(r.date)+'</td>'+
    '<td data-label="종목">'+esc(r.name)+'</td>'+
-   '<td data-label="코드">'+esc(r.code)+'</td>'+
+   '<td data-label="코드"><a class="codelink" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+'/price" target="_blank" rel="noopener">'+esc(r.code)+'</a></td>'+
    '<td data-label="출처"><span class="src-tag">'+srcKo(r.src)+'</span></td>'+
    '<td data-label="시각">'+esc(r.stime||"")+'</td>'+
    '<td data-label="신호">'+sigKo(r.type)+'</td>'+
