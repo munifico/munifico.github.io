@@ -124,6 +124,10 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
     <div class="chips" id="sectorChips"></div>
   </div>
 
+  <!-- 미국 위험·심리 게이지 -->
+  <div class="sec-title">🇺🇸 미국 위험·심리 게이지 <span class="sub">FRED + CNN · 침체 맥락=금리차 역전+HY 확대</span></div>
+  <div class="card" id="riskCard"><div class="empty">불러오는 중…</div></div>
+
   <!-- 마켓 오버뷰 -->
   <div class="sec-title">🌐 마켓 오버뷰 <span class="sub" id="mktAsof"></span></div>
   <div class="grid2">
@@ -202,6 +206,22 @@ function renderBubble(b){
   '천장 예측 지표는 동행지표일 수 있음(우리 ADR breadth 검증 전례).</div></details>';
 }
 
+/* 미국 위험·심리 게이지 (FRED + CNN) */
+function renderRisk(b){
+ const card=document.getElementById("riskCard");
+ if(!b||!b.items||!b.items.length){card.innerHTML='<div class="empty">게이지 데이터 없음</div>';return}
+ const cls=s=>s==="bad"?"lvl-bad":(s==="warn"?"lvl-warn":"lvl-ok");
+ const ic=s=>s==="bad"?"🚨":(s==="warn"?"⚠️":"✅");
+ const rows=b.items.map(it=>'<div class="item"><div class="item-row">'+
+  '<span class="item-name">'+ic(it.status)+' '+esc(it.name)+(it.psych?' <span class="flag near">심리</span>':"")+'</span>'+
+  '<span class="item-sig '+cls(it.status)+'">'+esc(it.value)+esc(it.unit)+'</span></div>'+
+  '<div class="pain-sub">'+esc(it.note)+'</div></div>').join("");
+ const ovc=b.overall==="위험"?"lvl-bad":(b.overall==="주의"?"lvl-warn":"lvl-ok");
+ card.innerHTML='<div class="pain-head"><span class="pain-level '+ovc+'">'+esc(b.overall)+'</span>'+
+  '<span class="pain-sub" style="margin-left:8px">4개 게이지 종합</span></div>'+rows+
+  '<details class="help"><summary>📖 지표 설명</summary><div>'+esc(b.help)+'</div></details>';
+}
+
 /* 마켓 (서버 FDR) */
 function renderMarket(groups){
  const card=document.getElementById("marketCard");
@@ -249,7 +269,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderMarket(j.market);
+ renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket(j.market);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 </script>
