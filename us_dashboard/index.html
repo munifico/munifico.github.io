@@ -1,0 +1,67 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🇺🇸 미국 핫섹터 스캐너 성과</title>
+<style>
+:root{--bg:#0f1419;--card:#1a2030;--line:#2a3346;--txt:#e6edf3;--mut:#8b98a9;--pos:#3fb950;--neg:#f85149;--acc:#58a6ff}
+body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 -apple-system,system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:19px;margin:8px 0}
+.sub{color:var(--mut);font-size:12px;margin-bottom:14px}
+.cards{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:120px}
+.card .k{color:var(--mut);font-size:11px}.card .v{font-size:18px;font-weight:700;margin-top:2px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+select,input{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.mut{color:var(--mut)}
+.badge{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;background:#22303f}
+.strong{background:#1f3a26;color:var(--pos)}
+@media(max-width:680px){.wrap{padding:10px}th:nth-child(6),td:nth-child(6){display:none}}
+</style></head><body><div class="wrap">
+<h1>🇺🇸 미국 핫섹터 스캐너 성과</h1>
+<div class="sub" id="gen"></div>
+<div class="cards" id="cards"></div>
+<div class="filters">
+<select id="fSig"><option value="">신호 전체</option></select>
+<select id="fSec"><option value="">섹터 전체</option></select>
+<select id="fReg"><option value="">regime 전체</option></select>
+<select id="fStat"><option value="">상태 전체</option><option value="done">평가완료</option><option value="pending">대기</option></select>
+<input id="fTxt" placeholder="티커 검색">
+</div>
+<table><thead><tr>
+<th data-k="date">날짜</th><th data-k="ticker">티커</th><th data-k="sector">섹터</th>
+<th data-k="signal">신호</th><th data-k="grade">등급</th><th data-k="regime">regime</th>
+<th data-k="d5_ret">D+5 %</th><th data-k="hit">hit</th><th data-k="status">상태</th>
+</tr></thead><tbody id="tb"></tbody></table>
+</div><script>
+let ROWS=[],SORT={k:"date",dir:-1};
+const $=s=>document.querySelector(s);
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
+ ROWS=d.rows;$("#gen").textContent="생성 "+d.generated+" · 총 "+d.stats.total+"건(평가완료 "+d.stats.done+"/대기 "+d.stats.pending+")";
+ renderCards(d.stats.by_signal);
+ fill("#fSig",[...new Set(ROWS.map(r=>r.signal))]);
+ fill("#fSec",[...new Set(ROWS.map(r=>r.sector))]);
+ fill("#fReg",[...new Set(ROWS.map(r=>r.regime))]);
+ ["#fSig","#fSec","#fReg","#fStat","#fTxt"].forEach(s=>$(s).addEventListener("input",render));
+ document.querySelectorAll("th").forEach(th=>th.addEventListener("click",()=>{
+   const k=th.dataset.k;SORT.dir=(SORT.k===k)?-SORT.dir:1;SORT.k=k;render();}));
+ render();
+});
+function fill(sel,vals){vals.filter(Boolean).sort().forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;$(sel).appendChild(o);});}
+function renderCards(by){let h="";for(const[s,v]of Object.entries(by)){
+ h+=`<div class="card"><div class="k">${s} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
+ $("#cards").innerHTML=h||'<div class="card"><div class="k">평가완료 신호 없음</div><div class="v mut">대기중</div></div>';}
+function render(){
+ const sig=$("#fSig").value,sec=$("#fSec").value,reg=$("#fReg").value,stat=$("#fStat").value,txt=$("#fTxt").value.toUpperCase();
+ let rows=ROWS.filter(r=>(!sig||r.signal===sig)&&(!sec||r.sector===sec)&&(!reg||r.regime===reg)&&(!stat||r.status===stat)&&(!txt||r.ticker.toUpperCase().includes(txt)));
+ rows.sort((a,b)=>{let x=a[SORT.k],y=b[SORT.k];if(x==null)x="";if(y==null)y="";return(x>y?1:x<y?-1:0)*SORT.dir;});
+ $("#tb").innerHTML=rows.map(r=>{
+  const d5=r.d5_ret==null?'<span class="mut">–</span>':`<span class="${r.d5_ret>=0?'pos':'neg'}">${r.d5_ret>=0?'+':''}${r.d5_ret}</span>`;
+  const hit=r.hit==null?'<span class="mut">–</span>':(r.hit?'🔥':'·');
+  const gr=`<span class="badge ${String(r.grade).startsWith('강')?'strong':''}">${r.grade}</span>`;
+  const st=r.status==='done'?'평가완료':'<span class="mut">대기</span>';
+  return `<tr><td>${r.date}</td><td><b>${r.ticker}</b></td><td>${r.sector}</td><td>${r.signal}</td><td>${gr}</td><td>${r.regime}</td><td>${d5}</td><td>${hit}</td><td>${st}</td></tr>`;
+ }).join("")||'<tr><td colspan="9" class="mut">해당 신호 없음</td></tr>';}
+</script></body></html>
