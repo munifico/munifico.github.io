@@ -129,7 +129,7 @@ const yh=t=>'https://finance.yahoo.com/quote/'+encodeURIComponent(t)+'/';
 window.addEventListener("click",e=>{if(e.target.classList&&e.target.classList.contains("modal"))e.target.classList.remove("on");});
 // 테마 토글
 const tb=$("#themeBtn");
-function setTh(t){document.documentElement.setAttribute("data-theme",t);tb.textContent=t==="dark"?"☀️":"🌙";localStorage.setItem("theme",t);}
+function setTh(t){document.documentElement.setAttribute("data-theme",t);tb.textContent=t==="dark"?"☀️ 라이트":"🌙 다크";localStorage.setItem("theme",t);}
 setTh(localStorage.getItem("theme")||"light");
 tb.onclick=()=>setTh(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");
 
@@ -159,7 +159,7 @@ function renderRisk(b){const el=$("#usRisk");
  const cl=s=>s==="bad"?"rbad":(s==="warn"?"rwarn":"rok");
  const ov=b.overall==="위험"?"rbad":(b.overall==="주의"?"rwarn":"rok");
  const rows=b.items.map(it=>`<div class="rrow"><span>${ic(it.status)} ${esc(it.name)}${it.psych?' <span class="rnote">심리</span>':''}</span><span class="${cl(it.status)}">${esc(it.value)}${esc(it.unit)} <span class="rnote">${esc(it.note)}</span></span></div>`).join("");
- el.innerHTML=`<div class="rh">🚨 미국 위험·심리 게이지 <span class="${ov}">${esc(b.overall)}</span></div>${rows}<div class="rnote" style="margin-top:6px">FRED+CNN · 침체 맥락=금리차 역전+HY 확대 · <a href="#" onclick="document.getElementById('m').classList.add('on');return false;" style="color:var(--acc)">설명 ❓</a></div>`;}
+ el.innerHTML=`<div class="rh">🚨 미국 위험·심리 게이지 <span class="${ov}">${esc(b.overall)}</span></div>${rows}<div class="rnote" style="margin-top:6px">FRED+CNN · 침체 맥락=금리차 역전+HY 확대</div>`;}
 function renderCards(by){let h="";for(const[s,v]of Object.entries(by)){
  h+=`<div class="card"><div class="k">${esc(sigL(s))} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
  $("#cards").innerHTML=h||'<div class="card"><div class="k">평가완료 신호 없음</div><div class="v mut">대기중</div></div>';}
