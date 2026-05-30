@@ -20,6 +20,11 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
 .strong{background:#1f3a26;color:var(--pos)}
 .tklink{color:var(--acc);text-decoration:none;font-variant-numeric:tabular-nums}
 .tklink:hover{text-decoration:underline}
+details.combo{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 14px;margin-bottom:14px}
+details.combo summary{cursor:pointer;font-weight:600;font-size:14px;padding:4px 0;user-select:none}
+details.combo summary .hint{color:var(--mut);font-weight:400;font-size:12px}
+.ctbl{margin-top:8px}.ctbl th{font-size:12px}
+.crow{cursor:pointer}.crow:hover{background:#222f3f}
 .help{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--acc);border-radius:7px;padding:4px 10px;font-size:13px;margin-left:8px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9;padding:16px;overflow:auto}
 .modal.on{display:block}
@@ -33,6 +38,9 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
 <h1>🇺🇸 미국 핫섹터 스캐너 성과 <button class="help" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button></h1>
 <div class="sub" id="gen"></div>
 <div class="cards" id="cards"></div>
+<details class="combo"><summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 행 클릭 → 해당 조합으로 필터. 개별 추격 X, 조합 경향 보기용</span></summary>
+<table class="ctbl"><thead><tr><th>신호</th><th>장세</th><th>N</th><th>D+5 평균</th><th>승률</th><th>hit</th></tr></thead><tbody id="comboTb"></tbody></table>
+</details>
 <div class="filters">
 <select id="fSig"><option value="">신호 전체</option></select>
 <select id="fSec"><option value="">섹터 전체</option></select>
@@ -72,6 +80,7 @@ window.addEventListener("click",e=>{if(e.target.id==="m")e.target.classList.remo
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
  ROWS=d.rows;$("#gen").textContent="생성 "+d.generated+" · 총 "+d.stats.total+"건(평가완료 "+d.stats.done+"/대기 "+d.stats.pending+")";
  renderCards(d.stats.by_signal);
+ renderCombo(d.stats.by_combo);
  fillSig("#fSig",[...new Set(ROWS.map(r=>r.signal))]);
  fill("#fSec",[...new Set(ROWS.map(r=>r.sector))]);
  fillReg("#fReg",[...new Set(ROWS.map(r=>r.regime))]);
@@ -84,6 +93,10 @@ function opt(sel,val,txt){const o=document.createElement("option");o.value=val;o
 function fill(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,v));}
 function fillSig(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,sigL(v)));}
 function fillReg(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,regL(v)));}
+function renderCombo(cb){const tb=$("#comboTb");
+ if(!cb||!cb.length){tb.innerHTML='<tr><td colspan="6" class="mut">평가완료 신호가 쌓이면 표시됩니다 (신호 후 5거래일 경과 시 자동 집계)</td></tr>';return;}
+ tb.innerHTML=cb.map(c=>`<tr class="crow" data-sig="${c.signal}" data-reg="${c.regime}"><td>${sigL(c.signal)}</td><td>${regL(c.regime)}</td><td>${c.n}</td><td class="${c.avg_d5>=0?'pos':'neg'}">${c.avg_d5>=0?'+':''}${c.avg_d5}%</td><td>${c.win}%</td><td>${c.hit}%</td></tr>`).join("");
+ tb.querySelectorAll(".crow").forEach(tr=>tr.onclick=()=>{$("#fSig").value=tr.dataset.sig;$("#fReg").value=tr.dataset.reg;$("#fStat").value="done";render();document.querySelector(".filters").scrollIntoView({behavior:"smooth"});});}
 function renderCards(by){let h="";for(const[s,v]of Object.entries(by)){
  h+=`<div class="card"><div class="k">${sigL(s)} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
  $("#cards").innerHTML=h||'<div class="card"><div class="k">평가완료 신호 없음</div><div class="v mut">대기중</div></div>';}
