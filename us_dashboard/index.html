@@ -1,42 +1,69 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<!doctype html><html lang="ko" data-theme="light"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🇺🇸 미국 핫섹터 스캐너 성과</title>
+<title>🇺🇸 신호성과 미국 — 핫섹터 스캐너</title>
 <style>
-:root{--bg:#0f1419;--card:#1a2030;--line:#2a3346;--txt:#e6edf3;--mut:#8b98a9;--pos:#3fb950;--neg:#f85149;--acc:#58a6ff}
-body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 -apple-system,system-ui,sans-serif}
-.wrap{max-width:1100px;margin:0 auto;padding:16px}
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--mut:#6b7280;--line:#e5e7eb;--acc:#7c3aed;--pos:#16a34a;--neg:#dc2626;--hit:#f59e0b}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--mut:#9ca3af;--line:#2d3138;--acc:#a78bfa;--pos:#22c55e;--neg:#f87171;--hit:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px}
+.head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 h1{font-size:19px;margin:8px 0}
 .sub{color:var(--mut);font-size:12px;margin-bottom:14px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 11px;font-size:13px}
+.btn.acc{color:var(--acc)}
+.spacer{margin-left:auto}
 .cards{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:120px}
 .card .k{color:var(--mut);font-size:11px}.card .v{font-size:18px;font-weight:700;margin-top:2px}
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-select,input{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
-th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
-.pos{color:var(--pos)}.neg{color:var(--neg)}.mut{color:var(--mut)}
-.badge{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;background:#22303f}
-.strong{background:#1f3a26;color:var(--pos)}
-.tklink{color:var(--acc);text-decoration:none;font-variant-numeric:tabular-nums}
-.tklink:hover{text-decoration:underline}
 details.combo{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 14px;margin-bottom:14px}
 details.combo summary{cursor:pointer;font-weight:600;font-size:14px;padding:4px 0;user-select:none}
 details.combo summary .hint{color:var(--mut);font-weight:400;font-size:12px}
-.ctbl{margin-top:8px}.ctbl th{font-size:12px}
-.crow{cursor:pointer}.crow:hover{background:#222f3f}
-.help{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--acc);border-radius:7px;padding:4px 10px;font-size:13px;margin-left:8px}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9;padding:16px;overflow:auto}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+select,input{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sticky;top:46px;background:var(--card)}
+.ctbl th{position:static}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.mut{color:var(--mut)}
+.badge{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;background:var(--line)}
+.strong{background:rgba(22,163,74,.16);color:var(--pos)}
+.tklink,.crow{color:var(--acc);text-decoration:none;font-variant-numeric:tabular-nums}
+.tklink:hover{text-decoration:underline}
+.crow{cursor:pointer}.crow:hover{background:rgba(124,58,237,.08)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;padding:16px;overflow:auto}
 .modal.on{display:block}
-.mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.mbox{max-width:720px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
 .mbox h2{font-size:16px;margin:14px 0 6px}.mbox h2:first-child{margin-top:0}
-.mbox p{margin:4px 0;color:var(--txt)}.mbox .t{color:var(--mut);font-size:12px}
+.mbox p{margin:4px 0}.mbox .t{color:var(--mut);font-size:12px}
 .mbox b.sig{color:var(--acc)}
-.mclose{float:right;cursor:pointer;color:var(--mut);font-size:20px;line-height:1}
-@media(max-width:680px){.wrap{padding:10px}th:nth-child(4),td:nth-child(4),th:nth-child(7),td:nth-child(7){display:none}}
-</style></head><body><div class="wrap">
-<h1>🇺🇸 미국 핫섹터 스캐너 성과 <button class="help" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button></h1>
-<div class="sub" id="gen"></div>
+.mclose{float:right;cursor:pointer;color:var(--mut);font-size:22px;line-height:1}
+.usec{margin:12px 0 4px;font-weight:700;color:var(--acc);font-size:13px}
+.ulist{display:flex;flex-wrap:wrap;gap:6px}
+.uitem{border:1px solid var(--line);border-radius:7px;padding:4px 8px;font-size:12px}
+.uitem a{color:var(--acc);text-decoration:none}.uitem a:hover{text-decoration:underline}
+@media(max-width:680px){.wrap{padding:10px}th:nth-child(4),td:nth-child(4),th:nth-child(7),td:nth-child(7){display:none}th{top:0}}
+
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+
+</style></head><body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item active" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<div class="wrap">
+<div class="head">
+  <h1>🇺🇸 신호성과 미국 <span class="sub" id="gen"></span></h1>
+  <button class="btn acc spacer" onclick="document.getElementById('mu').classList.add('on')">📋 종목 구성</button>
+  <button class="btn acc" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button>
+  <button class="btn" id="themeBtn">🌙</button>
+</div>
 <div class="cards" id="cards"></div>
 <details class="combo"><summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 행 클릭 → 해당 조합으로 필터. 개별 추격 X, 조합 경향 보기용</span></summary>
 <table class="ctbl"><thead><tr><th>신호</th><th>장세</th><th>N</th><th>D+5 평균</th><th>승률</th><th>hit</th></tr></thead><tbody id="comboTb"></tbody></table>
@@ -44,22 +71,23 @@ details.combo summary .hint{color:var(--mut);font-weight:400;font-size:12px}
 <div class="filters">
 <select id="fSig"><option value="">신호 전체</option></select>
 <select id="fSec"><option value="">섹터 전체</option></select>
-<select id="fReg"><option value="">regime 전체</option></select>
+<select id="fReg"><option value="">장세 전체</option></select>
 <select id="fStat"><option value="">상태 전체</option><option value="done">평가완료</option><option value="pending">대기</option></select>
-<input id="fTxt" placeholder="티커 검색">
+<input id="fTxt" placeholder="티커/종목 검색">
 </div>
 <table><thead><tr>
 <th data-k="date">날짜</th><th data-k="name">종목</th><th data-k="ticker">티커</th><th data-k="sector">섹터</th>
-<th data-k="signal">신호</th><th data-k="grade">등급</th><th data-k="regime">regime</th>
+<th data-k="signal">신호</th><th data-k="grade">등급</th><th data-k="regime">장세</th>
 <th data-k="d5_ret">D+5 %</th><th data-k="hit">hit</th><th data-k="status">상태</th>
 </tr></thead><tbody id="tb"></tbody></table>
+</div>
 <div class="modal" id="m"><div class="mbox">
 <span class="mclose" onclick="document.getElementById('m').classList.remove('on')">×</span>
 <h2>이 화면은?</h2>
-<p>미국 핫섹터 141종목을 매일 종가 기준으로 훑어 <b>3가지 자리</b>를 찾아 기록합니다. 매수 추천이 아니라 <b>관찰 기록</b>이며, 5거래일 뒤 성과(D+5)가 자동으로 채워집니다.</p>
+<p>미국 핫섹터 종목을 매일 종가 기준으로 훑어 <b>3가지 자리</b>를 찾아 기록합니다. 매수 추천이 아니라 <b>관찰 기록</b>이며, 5거래일 뒤 성과(D+5)가 자동으로 채워집니다.</p>
 <h2>신호 (어떤 자리인가)</h2>
 <p><b class="sig">과매도 바닥</b> — 주가가 15일 평균선보다 15% 아래로 빠진 깊은 과매도. 바닥에서 튕기는 반등을 노립니다. <b>하락장에서 강함</b>.</p>
-<p><b class="sig">상승 눌림목</b> — 상승 추세(단기·중기 평균선 정배열) 종목이 15일 평균선 근처로 잠깐 눌린 자리. 쉬고 재출발하는 구간. <b>상승장에서 가장 강함</b>(이번 4년 백테 최강 신호).</p>
+<p><b class="sig">상승 눌림목</b> — 상승 추세(단기·중기 평균선 정배열) 종목이 15일 평균선 근처로 잠깐 눌린 자리. 쉬고 재출발하는 구간. <b>상승장에서 가장 강함</b>(4년 백테 최강 신호).</p>
 <p><b class="sig">강세 돌파</b> — 80일 볼린저밴드 상단을 위로 뚫는 강한 모멘텀. "가던 게 더 간다". <b>상승장 보조</b>.</p>
 <h2>등급 (지금 봐야 하나)</h2>
 <p><b>핵심</b> — 지금 장세에 통계적으로 잘 맞는 신호. 우선 보기.</p>
@@ -70,22 +98,36 @@ details.combo summary .hint{color:var(--mut);font-weight:400;font-size:12px}
 <h2>성과 컬럼</h2>
 <p class="t">D+5 = 신호 후 5거래일 종가 수익률 · hit🔥 = 5일 내 최고가가 +10% 도달 · 대기 = 아직 5일 미경과</p>
 </div></div>
-</div><script>
-let ROWS=[],SORT={k:"date",dir:-1};
+<div class="modal" id="mu"><div class="mbox">
+<span class="mclose" onclick="document.getElementById('mu').classList.remove('on')">×</span>
+<h2>📋 미국 핫섹터 종목 구성 <span class="t" id="uCount"></span></h2>
+<p class="t">테마별 종목명 · 티커(클릭 시 Yahoo Finance). 스캐너가 매일 훑는 universe 입니다.</p>
+<div id="uBody"></div>
+</div></div>
+<script>
+let ROWS=[],UNIV=[],SORT={k:"date",dir:-1};
 const SIG={"하단터치":"과매도 바닥","A3눌림":"상승 눌림목","BB80돌파":"강세 돌파"};
 const REG={"BULL":"상승장","BEAR":"하락장","RANGE":"횡보장"};
 const sigL=s=>SIG[s]||s, regL=r=>(REG[r]?REG[r]+"("+r+")":r);
 const $=s=>document.querySelector(s);
-window.addEventListener("click",e=>{if(e.target.id==="m")e.target.classList.remove("on");});
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const yh=t=>'https://finance.yahoo.com/quote/'+encodeURIComponent(t)+'/';
+window.addEventListener("click",e=>{if(e.target.classList&&e.target.classList.contains("modal"))e.target.classList.remove("on");});
+// 테마 토글
+const tb=$("#themeBtn");
+function setTh(t){document.documentElement.setAttribute("data-theme",t);tb.textContent=t==="dark"?"☀️":"🌙";localStorage.setItem("theme",t);}
+setTh(localStorage.getItem("theme")||"light");
+tb.onclick=()=>setTh(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");
+
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
- ROWS=d.rows;$("#gen").textContent="생성 "+d.generated+" · 총 "+d.stats.total+"건(평가완료 "+d.stats.done+"/대기 "+d.stats.pending+")";
- renderCards(d.stats.by_signal);
- renderCombo(d.stats.by_combo);
+ ROWS=d.rows;UNIV=d.universe||[];
+ $("#gen").textContent="생성 "+d.generated+" · 총 "+d.stats.total+"건(평가완료 "+d.stats.done+"/대기 "+d.stats.pending+")";
+ renderCards(d.stats.by_signal);renderCombo(d.stats.by_combo);renderUniv();
  fillSig("#fSig",[...new Set(ROWS.map(r=>r.signal))]);
  fill("#fSec",[...new Set(ROWS.map(r=>r.sector))]);
  fillReg("#fReg",[...new Set(ROWS.map(r=>r.regime))]);
  ["#fSig","#fSec","#fReg","#fStat","#fTxt"].forEach(s=>$(s).addEventListener("input",render));
- document.querySelectorAll("th").forEach(th=>th.addEventListener("click",()=>{
+ document.querySelectorAll("thead th[data-k]").forEach(th=>th.addEventListener("click",()=>{
    const k=th.dataset.k;SORT.dir=(SORT.k===k)?-SORT.dir:1;SORT.k=k;render();}));
  render();
 });
@@ -93,23 +135,31 @@ function opt(sel,val,txt){const o=document.createElement("option");o.value=val;o
 function fill(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,v));}
 function fillSig(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,sigL(v)));}
 function fillReg(sel,vals){vals.filter(Boolean).sort().forEach(v=>opt(sel,v,regL(v)));}
-function renderCombo(cb){const tb=$("#comboTb");
- if(!cb||!cb.length){tb.innerHTML='<tr><td colspan="6" class="mut">평가완료 신호가 쌓이면 표시됩니다 (신호 후 5거래일 경과 시 자동 집계)</td></tr>';return;}
- tb.innerHTML=cb.map(c=>`<tr class="crow" data-sig="${c.signal}" data-reg="${c.regime}"><td>${sigL(c.signal)}</td><td>${regL(c.regime)}</td><td>${c.n}</td><td class="${c.avg_d5>=0?'pos':'neg'}">${c.avg_d5>=0?'+':''}${c.avg_d5}%</td><td>${c.win}%</td><td>${c.hit}%</td></tr>`).join("");
- tb.querySelectorAll(".crow").forEach(tr=>tr.onclick=()=>{$("#fSig").value=tr.dataset.sig;$("#fReg").value=tr.dataset.reg;$("#fStat").value="done";render();document.querySelector(".filters").scrollIntoView({behavior:"smooth"});});}
+function renderCombo(cb){const t=$("#comboTb");
+ if(!cb||!cb.length){t.innerHTML='<tr><td colspan="6" class="mut">평가완료 신호가 쌓이면 표시됩니다 (신호 후 5거래일 경과 시 자동 집계)</td></tr>';return;}
+ t.innerHTML=cb.map(c=>`<tr class="crow" data-sig="${esc(c.signal)}" data-reg="${esc(c.regime)}"><td>${esc(sigL(c.signal))}</td><td>${esc(regL(c.regime))}</td><td>${c.n}</td><td class="${c.avg_d5>=0?'pos':'neg'}">${c.avg_d5>=0?'+':''}${c.avg_d5}%</td><td>${c.win}%</td><td>${c.hit}%</td></tr>`).join("");
+ t.querySelectorAll(".crow").forEach(tr=>tr.onclick=()=>{$("#fSig").value=tr.dataset.sig;$("#fReg").value=tr.dataset.reg;$("#fStat").value="done";render();$(".filters").scrollIntoView({behavior:"smooth"});});}
 function renderCards(by){let h="";for(const[s,v]of Object.entries(by)){
- h+=`<div class="card"><div class="k">${sigL(s)} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
+ h+=`<div class="card"><div class="k">${esc(sigL(s))} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
  $("#cards").innerHTML=h||'<div class="card"><div class="k">평가완료 신호 없음</div><div class="v mut">대기중</div></div>';}
+function renderUniv(){
+ $("#uCount").textContent="("+UNIV.length+"종목)";
+ const bySec={};UNIV.forEach(u=>{(bySec[u.sector]=bySec[u.sector]||[]).push(u);});
+ let h="";Object.keys(bySec).sort().forEach(sec=>{
+  h+=`<div class="usec">${esc(sec)} <span class="t">(${bySec[sec].length})</span></div><div class="ulist">`;
+  h+=bySec[sec].map(u=>`<span class="uitem">${esc(u.name)} <a href="${yh(u.ticker)}" target="_blank" rel="noopener">${esc(u.ticker)}</a></span>`).join("");
+  h+="</div>";});
+ $("#uBody").innerHTML=h;}
 function render(){
  const sig=$("#fSig").value,sec=$("#fSec").value,reg=$("#fReg").value,stat=$("#fStat").value,txt=$("#fTxt").value.toUpperCase();
- let rows=ROWS.filter(r=>(!sig||r.signal===sig)&&(!sec||r.sector===sec)&&(!reg||r.regime===reg)&&(!stat||r.status===stat)&&(!txt||r.ticker.toUpperCase().includes(txt)));
+ let rows=ROWS.filter(r=>(!sig||r.signal===sig)&&(!sec||r.sector===sec)&&(!reg||r.regime===reg)&&(!stat||r.status===stat)&&(!txt||(r.ticker+" "+(r.name||"")).toUpperCase().includes(txt)));
  rows.sort((a,b)=>{let x=a[SORT.k],y=b[SORT.k];if(x==null)x="";if(y==null)y="";return(x>y?1:x<y?-1:0)*SORT.dir;});
  $("#tb").innerHTML=rows.map(r=>{
   const d5=r.d5_ret==null?'<span class="mut">–</span>':`<span class="${r.d5_ret>=0?'pos':'neg'}">${r.d5_ret>=0?'+':''}${r.d5_ret}</span>`;
   const hit=r.hit==null?'<span class="mut">–</span>':(r.hit?'🔥':'·');
-  const gr=`<span class="badge ${String(r.grade).startsWith('핵심')?'strong':''}">${r.grade}</span>`;
+  const gr=`<span class="badge ${String(r.grade).startsWith('핵심')?'strong':''}">${esc(r.grade)}</span>`;
   const st=r.status==='done'?'평가완료':'<span class="mut">대기</span>';
-  const tklink=`<a class="tklink" href="https://finance.yahoo.com/quote/${r.ticker}/" target="_blank" rel="noopener"><b>${r.ticker}</b></a>`;
-  return `<tr><td>${r.date}</td><td>${r.name||r.ticker}</td><td>${tklink}</td><td>${r.sector}</td><td>${sigL(r.signal)}</td><td>${gr}</td><td>${regL(r.regime)}</td><td>${d5}</td><td>${hit}</td><td>${st}</td></tr>`;
+  const tk=`<a class="tklink" href="${yh(r.ticker)}" target="_blank" rel="noopener"><b>${esc(r.ticker)}</b></a>`;
+  return `<tr><td>${esc(r.date)}</td><td>${esc(r.name||r.ticker)}</td><td>${tk}</td><td>${esc(r.sector)}</td><td>${esc(sigL(r.signal))}</td><td>${gr}</td><td>${esc(regL(r.regime))}</td><td>${d5}</td><td>${hit}</td><td>${st}</td></tr>`;
  }).join("")||'<tr><td colspan="10" class="mut">해당 신호 없음</td></tr>';}
 </script></body></html>
