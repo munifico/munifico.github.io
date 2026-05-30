@@ -42,6 +42,14 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sti
 .ulist{display:flex;flex-wrap:wrap;gap:6px}
 .uitem{border:1px solid var(--line);border-radius:7px;padding:4px 8px;font-size:12px}
 .uitem a{color:var(--acc);text-decoration:none}.uitem a:hover{text-decoration:underline}
+.usrisk{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.usrisk .rh{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:4px}
+.usrisk .rrow{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:13px;border-top:1px solid var(--line)}
+.usrisk .rrow:first-of-type{border-top:0}
+.usrisk .rnote{color:var(--mut);font-size:11px;font-weight:400}
+.rbad{color:var(--neg);font-weight:700}.rwarn{color:var(--hit);font-weight:700}.rok{color:var(--pos);font-weight:600}
+.filters{clear:both}
+@media(min-width:760px){.usrisk{float:right;width:330px;margin-left:16px}}
 @media(max-width:680px){.wrap{padding:10px}th:nth-child(4),td:nth-child(4),th:nth-child(7),td:nth-child(7){display:none}th{top:0}}
 
 .hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
@@ -64,6 +72,7 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sti
   <button class="btn acc" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button>
   <button class="btn" id="themeBtn">🌙</button>
 </div>
+<div class="usrisk" id="usRisk"></div>
 <div class="cards" id="cards"></div>
 <details class="combo"><summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 행 클릭 → 해당 조합으로 필터. 개별 추격 X, 조합 경향 보기용</span></summary>
 <table class="ctbl"><thead><tr><th>신호</th><th>장세</th><th>N</th><th>D+5 평균</th><th>승률</th><th>hit</th></tr></thead><tbody id="comboTb"></tbody></table>
@@ -97,6 +106,11 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sti
 <p><b>BULL 상승장</b> / <b>BEAR 하락장</b> / <b>RANGE 횡보장</b>. 신호별로 잘 맞는 장세가 달라 등급이 갈립니다.</p>
 <h2>성과 컬럼</h2>
 <p class="t">D+5 = 신호 후 5거래일 종가 수익률 · hit🔥 = 5일 내 최고가가 +10% 도달 · 대기 = 아직 5일 미경과</p>
+<h2>🚨 위험·심리 게이지 (우측 상단)</h2>
+<p><b>장단기 금리차(10Y−2Y)</b> — 정상은 양수. 음수(역전)면 시장이 향후 금리 인하를 예상 = 경기 둔화 신호. 지난 ~50년 미 침체 직전마다 역전이 선행(리드 6~18개월, 느린 선행지표).</p>
+<p><b>하이일드 스프레드</b> — 투기등급 회사채가 국채 대비 얹는 부도위험 보상. 확대(↑)=신용 스트레스=리스크오프(실시간 동행), 타이트(낮음)=위험선호.</p>
+<p><b>VIX · CNN 공포·탐욕</b> — 심리 게이지. 공포 극단은 오히려 바닥, 탐욕 극단은 과열. 위험신호 아님(맥락).</p>
+<p class="t">🚨 위험 / ⚠️ 주의 / ✅ 정상. 진짜 침체 맥락 = 금리차 역전 + HY 스프레드 확대 조합.</p>
 </div></div>
 <div class="modal" id="mu"><div class="mbox">
 <span class="mclose" onclick="document.getElementById('mu').classList.remove('on')">×</span>
@@ -122,7 +136,7 @@ tb.onclick=()=>setTh(document.documentElement.getAttribute("data-theme")==="dark
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
  ROWS=d.rows;UNIV=d.universe||[];
  $("#gen").textContent="생성 "+d.generated+" · 총 "+d.stats.total+"건(평가완료 "+d.stats.done+"/대기 "+d.stats.pending+")";
- renderCards(d.stats.by_signal);renderCombo(d.stats.by_combo);renderUniv();
+ renderCards(d.stats.by_signal);renderCombo(d.stats.by_combo);renderUniv();renderRisk(d.risk);
  fillSig("#fSig",[...new Set(ROWS.map(r=>r.signal))]);
  fill("#fSec",[...new Set(ROWS.map(r=>r.sector))]);
  fillReg("#fReg",[...new Set(ROWS.map(r=>r.regime))]);
@@ -139,6 +153,13 @@ function renderCombo(cb){const t=$("#comboTb");
  if(!cb||!cb.length){t.innerHTML='<tr><td colspan="6" class="mut">평가완료 신호가 쌓이면 표시됩니다 (신호 후 5거래일 경과 시 자동 집계)</td></tr>';return;}
  t.innerHTML=cb.map(c=>`<tr class="crow" data-sig="${esc(c.signal)}" data-reg="${esc(c.regime)}"><td>${esc(sigL(c.signal))}</td><td>${esc(regL(c.regime))}</td><td>${c.n}</td><td class="${c.avg_d5>=0?'pos':'neg'}">${c.avg_d5>=0?'+':''}${c.avg_d5}%</td><td>${c.win}%</td><td>${c.hit}%</td></tr>`).join("");
  t.querySelectorAll(".crow").forEach(tr=>tr.onclick=()=>{$("#fSig").value=tr.dataset.sig;$("#fReg").value=tr.dataset.reg;$("#fStat").value="done";render();$(".filters").scrollIntoView({behavior:"smooth"});});}
+function renderRisk(b){const el=$("#usRisk");
+ if(!b||!b.items||!b.items.length){el.style.display="none";return;}
+ const ic=s=>s==="bad"?"🚨":(s==="warn"?"⚠️":"✅");
+ const cl=s=>s==="bad"?"rbad":(s==="warn"?"rwarn":"rok");
+ const ov=b.overall==="위험"?"rbad":(b.overall==="주의"?"rwarn":"rok");
+ const rows=b.items.map(it=>`<div class="rrow"><span>${ic(it.status)} ${esc(it.name)}${it.psych?' <span class="rnote">심리</span>':''}</span><span class="${cl(it.status)}">${esc(it.value)}${esc(it.unit)} <span class="rnote">${esc(it.note)}</span></span></div>`).join("");
+ el.innerHTML=`<div class="rh">🚨 미국 위험·심리 게이지 <span class="${ov}">${esc(b.overall)}</span></div>${rows}<div class="rnote" style="margin-top:6px">FRED+CNN · 침체 맥락=금리차 역전+HY 확대 · <a href="#" onclick="document.getElementById('m').classList.add('on');return false;" style="color:var(--acc)">설명 ❓</a></div>`;}
 function renderCards(by){let h="";for(const[s,v]of Object.entries(by)){
  h+=`<div class="card"><div class="k">${esc(sigL(s))} (N${v.n})</div><div class="v ${v.avg_d5>=0?'pos':'neg'}">${v.avg_d5>=0?'+':''}${v.avg_d5}%</div><div class="k">승률 ${v.win}% · hit ${v.hit}%</div></div>`;}
  $("#cards").innerHTML=h||'<div class="card"><div class="k">평가완료 신호 없음</div><div class="v mut">대기중</div></div>';}
