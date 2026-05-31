@@ -75,6 +75,7 @@ h1{font-size:19px;margin:6px 0}
 <p class="t">양봉+거래량 / MA20 눌림목 — AI 전략 문서 기준이나 <b>우리 백테상 근거 약함</b>(거래량 마름→돌파는 -EV). 비교용으로만.</p>
 <h2>등급 · 장세</h2>
 <p><b>핵심</b>=지금 장세에 맞는 신호 / <b>참고</b>=다른 장세용. 장세(regime)는 지수 20일선 기준 BULL/BEAR/RANGE.</p>
+<p class="t">⚠ 등급은 <b>KOSPI 장세 기준</b>입니다 — 우리 4년 백테가 KOSPI 단일 regime 으로 검증됐기 때문(코스닥 종목도 KOSPI 기준 게이팅이 PF 정합). 종목 카드의 '코스닥 BEAR' 칩은 <b>소속 시장 장세(참고)</b>일 뿐 등급엔 반영하지 않습니다.</p>
 <h2>리스크</h2>
 <p class="t">손절 = 현재가 −8% · 목표 = 최근 60일 고가 근사 · 금리민감도(🔴직격/🟡중립/🟢방어)는 문서 표 기준.</p>
 <h2>🚨 위험·심리 게이지</h2>
@@ -123,8 +124,9 @@ function renderGrid(stocks){
    return '<div class="sig'+(g.kind==='doc'?' doc':'')+'"><span class="st">'+STI[g.status]+'</span>'+
     '<span class="sl">'+esc(g.label)+'</span>'+fit+'<span class="sd">'+esc(g.detail)+'</span></div>';
   }).join("");
+  const mr=s.market_regime?'<span class="rg '+esc(s.market_regime)+'">'+esc(s.market)+' '+esc(s.market_regime)+'</span>':'';
   return '<div class="stk'+hot+'"><div class="sh">'+
-   '<span class="nm">'+esc(s.name)+'</span>'+
+   '<span class="nm">'+esc(s.name)+'</span>'+mr+
    '<span class="chip">'+esc(s.theme)+'</span>'+
    '<span class="chip '+rs[1]+'">'+rs[0]+' 금리</span>'+
    '<span class="px"><b class="'+up+'">'+Number(s.close).toLocaleString()+'</b> <span class="'+up+'">'+(s.chg>=0?'+':'')+s.chg+'%</span></span>'+
