@@ -27,6 +27,7 @@ h1{font-size:19px;margin:6px 0}
 .stk.hot{border-color:var(--on);box-shadow:0 0 0 1px var(--on) inset}
 .sh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .sh .nm{font-size:16px;font-weight:700}
+a.nm{color:var(--acc);text-decoration:none}a.nm:hover{text-decoration:underline}
 .chip{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
 .rs-red{color:#dc2626}.rs-yellow{color:#f59e0b}.rs-green{color:#16a34a}
 .px{margin-left:auto;text-align:right}.px b{font-size:16px}
@@ -126,7 +127,7 @@ function renderGrid(stocks){
   }).join("");
   const mr=s.market_regime?'<span class="rg '+esc(s.market_regime)+'">'+esc(s.market)+' '+esc(s.market_regime)+'</span>':'';
   return '<div class="stk'+hot+'"><div class="sh">'+
-   '<span class="nm">'+esc(s.name)+'</span>'+mr+
+   '<a class="nm" href="https://finance.naver.com/item/main.naver?code='+esc(s.code)+'" target="_blank" rel="noopener">'+esc(s.name)+'</a>'+mr+
    '<span class="chip">'+esc(s.theme)+'</span>'+
    '<span class="chip '+rs[1]+'">'+rs[0]+' 금리</span>'+
    '<span class="px"><b class="'+up+'">'+Number(s.close).toLocaleString()+'</b> <span class="'+up+'">'+(s.chg>=0?'+':'')+s.chg+'%</span></span>'+
