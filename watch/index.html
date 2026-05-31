@@ -127,7 +127,7 @@ function renderGrid(stocks){
   }).join("");
   const mr=s.market_regime?'<span class="rg '+esc(s.market_regime)+'">'+esc(s.market)+' '+esc(s.market_regime)+'</span>':'';
   return '<div class="stk'+hot+'"><div class="sh">'+
-   '<a class="nm" href="https://finance.naver.com/item/main.naver?code='+esc(s.code)+'" target="_blank" rel="noopener">'+esc(s.name)+'</a>'+mr+
+   '<a class="nm" href="https://stock.naver.com/domestic/stock/'+esc(s.code)+'/price" target="_blank" rel="noopener">'+esc(s.name)+'</a>'+mr+
    '<span class="chip">'+esc(s.theme)+'</span>'+
    '<span class="chip '+rs[1]+'">'+rs[0]+' 금리</span>'+
    '<span class="px"><b class="'+up+'">'+Number(s.close).toLocaleString()+'</b> <span class="'+up+'">'+(s.chg>=0?'+':'')+s.chg+'%</span></span>'+
