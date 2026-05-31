@@ -1,0 +1,136 @@
+<!doctype html><html lang="ko" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎯 watch — 하반기 주도주 진입 모니터</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--mut:#6b7280;--line:#e5e7eb;--acc:#7c3aed;--pos:#dc2626;--neg:#2563eb;--on:#16a34a;--near:#f59e0b}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--mut:#9ca3af;--line:#2d3138;--acc:#a78bfa;--pos:#f87171;--neg:#60a5fa;--on:#22c55e;--near:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:16px}
+.head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font-size:19px;margin:6px 0}
+.sub{color:var(--mut);font-size:12px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 11px;font-size:13px}
+.btn.acc{color:var(--acc)}.spacer{margin-left:auto}
+.mkt{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:13px}
+.mcard b{font-size:15px}
+.rg{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:700;margin-left:4px}
+.rg.BULL{background:rgba(220,38,38,.15);color:var(--pos)}.rg.BEAR{background:rgba(37,99,235,.15);color:var(--neg)}.rg.RANGE{background:var(--line);color:var(--mut)}
+.risk{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin-bottom:12px;font-size:13px}
+.risk .rh{font-weight:700;margin-bottom:4px}
+.risk .rr{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid var(--line)}
+.risk .rr:first-of-type{border-top:0}.risk .rn{color:var(--mut);font-size:11px;font-weight:400}
+.rbad{color:#dc2626;font-weight:700}.rwarn{color:#f59e0b;font-weight:700}.rok{color:#16a34a;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.stk{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+.stk.hot{border-color:var(--on);box-shadow:0 0 0 1px var(--on) inset}
+.sh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sh .nm{font-size:16px;font-weight:700}
+.chip{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.rs-red{color:#dc2626}.rs-yellow{color:#f59e0b}.rs-green{color:#16a34a}
+.px{margin-left:auto;text-align:right}.px b{font-size:16px}
+.up{color:var(--pos)}.dn{color:var(--neg)}
+.siglist{margin:10px 0 0;border-top:1px solid var(--line)}
+.sig{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.sig:last-child{border-bottom:0}
+.st{flex:0 0 auto;width:20px;text-align:center}
+.sl{flex:0 0 auto;font-weight:600}
+.sd{color:var(--mut);margin-left:auto;text-align:right}
+.fit{font-size:10px;padding:0 5px;border-radius:5px;background:var(--line);color:var(--mut)}
+.fit.핵심{background:rgba(22,163,74,.16);color:#16a34a}
+.doc .sl{color:var(--mut);font-weight:500}
+.risk2{margin-top:9px;font-size:12px;color:var(--mut);display:flex;gap:14px;flex-wrap:wrap}
+.risk2 b{color:var(--fg)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;padding:16px;overflow:auto}
+.modal.on{display:block}
+.mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.mbox h2{font-size:15px;margin:13px 0 5px}.mbox h2:first-child{margin-top:0}.mbox p{margin:4px 0}.mbox .t{color:var(--mut);font-size:12px}
+.mclose{float:right;cursor:pointer;color:var(--mut);font-size:22px;line-height:1}
+.mbox b.sig{color:var(--acc)}
+@media(max-width:680px){.wrap{padding:10px}}
+</style></head><body>
+<div class="wrap">
+<div class="head">
+  <h1>🎯 watch <span class="sub" id="gen"></span></h1>
+  <button class="btn acc spacer" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button>
+  <button class="btn" id="themeBtn">🌙</button>
+</div>
+<div class="mkt" id="mkt"></div>
+<div class="risk" id="risk"></div>
+<div class="grid" id="grid"></div>
+</div>
+<div class="modal" id="m"><div class="mbox">
+<span class="mclose" onclick="document.getElementById('m').classList.remove('on')">×</span>
+<h2>이 화면은?</h2>
+<p>하반기 주도주 후보를 매일 <b>11시(잠정)·장마감(확정)</b> 2회 훑어 '진입 자리'를 표시합니다. 매수 추천이 아니라 <b>관찰 보조</b>이며, 최종 판단은 본인 몫입니다.</p>
+<h2>신호 상태</h2>
+<p>✅ 충족(트리거 ON) · 🔶 근접 · ⬜ 미충족</p>
+<h2>우리 채택 신호 (4년 백테 검증)</h2>
+<p><b class="sig">엔벨로프 하단터치</b> — 15일선보다 15% 아래로 빠진 깊은 과매도 반등. <b>하락장 강함</b>.</p>
+<p><b class="sig">하단+스토캐스틱 GC</b> — 하단 근처에서 스토캐스틱이 골든크로스(%K&lt;20). 상승장의 '떨어지는 칼날' 필터.</p>
+<p><b class="sig">강세주 얕은눌림</b> — 52주 고가 근처·200일선 상승 종목이 15일선 부근으로 잠깐 눌린 자리. <b>하락장 V1</b>.</p>
+<p><b class="sig">정배열 60일 돌파</b> — 추세 정배열 종목이 60일 신고가를 뚫는 모멘텀. <b>상승장 M2</b>.</p>
+<h2>문서 트리거 (⚠ 참고용)</h2>
+<p class="t">양봉+거래량 / MA20 눌림목 — AI 전략 문서 기준이나 <b>우리 백테상 근거 약함</b>(거래량 마름→돌파는 -EV). 비교용으로만.</p>
+<h2>등급 · 장세</h2>
+<p><b>핵심</b>=지금 장세에 맞는 신호 / <b>참고</b>=다른 장세용. 장세(regime)는 지수 20일선 기준 BULL/BEAR/RANGE.</p>
+<h2>리스크</h2>
+<p class="t">손절 = 현재가 −8% · 목표 = 최근 60일 고가 근사 · 금리민감도(🔴직격/🟡중립/🟢방어)는 문서 표 기준.</p>
+<h2>🚨 위험·심리 게이지</h2>
+<p class="t">금리차 역전+하이일드 확대 = 침체 맥락. VIX·공포탐욕은 심리(공포극단=바닥). 🚨위험/⚠️주의/✅정상.</p>
+</div></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const tb=$("#themeBtn");
+function setTh(t){document.documentElement.setAttribute("data-theme",t);tb.textContent=t==="dark"?"☀️ 라이트":"🌙 다크";localStorage.setItem("theme",t);}
+setTh(localStorage.getItem("theme")||"light");
+tb.onclick=()=>setTh(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");
+window.addEventListener("click",e=>{if(e.target.classList&&e.target.classList.contains("modal"))e.target.classList.remove("on");});
+const RS={red:["🔴","rs-red"],yellow:["🟡","rs-yellow"],green:["🟢","rs-green"]};
+const STI={on:"✅",near:"🔶",off:"⬜"};
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
+ $("#gen").textContent="· "+d.generated+" · "+d.slot;
+ renderMkt(d.market);renderRisk(d.risk);renderGrid(d.stocks);
+});
+function rg(r){return '<span class="rg '+esc(r)+'">'+esc(r)+'</span>';}
+function renderMkt(m){
+ const f=v=>v==null?'–':(v>=0?'+':'')+v.toFixed(2)+'%';
+ const cl=v=>v==null?'':(v>=0?'up':'dn');
+ let h='';
+ if(m.kospi)h+='<div class="mcard">KOSPI <b class="'+cl(m.kospi.chg)+'">'+f(m.kospi.chg)+'</b>'+rg(m.kospi.regime)+'</div>';
+ if(m.kosdaq)h+='<div class="mcard">코스닥 <b class="'+cl(m.kosdaq.chg)+'">'+f(m.kosdaq.chg)+'</b>'+rg(m.kosdaq.regime)+'</div>';
+ h+='<div class="mcard">신호 등급 기준 장세 '+rg(m.grade_regime)+'</div>';
+ $("#mkt").innerHTML=h;
+}
+function renderRisk(b){const el=$("#risk");
+ if(!b||!b.items||!b.items.length){el.style.display="none";return;}
+ const ic=s=>s==="bad"?"🚨":(s==="warn"?"⚠️":"✅");
+ const cl=s=>s==="bad"?"rbad":(s==="warn"?"rwarn":"rok");
+ const ov=b.overall==="위험"?"rbad":(b.overall==="주의"?"rwarn":"rok");
+ el.innerHTML='<div class="rh">🚨 매크로 위험·심리 게이지 <span class="'+ov+'">'+esc(b.overall)+'</span></div>'+
+  b.items.map(it=>'<div class="rr"><span>'+ic(it.status)+' '+esc(it.name)+(it.psych?' <span class="rn">심리</span>':'')+
+  '</span><span class="'+cl(it.status)+'">'+esc(it.value)+esc(it.unit)+' <span class="rn">'+esc(it.note)+'</span></span></div>').join("");
+}
+function renderGrid(stocks){
+ $("#grid").innerHTML=stocks.map(s=>{
+  const hot=s.triggered&&s.triggered.length?' hot':'';
+  const rs=RS[s.rate_sens]||RS.yellow;
+  const up=s.chg>=0?'up':'dn';
+  const sigs=s.signals.map(g=>{
+   const fit=g.kind==='adopted'?'<span class="fit '+esc(g.fit)+'">'+esc(g.fit)+'</span>':'';
+   return '<div class="sig'+(g.kind==='doc'?' doc':'')+'"><span class="st">'+STI[g.status]+'</span>'+
+    '<span class="sl">'+esc(g.label)+'</span>'+fit+'<span class="sd">'+esc(g.detail)+'</span></div>';
+  }).join("");
+  return '<div class="stk'+hot+'"><div class="sh">'+
+   '<span class="nm">'+esc(s.name)+'</span>'+
+   '<span class="chip">'+esc(s.theme)+'</span>'+
+   '<span class="chip '+rs[1]+'">'+rs[0]+' 금리</span>'+
+   '<span class="px"><b class="'+up+'">'+Number(s.close).toLocaleString()+'</b> <span class="'+up+'">'+(s.chg>=0?'+':'')+s.chg+'%</span></span>'+
+   '</div><div class="siglist">'+sigs+'</div>'+
+   '<div class="risk2"><span>손절 <b>'+Number(s.stop8).toLocaleString()+'</b></span>'+
+   (s.target?'<span>목표(60일고가) <b>'+Number(s.target).toLocaleString()+'</b></span>':'')+'</div></div>';
+ }).join("")||'<p class="sub">데이터 없음</p>';
+}
+</script></body></html>
