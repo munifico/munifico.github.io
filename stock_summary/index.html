@@ -83,6 +83,11 @@ h3{font-size:14px;margin:2px 0 8px}
     <input id="q" type="text" placeholder="🔍 종목명 또는 코드 검색 (예: 삼성전자 / 005930)" autocomplete="off">
     <button id="qx" class="qx" title="지우기" type="button">×</button>
   </div>
+  <select id="marketf">
+    <option value="">전체 시장</option>
+    <option value="코스피">코스피</option>
+    <option value="코스닥">코스닥</option>
+  </select>
   <select id="zonef">
     <option value="">전체</option>
     <option value="lower">🔻 하단 터치·근접</option>
@@ -138,10 +143,10 @@ function zoneOf(s){const L=s.levels;if(!L)return "inside";
  if(L.zone==="below"||(L.pos_vs_lower!=null&&L.pos_vs_lower<=5))return "lower";
  return "inside";}
 function initSearch(){
- const q=$("#q"),dd=$("#dd"),zf=$("#zonef");
- const filt=()=>{const v=q.value.trim().toLowerCase(),z=zf.value;
+ const q=$("#q"),dd=$("#dd"),zf=$("#zonef"),mf=$("#marketf");
+ const filt=()=>{const v=q.value.trim().toLowerCase(),z=zf.value,mk=mf.value;
    return ST.filter(s=>(!v||s.name.toLowerCase().includes(v)||String(s.code).toLowerCase().includes(v))
-     &&(!z||zoneOf(s)===z));};
+     &&(!z||zoneOf(s)===z)&&(!mk||s.market===mk));};
  const tag=s=>{const z=zoneOf(s);if(z==="lower")return ' <span class="zl">🔻'+(s.levels.pos_vs_lower>=0?'+'+s.levels.pos_vs_lower:'터치')+'</span>';
    if(z==="above")return ' <span class="za">🔺+'+s.levels.pos_vs_upper+'%</span>';return '';};
  const draw=items=>{dd.innerHTML=items.slice(0,80).map(s=>
@@ -158,9 +163,14 @@ function initSearch(){
  setOpt("lower","🔻 하단 터치·근접 ("+cnt.lower+")");
  setOpt("above","🔺 상단 이탈 ("+cnt.above+")");
  setOpt("inside","↔ 밴드 안 ("+cnt.inside+")");
+ const mc={};ST.forEach(s=>{if(s.market)mc[s.market]=(mc[s.market]||0)+1;});
+ const setMk=(v,t)=>{const o=mf.querySelector('option[value="'+v+'"]');if(o)o.textContent=t;};
+ setMk("코스피","코스피 ("+(mc["코스피"]||0)+")");
+ setMk("코스닥","코스닥 ("+(mc["코스닥"]||0)+")");
  q.addEventListener("focus",open);
  q.addEventListener("input",open);
  zf.addEventListener("change",open);
+ mf.addEventListener("change",open);
  dd.addEventListener("click",e=>{const it=e.target.closest(".ddi");if(!it||!it.dataset.code)return;
    const s=ST.find(x=>String(x.code)===it.dataset.code);if(s){render(s);q.value=s.name;toggleX();dd.classList.remove("on");}});
  document.addEventListener("click",e=>{if(!e.target.closest(".search"))dd.classList.remove("on");});
@@ -170,7 +180,7 @@ function render(s){
  const up=s.chg>=0?'up':'dn';
  $("#chartCard").innerHTML=
   '<div class="sh"><a class="nm" style="color:var(--acc);text-decoration:none" href="https://stock.naver.com/domestic/stock/'+esc(s.code)+'/price" target="_blank" rel="noopener">'+esc(s.name)+'</a>'+
-  '<span class="chip">'+esc(s.code)+'</span>'+(s.theme?'<span class="chip">'+esc(s.theme)+'</span>':'')+
+  '<span class="chip">'+esc(s.code)+'</span>'+(s.market?'<span class="chip">'+esc(s.market)+'</span>':'')+(s.theme?'<span class="chip">'+esc(s.theme)+'</span>':'')+
   '<span class="px"><b class="'+up+'">'+won(s.close)+'</b> <span class="'+up+'">'+(s.chg>=0?'+':'')+s.chg+'%</span></span></div>'+
   '<canvas id="cv"></canvas>'+
   '<div class="lgd"><span><i style="border-color:var(--fg)"></i>종가</span>'+
