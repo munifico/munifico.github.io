@@ -101,7 +101,7 @@ td a.codelink:hover{text-decoration:underline}
 </style>
 </head>
 <body>
-<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item active" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item active" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
 <header>
   <h1>📈 신호 성과 대시보드</h1>
   <span class="gen" id="gen"></span>
@@ -120,6 +120,7 @@ td a.codelink:hover{text-decoration:underline}
 <div class="controls">
   <input id="q" placeholder="🔎 종목명·코드 검색" size="18">
   <select id="fSrc"><option value="">전체 출처</option></select>
+  <select id="fMarket"><option value="">전체 시장</option></select>
   <select id="fType"><option value="">전체 타입</option></select>
   <select id="fTheme"><option value="">전체 테마</option></select>
   <select id="fRegime"><option value="">전체 regime</option></select>
@@ -239,7 +240,7 @@ function themeCell(ts){ts=ts||[];if(!ts.length)return '<td data-label="테마"><
  const more=ts.length>2?'<span class="muted" style="font-size:11px"> 외 '+(ts.length-2)+'</span>':'';
  return '<td data-label="테마">'+show+more+'</td>'}
 const COLS=[
- {k:"date",t:"일자",n:0},{k:"name",t:"종목",n:0},{k:"code",t:"코드",n:0},
+ {k:"date",t:"일자",n:0},{k:"name",t:"종목",n:0},{k:"code",t:"코드",n:0},{k:"market",t:"시장",n:0},
  {k:"src",t:"출처",n:0},{k:"stime",t:"시각",n:0},
  {k:"type",t:"신호",n:0},{k:"supply",t:"비고",n:0},{k:"theme",t:"테마",n:0},{k:"conf",t:"등급",n:0},{k:"regime",t:"장세",n:0},
  {k:"tech",t:"tech",n:1},{k:"d1",t:"D+1%",n:1},{k:"d5",t:"D+5%",n:1},
@@ -260,6 +261,7 @@ function render(){
    '<td data-label="일자">'+fmtDate(r.date)+'</td>'+
    '<td data-label="종목">'+esc(r.name)+'</td>'+
    '<td data-label="코드"><a class="codelink" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+'/price" target="_blank" rel="noopener">'+esc(r.code)+'</a></td>'+
+   '<td data-label="시장">'+esc(r.market||"")+'</td>'+
    '<td data-label="출처"><span class="src-tag">'+srcKo(r.src)+'</span></td>'+
    '<td data-label="시각">'+esc(r.stime||"")+'</td>'+
    '<td data-label="신호">'+sigKo(r.type)+'</td>'+
@@ -285,6 +287,7 @@ function apply(){
  const q=document.getElementById("q").value.trim().toLowerCase();
  const ft=document.getElementById("fType").value,fr=document.getElementById("fRegime").value;
  const fs=document.getElementById("fSrc").value,fth=document.getElementById("fTheme").value;
+ const fm=document.getElementById("fMarket").value;
  const fh=document.getElementById("fHit").checked,fd=document.getElementById("fDone").checked;
  const fp=document.getElementById("fPending").checked;
  const fg=document.getElementById("fGroup").checked;
@@ -293,12 +296,14 @@ function apply(){
   if(ft&&r.type!==ft)return false;
   if(fr&&r.regime!==fr)return false;
   if(fs&&r.src!==fs)return false;
+  if(fm&&r.market!==fm)return false;
   if(fth&&!(r.themes||[]).includes(fth))return false;
   if(fh&&!r.hit)return false;
   if(fd&&r.status!=="done")return false;
   if(fp&&r.status==="done")return false;
   return true});
  if(fg){const byCode={};view.forEach(r=>{const p=byCode[r.code];if(!p||r.date>p.date)byCode[r.code]=r});view=Object.values(byCode);}
+ cards(statsOf(view));
  view.sort((a,b)=>{let x=a[sortK],y=b[sortK];
   if(sortK==="theme"){x=(a.themes||[]).join();y=(b.themes||[]).join()}
   if(x==null)x=-1e9;if(y==null)y=-1e9;
@@ -315,10 +320,18 @@ function fillFilters(){
  const regs=[...new Set(DATA.map(r=>r.regime).filter(Boolean))].sort();
  const srcs=[...new Set(DATA.map(r=>r.src).filter(Boolean))];
  const themes=[...new Set(DATA.flatMap(r=>r.themes||[]))].sort();
+ const mkts=[...new Set(DATA.map(r=>r.market).filter(Boolean))].sort();
  document.getElementById("fType").innerHTML='<option value="">전체 신호</option>'+types.map(t=>'<option value="'+esc(t)+'">'+sigKo(t)+'</option>').join("");
  document.getElementById("fRegime").innerHTML='<option value="">전체 장세</option>'+regs.map(t=>'<option value="'+esc(t)+'">'+esc(LAB[t]||t)+'</option>').join("");
  document.getElementById("fSrc").innerHTML='<option value="">전체 출처</option>'+srcs.map(s=>'<option value="'+esc(s)+'">'+srcKo(s)+'</option>').join("");
+ document.getElementById("fMarket").innerHTML='<option value="">전체 시장</option>'+mkts.map(s=>'<option value="'+esc(s)+'">'+esc(s)+'</option>').join("");
  document.getElementById("fTheme").innerHTML='<option value="">전체 테마</option>'+themes.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join("");
+}
+function statsOf(rows){
+ const done=rows.filter(r=>r.status==="done"),hits=done.filter(r=>r.hit);
+ const avg=done.length?done.reduce((a,r)=>a+(r.d5||0),0)/done.length:0;
+ return {total:rows.length,done:done.length,pending:rows.length-done.length,hits:hits.length,
+  hit_rate:done.length?Math.round(hits.length/done.length*1000)/10:0,avg_d5:Math.round(avg*100)/100};
 }
 function cards(s){
  const c=[["총 신호",s.total],["평가완료",s.done],["대기",s.pending],
@@ -362,7 +375,7 @@ document.getElementById("helpClose").onclick=()=>_hm.classList.remove("open");
 _hm.onclick=e=>{if(e.target===_hm)_hm.classList.remove("open")};
 document.addEventListener("keydown",e=>{if(e.key==="Escape")_hm.classList.remove("open")});
 if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
-["q","fSrc","fType","fTheme","fRegime","fHit","fDone","fPending","fGroup"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+["q","fSrc","fMarket","fType","fTheme","fRegime","fHit","fDone","fPending","fGroup"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
 // 조합표 행 클릭 → 해당 신호×장세 로 메인 표 필터(드릴다운)
 function drill(t,r){
  document.getElementById("fType").value=t;
