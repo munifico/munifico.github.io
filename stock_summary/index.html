@@ -12,7 +12,10 @@ h1{font-size:19px;margin:6px 0}.sub{color:var(--mut);font-size:12px}
 .btn{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 11px;font-size:13px}
 .btn.acc{color:var(--acc)}.spacer{margin-left:auto}
 .search{position:relative;margin:12px 0;max-width:580px;display:flex;gap:8px}
-.search input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font-size:14px}
+.ibox{position:relative;flex:1;min-width:0}
+.search input{width:100%;padding:9px 32px 9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font-size:14px}
+.qx{position:absolute;right:4px;top:0;bottom:0;border:0;background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer;padding:0 8px;display:none}
+.qx.on{display:block}.qx:hover{color:var(--fg)}
 .search select{flex:0 0 auto;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font-size:13px;cursor:pointer}
 .search input:focus{outline:none;border-color:var(--acc)}
 .dd{display:none;position:absolute;top:100%;left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--line);border-radius:9px;margin-top:4px;max-height:340px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.14)}
@@ -63,7 +66,10 @@ h3{font-size:14px;margin:2px 0 8px}
   <button class="btn" id="themeBtn">🌙</button>
 </div>
 <div class="search">
-  <input id="q" type="text" placeholder="🔍 종목명 또는 코드 검색 (예: 삼성전자 / 005930)" autocomplete="off">
+  <div class="ibox">
+    <input id="q" type="text" placeholder="🔍 종목명 또는 코드 검색 (예: 삼성전자 / 005930)" autocomplete="off">
+    <button id="qx" class="qx" title="지우기" type="button">×</button>
+  </div>
   <select id="zonef">
     <option value="">전체</option>
     <option value="lower">🔻 하단 터치·근접</option>
@@ -129,7 +135,10 @@ function initSearch(){
    '<div class="ddi" data-code="'+esc(s.code)+'"><span>'+esc(s.name)+tag(s)+'</span>'+
    '<span class="ddc">'+esc(s.code)+(s.theme?' · '+esc(s.theme):'')+'</span></div>').join("")
    ||'<div class="ddi mut">결과 없음</div>';};
- const open=()=>{draw(filt());dd.classList.add("on");};
+ const qx=$("#qx");
+ const toggleX=()=>qx.classList.toggle("on",q.value.length>0);
+ const open=()=>{draw(filt());dd.classList.add("on");toggleX();};
+ qx.addEventListener("click",()=>{q.value="";toggleX();q.focus();open();});
  // 옵션별 카운트
  const cnt={lower:0,above:0,inside:0};ST.forEach(s=>cnt[zoneOf(s)]++);
  const setOpt=(v,t)=>{const o=zf.querySelector('option[value="'+v+'"]');if(o)o.textContent=t;};
@@ -140,7 +149,7 @@ function initSearch(){
  q.addEventListener("input",open);
  zf.addEventListener("change",open);
  dd.addEventListener("click",e=>{const it=e.target.closest(".ddi");if(!it||!it.dataset.code)return;
-   const s=ST.find(x=>String(x.code)===it.dataset.code);if(s){render(s);q.value=s.name;dd.classList.remove("on");}});
+   const s=ST.find(x=>String(x.code)===it.dataset.code);if(s){render(s);q.value=s.name;toggleX();dd.classList.remove("on");}});
  document.addEventListener("click",e=>{if(!e.target.closest(".search"))dd.classList.remove("on");});
 }
 function render(s){
