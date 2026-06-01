@@ -62,6 +62,7 @@ h3{font-size:14px;margin:2px 0 8px}
 <p>종목별 <b>추세(주가)</b>와 <b>펀더(재무제표)</b>를 한눈에 봅니다. <b>'AI 주가예측' 같은 점 예측가는 의도적으로 넣지 않습니다</b> — 가격만으로 미래를 맞히는 건 검증되지 않기 때문입니다. 대신 검증 가능한 <b>추세선·이동평균·실적</b>만 보여줍니다.</p>
 <h2>차트</h2>
 <p>종가 + 이동평균(20/60/120일) + <b>MTS 자동추세선</b>(빨강 저항 / 파랑 지지). 추세선은 두 고점/저점을 잇되 그 사이 봉이 선을 뚫지 않은 것만 살아남습니다.</p>
+<p><b>엔벨로프 15</b>(보라 점선 밴드) = 15일선 ±15%. <b>하단 터치는 우리 4년 백테상 하락장 강한 반등 신호(§91)</b>입니다. 휠/핀치로 확대, 드래그로 이동, 더블클릭으로 리셋.</p>
 <h2>추세 상태</h2>
 <p><b>상승추세</b> = 정배열(20&gt;60&gt;120) · <b>하락추세</b> = 역배열 · 그 외 혼조. 120일선 위/아래와 최근 60일 기울기도 함께 표시. 장세(regime)는 KOSPI 20일선 기준.</p>
 <h2>펀더 (DART 전자공시)</h2>
@@ -102,6 +103,7 @@ function render(s){
   '<span><i style="border-color:#3b82f6"></i>MA20</span><span><i style="border-color:#10b981"></i>MA60</span>'+
   '<span><i style="border-color:#f59e0b"></i>MA120</span>'+
   '<span><i style="border-color:var(--pos)"></i>저항선</span><span><i style="border-color:var(--neg)"></i>지지선</span>'+
+  '<span><i style="border-color:var(--acc);border-top-style:dashed"></i>엔벨로프15(±15%)</span>'+
   '<span style="margin-left:auto">🔍 휠/핀치 확대 · 드래그 이동 · 더블클릭 리셋</span></div>';
  drawChart(s.chart);
  renderSide(s);
@@ -168,7 +170,7 @@ function drawChart(c){
  const a=Math.max(0,Math.floor(VS)),b=Math.min(n-1,Math.ceil(VE));
  const interp=(l,i)=>l?(l.y0+(l.y1-l.y0)*(i-l.x0)/((l.x1-l.x0)||1)):null;
  let lo=Infinity,hi=-Infinity;
- [c.close,c.ma20,c.ma60,c.ma120].forEach(arr=>{for(let i=a;i<=b;i++){const v=arr[i];if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}}});
+ [c.close,c.ma20,c.ma60,c.ma120,c.envu,c.envl].forEach(arr=>{if(!arr)return;for(let i=a;i<=b;i++){const v=arr[i];if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}}});
  [c.lines.res,c.lines.sup].forEach(l=>{if(l){[interp(l,a),interp(l,b)].forEach(v=>{if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}});}});
  if(!isFinite(lo)||!isFinite(hi)||hi<=lo){lo=0;hi=1;}
  const pad=(hi-lo)*0.06;lo-=pad;hi+=pad;
@@ -186,9 +188,18 @@ function drawChart(c){
  for(let i=a;i<=b;i+=step){const d=c.dates[i];if(!d)continue;
    ctx.fillText(d.slice(4,6)+"/"+d.slice(6,8),X(i),H-padB+3);}
  ctx.save();ctx.beginPath();ctx.rect(padL,padT,W-padL-padR,H-padT-padB);ctx.clip();
- const line=(arr,color,w)=>{ctx.strokeStyle=color;ctx.lineWidth=w;ctx.beginPath();let st=false;
+ const line=(arr,color,w,dash)=>{if(!arr)return;ctx.strokeStyle=color;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();let st=false;
    for(let i=a;i<=b;i++){const v=arr[i];if(v==null){st=false;continue;}
-     const x=X(i),y=Y(v);if(!st){ctx.moveTo(x,y);st=true;}else ctx.lineTo(x,y);}ctx.stroke();};
+     const x=X(i),y=Y(v);if(!st){ctx.moveTo(x,y);st=true;}else ctx.lineTo(x,y);}ctx.stroke();ctx.setLineDash([]);};
+ // 엔벨로프 15 밴드 (채움 + 점선 경계 + MA15 중심선)
+ if(c.envu&&c.envl){
+   ctx.fillStyle=dark?"rgba(167,139,250,.10)":"rgba(124,58,237,.07)";ctx.beginPath();let st=false;
+   for(let i=a;i<=b;i++){const v=c.envu[i];if(v==null){continue;}const x=X(i),y=Y(v);if(!st){ctx.moveTo(x,y);st=true;}else ctx.lineTo(x,y);}
+   for(let i=b;i>=a;i--){const v=c.envl[i];if(v==null)continue;ctx.lineTo(X(i),Y(v));}
+   ctx.closePath();ctx.fill();
+   const ec=dark?"rgba(167,139,250,.55)":"rgba(124,58,237,.45)";
+   line(c.envu,ec,1,[3,3]);line(c.envl,ec,1,[3,3]);line(c.ma15,ec,1,[2,4]);
+ }
  line(c.ma120,"#f59e0b",1);line(c.ma60,"#10b981",1);line(c.ma20,"#3b82f6",1);
  line(c.close,fg,1.6);
  const tl=(l,color)=>{if(!l)return;ctx.strokeStyle=color;ctx.lineWidth=1.4;ctx.setLineDash([5,3]);
