@@ -38,6 +38,10 @@ h3{font-size:14px;margin:2px 0 8px}
 .bar.rev{background:var(--rev)}.bar.op{background:var(--op)}.bar.np{background:var(--np)}
 .barval{font-size:11px;color:var(--mut)}
 .note{color:var(--mut);font-size:11px;margin-top:8px}
+.lvl{display:flex;gap:10px;padding:5px 0;border-top:1px solid var(--line);font-size:12px}
+.lvl .lt{flex:0 0 116px;font-weight:600}
+.lvl .ld{color:var(--mut);flex:1}
+.on{color:#16a34a}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;padding:16px;overflow:auto}
 .modal.on{display:block}
 .mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
@@ -63,6 +67,11 @@ h3{font-size:14px;margin:2px 0 8px}
 <h2>차트</h2>
 <p>종가 + 이동평균(20/60/120일) + <b>MTS 자동추세선</b>(빨강 저항 / 파랑 지지). 추세선은 두 고점/저점을 잇되 그 사이 봉이 선을 뚫지 않은 것만 살아남습니다.</p>
 <p><b>엔벨로프 15</b>(보라 점선 밴드) = 15일선 ±15%. <b>하단 터치는 우리 4년 백테상 하락장 강한 반등 신호(§91)</b>입니다. 휠/핀치로 확대, 드래그로 이동, 더블클릭으로 리셋.</p>
+<h2>📐 엔벨로프 가격대 가이드</h2>
+<p><b>매수 추천이 아니라 if-then 관찰 레벨</b>입니다. 백테(fdr_all 4년)로 확인한 각 레벨의 의미:</p>
+<p class="t">① <b>상단 복귀/터치</b> — 신규 상단이탈은 20봉 내 98.9%가 밴드로 복귀(평균 3.2봉)하지만 그건 <b>얕은 눌림</b>일 뿐, 5일 뒤 평균 +0.79%(오히려 더 감 = "가는 놈이 더 간다"). 추세추종이지 검증된 엣지는 아님.</p>
+<p class="t">② <b>하단 터치</b>(MA15×0.85) — §91 과매도 반등. <b>BEAR일 때만 강함</b>(PF 2.75), BULL·RANGE선 무력(0.93). 그래서 장세 따라 '유효/대기'로 표시.</p>
+<p class="t">🛑 <b>손절</b> — 하단 −3% 이탈 = §91도 실패한 떨어지는 칼날. ⚠ 1·2차 동시매수(물타기)는 백테로 검증되지 않았습니다(각 레벨 독립 통계일 뿐).</p>
 <h2>추세 상태</h2>
 <p><b>상승추세</b> = 정배열(20&gt;60&gt;120) · <b>하락추세</b> = 역배열 · 그 외 혼조. 120일선 위/아래와 최근 60일 기울기도 함께 표시. 장세(regime)는 KOSPI 20일선 기준.</p>
 <h2>펀더 (DART 전자공시)</h2>
@@ -117,6 +126,23 @@ function renderSide(s){
  h+='<div class="kv"><span class="k">120일선</span><span>'+(t.above120?'위 ↑':'아래 ↓')+'</span></div>';
  if(t.slope60_pct!=null)h+='<div class="kv"><span class="k">최근 60일 기울기</span><span class="'+(t.slope60_pct>=0?'up':'dn')+'">'+(t.slope60_pct>=0?'+':'')+t.slope60_pct+'%</span></div>';
  h+='<div class="kv"><span class="k">장세(KOSPI)</span><span>'+rg(REGIME)+'</span></div>';
+
+ // 엔벨로프 가격대 가이드
+ const L=s.levels;
+ if(L){
+   const isBear=REGIME==="BEAR";
+   const zoneTxt=L.zone==="above"?('밴드 상단 +'+L.pos_vs_upper+'% 위 (과열)'):
+                 (L.zone==="below"?'밴드 하단 아래 (떨어지는 칼날 ⚠)':'밴드 안');
+   h+='<h3 style="margin-top:14px">📐 엔벨로프 가격대 가이드</h3>';
+   h+='<p class="note" style="margin-top:0">매수 추천 아님 · if-then 관찰 레벨 · 최종 판단 본인</p>';
+   h+='<div class="kv"><span class="k">현재 위치</span><span>'+esc(zoneTxt)+'</span></div>';
+   h+='<div class="lvl"><span class="lt"><b class="up">상단</b> '+won(L.upper)+'</span>'+
+      '<span class="ld">① 복귀/터치 = 얕은 눌림(98.9%·3.2봉). <b>추세추종</b>이지 검증 엣지 약함 ⚠</span></div>';
+   h+='<div class="lvl"><span class="lt">중심(MA15) '+won(L.mid)+'</span><span class="ld">평균 회귀선</span></div>';
+   h+='<div class="lvl"><span class="lt"><b class="dn">하단</b> '+won(L.lower)+'</span>'+
+      '<span class="ld">② 하단터치 = §91 과매도 반등. '+(isBear?'<b class="on">✅ 지금 BEAR — 유효(PF2.75)</b>':'<b>현재 '+esc(REGIME)+' → 대기</b> (BEAR 전환 시 강함, BULL·RANGE선 약함)')+'</span></div>';
+   h+='<div class="lvl"><span class="lt">🛑 손절 '+won(L.stop)+'</span><span class="ld">하단 −3% 이탈 = §91도 실패(칼날). 1·2차 동시매수(물타기)는 백테 미검증 ⚠</span></div>';
+ }
 
  const f=s.fund||{};
  h+='<h3 style="margin-top:14px">💰 재무 (DART 4년)</h3>';
