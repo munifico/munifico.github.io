@@ -62,7 +62,20 @@ h3{font-size:14px;margin:2px 0 8px}
 .mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
 .mbox h2{font-size:15px;margin:13px 0 5px}.mbox h2:first-child{margin-top:0}.mbox p{margin:4px 0}.mbox .t{color:var(--mut);font-size:12px}
 .mclose{float:right;cursor:pointer;color:var(--mut);font-size:22px;line-height:1}
-</style></head><body>
+</style><style>
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+</style>
+</head><body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item active" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
 <div class="wrap">
 <div class="head">
   <h1>🟢 젠슨황 유니버스 <span class="sub" id="gen"></span></h1>
