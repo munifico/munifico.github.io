@@ -101,7 +101,8 @@ function render(s){
   '<div class="lgd"><span><i style="border-color:var(--fg)"></i>종가</span>'+
   '<span><i style="border-color:#3b82f6"></i>MA20</span><span><i style="border-color:#10b981"></i>MA60</span>'+
   '<span><i style="border-color:#f59e0b"></i>MA120</span>'+
-  '<span><i style="border-color:var(--pos)"></i>저항선</span><span><i style="border-color:var(--neg)"></i>지지선</span></div>';
+  '<span><i style="border-color:var(--pos)"></i>저항선</span><span><i style="border-color:var(--neg)"></i>지지선</span>'+
+  '<span style="margin-left:auto">🔍 휠/핀치 확대 · 드래그 이동 · 더블클릭 리셋</span></div>';
  drawChart(s.chart);
  renderSide(s);
 }
@@ -150,43 +151,76 @@ function renderSide(s){
  h+='<p class="note">※ 매수 추천 아님 · 예측가 미제공(검증 불가) · 최종 판단은 본인</p>';
  $("#sideCard").innerHTML=h;
 }
+let VS=0,VE=0,_cref=null;
+const PADL=46,PADR=8;
+function redraw(){if(window._cur)drawChart(window._cur.chart);}
 function drawChart(c){
  const cv=$("#cv");if(!cv)return;
+ const n=c.close.length;
+ if(c!==_cref){_cref=c;VS=0;VE=n-1;}
+ VS=Math.max(0,VS);VE=Math.min(n-1,VE);if(VE-VS<4)VE=Math.min(n-1,VS+4);
+ if(!cv._bound){bindChart(cv);cv._bound=true;}
  const dark=document.documentElement.getAttribute("data-theme")==="dark";
  const W=cv.clientWidth||640,H=300,dpr=window.devicePixelRatio||1;
  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
  const ctx=cv.getContext("2d");ctx.scale(dpr,dpr);
- const padL=46,padR=8,padT=10,padB=20;
- const n=c.close.length;
+ const padL=PADL,padR=PADR,padT=10,padB=20;
+ const a=Math.max(0,Math.floor(VS)),b=Math.min(n-1,Math.ceil(VE));
+ const interp=(l,i)=>l?(l.y0+(l.y1-l.y0)*(i-l.x0)/((l.x1-l.x0)||1)):null;
  let lo=Infinity,hi=-Infinity;
- const consider=[c.close,c.ma20,c.ma60,c.ma120];
- consider.forEach(arr=>arr.forEach(v=>{if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}}));
- [c.lines.res,c.lines.sup].forEach(l=>{if(l){[l.y0,l.y1].forEach(v=>{if(v<lo)lo=v;if(v>hi)hi=v;});}});
+ [c.close,c.ma20,c.ma60,c.ma120].forEach(arr=>{for(let i=a;i<=b;i++){const v=arr[i];if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}}});
+ [c.lines.res,c.lines.sup].forEach(l=>{if(l){[interp(l,a),interp(l,b)].forEach(v=>{if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}});}});
  if(!isFinite(lo)||!isFinite(hi)||hi<=lo){lo=0;hi=1;}
  const pad=(hi-lo)*0.06;lo-=pad;hi+=pad;
- const X=i=>padL+(W-padL-padR)*(n<=1?0:i/(n-1));
+ const span=(VE-VS)||1;
+ const X=i=>padL+(W-padL-padR)*((i-VS)/span);
  const Y=v=>padT+(H-padT-padB)*(1-(v-lo)/(hi-lo));
  const grid=dark?"#2d3138":"#eef0f3",mut=dark?"#9ca3af":"#6b7280",fg=dark?"#e5e7eb":"#1a1d23";
  ctx.clearRect(0,0,W,H);
- // y grid + labels
  ctx.font="10px sans-serif";ctx.fillStyle=mut;ctx.textAlign="right";ctx.textBaseline="middle";
  for(let g=0;g<=4;g++){const v=lo+(hi-lo)*g/4,y=Y(v);
    ctx.strokeStyle=grid;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
    ctx.fillText(Math.round(v).toLocaleString(),padL-4,y);}
- // x labels (몇 개만)
  ctx.textAlign="center";ctx.textBaseline="top";
- const step=Math.max(1,Math.floor(n/5));
- for(let i=0;i<n;i+=step){const d=c.dates[i];if(!d)continue;
+ const vis=Math.max(1,b-a),step=Math.max(1,Math.floor(vis/5));
+ for(let i=a;i<=b;i+=step){const d=c.dates[i];if(!d)continue;
    ctx.fillText(d.slice(4,6)+"/"+d.slice(6,8),X(i),H-padB+3);}
+ ctx.save();ctx.beginPath();ctx.rect(padL,padT,W-padL-padR,H-padT-padB);ctx.clip();
  const line=(arr,color,w)=>{ctx.strokeStyle=color;ctx.lineWidth=w;ctx.beginPath();let st=false;
-   for(let i=0;i<n;i++){const v=arr[i];if(v==null){st=false;continue;}
+   for(let i=a;i<=b;i++){const v=arr[i];if(v==null){st=false;continue;}
      const x=X(i),y=Y(v);if(!st){ctx.moveTo(x,y);st=true;}else ctx.lineTo(x,y);}ctx.stroke();};
  line(c.ma120,"#f59e0b",1);line(c.ma60,"#10b981",1);line(c.ma20,"#3b82f6",1);
  line(c.close,fg,1.6);
  const tl=(l,color)=>{if(!l)return;ctx.strokeStyle=color;ctx.lineWidth=1.4;ctx.setLineDash([5,3]);
-   ctx.beginPath();ctx.moveTo(X(l.x0),Y(l.y0));ctx.lineTo(X(l.x1),Y(l.y1));ctx.stroke();ctx.setLineDash([]);};
+   ctx.beginPath();ctx.moveTo(X(l.x0),Y(interp(l,l.x0)));ctx.lineTo(X(l.x1),Y(interp(l,l.x1)));ctx.stroke();ctx.setLineDash([]);};
  tl(c.lines.res,dark?"#f87171":"#dc2626");
  tl(c.lines.sup,dark?"#60a5fa":"#2563eb");
+ ctx.restore();
 }
-window.addEventListener("resize",()=>{if(window._cur)drawChart(window._cur.chart);});
+function _clampView(n){if(VS<0){VE-=VS;VS=0;}if(VE>n-1){VS-=(VE-(n-1));VE=n-1;}if(VS<0)VS=0;}
+function bindChart(cv){
+ const idxAt=x=>{const W=cv.clientWidth,pw=W-PADL-PADR;return VS+(VE-VS)*Math.min(1,Math.max(0,(x-PADL)/pw));};
+ cv.addEventListener("wheel",e=>{e.preventDefault();const n=window._cur.chart.close.length;
+   const cur=idxAt(e.offsetX),f=e.deltaY<0?0.82:1.22;let sp=Math.min(n-1,Math.max(4,(VE-VS)*f));
+   const r=(cur-VS)/((VE-VS)||1);VS=cur-r*sp;VE=VS+sp;_clampView(n);redraw();},{passive:false});
+ let dragX=null;
+ cv.addEventListener("mousedown",e=>{dragX=e.offsetX;cv.style.cursor="grabbing";});
+ window.addEventListener("mouseup",()=>{dragX=null;cv.style.cursor="grab";});
+ cv.addEventListener("mousemove",e=>{if(dragX==null)return;const n=window._cur.chart.close.length;
+   const pw=cv.clientWidth-PADL-PADR,di=-((e.offsetX-dragX)/pw)*(VE-VS);dragX=e.offsetX;
+   VS+=di;VE+=di;_clampView(n);redraw();});
+ cv.style.cursor="grab";
+ cv.addEventListener("dblclick",()=>{const n=window._cur.chart.close.length;VS=0;VE=n-1;redraw();});
+ let t0=null,td=null;
+ cv.addEventListener("touchstart",e=>{if(e.touches.length===1)t0=e.touches[0].clientX;
+   else if(e.touches.length===2)td=Math.abs(e.touches[0].clientX-e.touches[1].clientX);},{passive:true});
+ cv.addEventListener("touchmove",e=>{const n=window._cur.chart.close.length,rect=cv.getBoundingClientRect(),pw=rect.width-PADL-PADR;
+   if(e.touches.length===1&&t0!=null){const x=e.touches[0].clientX,di=-((x-t0)/pw)*(VE-VS);t0=x;VS+=di;VE+=di;_clampView(n);redraw();e.preventDefault();}
+   else if(e.touches.length===2){const d=Math.abs(e.touches[0].clientX-e.touches[1].clientX);
+     if(td){let sp=Math.min(n-1,Math.max(4,(VE-VS)*(td/(d||1))));
+       const mx=((e.touches[0].clientX+e.touches[1].clientX)/2-rect.left-PADL)/pw,cur=VS+(VE-VS)*Math.min(1,Math.max(0,mx)),r=(cur-VS)/((VE-VS)||1);
+       VS=cur-r*sp;VE=VS+sp;_clampView(n);redraw();}td=d;e.preventDefault();}},{passive:false});
+ cv.addEventListener("touchend",e=>{if(e.touches.length===0){t0=null;td=null;}});
+}
+window.addEventListener("resize",redraw);
 </script></body></html>
