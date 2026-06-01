@@ -27,6 +27,20 @@ h1{font-size:19px;margin:6px 0}.sub{color:var(--mut);font-size:12px}
 .ddi{padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
 .ddi:last-child{border-bottom:0}.ddi:hover{background:var(--bg)}
 .ddc{color:var(--mut);font-size:11px}.ddi.mut{color:var(--mut);cursor:default;justify-content:flex-start}
+.mktsec{margin:16px 0}
+.mktsec h2{font-size:15px;margin:6px 0 10px}
+.thgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:11px}
+.thcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.thhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:8px}
+.thname{font-weight:700;font-size:13.5px}.thname .cnt{color:var(--mut);font-weight:400;font-size:11px}
+.thavg{font-size:14px;font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.schip{cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:3px 9px;font-size:12px;display:inline-flex;gap:5px;align-items:center;background:var(--bg)}
+.schip:hover{border-color:var(--acc)}
+.schip.act{background:var(--acc);color:#fff;border-color:var(--acc)}
+.schip.act .pc{color:#fff!important}
+.schip .pc{font-size:11px;font-weight:700}
+.seldiv{color:var(--mut);font-size:12px;margin:16px 0 6px}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
 @media(max-width:820px){.layout{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
@@ -56,19 +70,9 @@ h3{font-size:14px;margin:2px 0 8px}
   <button class="btn" id="themeBtn">🌙</button>
 </div>
 <div class="mkt" id="mkt"></div>
-<div class="search">
-  <div class="ibox">
-    <input id="q" type="text" placeholder="🔍 종목명 또는 코드 검색" autocomplete="off">
-    <button id="qx" class="qx" title="지우기" type="button">×</button>
-  </div>
-  <select id="mf">
-    <option value="">전체 시장</option>
-    <option value="US">🇺🇸 미국</option>
-    <option value="KR">🇰🇷 한국</option>
-  </select>
-  <div class="dd" id="dd"></div>
-</div>
-<div class="layout">
+<div id="themes"></div>
+<div class="seldiv" id="seldiv" style="display:none">▼ 선택 종목</div>
+<div class="layout" id="detail" style="display:none">
   <div class="card" id="chartCard"></div>
   <div class="card" id="sideCard"></div>
 </div>
@@ -101,23 +105,34 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
  $("#gen").textContent="· "+d.generated+" · "+ST.length+"종목";
  $("#mkt").innerHTML='<div class="mcard">🇺🇸 S&amp;P500 '+rg(RUS)+'</div><div class="mcard">🇰🇷 KOSPI '+rg(RKR)+'</div>'+
    '<div class="mcard">🇺🇸 '+ST.filter(s=>s.market==="US").length+' · 🇰🇷 '+ST.filter(s=>s.market==="KR").length+'</div>';
- initSearch();
- if(ST.length)render(ST[0]);
+ renderThemes();
 });
-function initSearch(){
- const q=$("#q"),dd=$("#dd"),mf=$("#mf"),qx=$("#qx");
- const filt=()=>{const v=q.value.trim().toLowerCase(),mk=mf.value;
-   return ST.filter(s=>(!v||s.name.toLowerCase().includes(v)||String(s.code).toLowerCase().includes(v))&&(!mk||s.market===mk));};
- const draw=items=>{dd.innerHTML=items.slice(0,80).map(s=>
-   '<div class="ddi" data-code="'+esc(s.code)+'"><span>'+flag(s.market)+' '+esc(s.name)+'</span>'+
-   '<span class="ddc">'+esc(s.code)+(s.fpe!=null?' · Fwd P/E '+s.fpe:'')+'</span></div>').join("")||'<div class="ddi mut">결과 없음</div>';};
- const toggleX=()=>qx.classList.toggle("on",q.value.length>0);
- const open=()=>{draw(filt());dd.classList.add("on");toggleX();};
- qx.addEventListener("click",()=>{q.value="";toggleX();q.focus();open();});
- q.addEventListener("focus",open);q.addEventListener("input",open);mf.addEventListener("change",open);
- dd.addEventListener("click",e=>{const it=e.target.closest(".ddi");if(!it||!it.dataset.code)return;
-   const s=ST.find(x=>String(x.code)===it.dataset.code);if(s){render(s);q.value=s.name;toggleX();dd.classList.remove("on");}});
- document.addEventListener("click",e=>{if(!e.target.closest(".search"))dd.classList.remove("on");});
+const avg=g=>g.reduce((a,s)=>a+s.chg,0)/g.length;
+function renderThemes(){
+ let html="";
+ [["US","🇺🇸 미국"],["KR","🇰🇷 한국"]].forEach(([mk,label])=>{
+   const arr=ST.filter(s=>s.market===mk);if(!arr.length)return;
+   const groups={};arr.forEach(s=>{(groups[s.theme]=groups[s.theme]||[]).push(s);});
+   const themes=Object.keys(groups).sort((a,b)=>avg(groups[b])-avg(groups[a]));
+   html+='<div class="mktsec"><h2>'+label+' <span class="sub">'+arr.length+'종목 · 평균 '+(avg(arr)>=0?'+':'')+avg(arr).toFixed(1)+'%</span></h2><div class="thgrid">';
+   themes.forEach(th=>{
+     const g=groups[th].slice().sort((a,b)=>b.chg-a.chg),av=avg(g);
+     html+='<div class="thcard"><div class="thhead"><span class="thname">'+esc(th)+' <span class="cnt">'+g.length+'종목</span></span>'+
+       '<span class="thavg '+(av>=0?'up':'dn')+'">'+(av>=0?'+':'')+av.toFixed(1)+'%</span></div><div class="chips">';
+     g.forEach(s=>{html+='<span class="schip" data-code="'+esc(s.code)+'">'+esc(s.name)+
+       ' <span class="pc '+(s.chg>=0?'up':'dn')+'">'+(s.chg>=0?'+':'')+s.chg.toFixed(1)+'</span></span>';});
+     html+='</div></div>';
+   });
+   html+='</div></div>';
+ });
+ $("#themes").innerHTML=html;
+ document.querySelectorAll(".schip").forEach(c=>c.onclick=()=>{
+   document.querySelectorAll(".schip").forEach(x=>x.classList.remove("act"));
+   c.classList.add("act");
+   const s=ST.find(x=>String(x.code)===c.dataset.code);
+   if(s){$("#seldiv").style.display="block";$("#detail").style.display="grid";render(s);
+     $("#seldiv").scrollIntoView({behavior:"smooth",block:"start"});}
+ });
 }
 function render(s){
  window._cur=s;const up=s.chg>=0?'up':'dn';
