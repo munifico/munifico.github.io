@@ -96,21 +96,26 @@ function setTh(t){document.documentElement.setAttribute("data-theme",t);tb.textC
 setTh(localStorage.getItem("theme")||"light");
 tb.onclick=()=>{setTh(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");if(window._cur)render(window._cur);};
 window.addEventListener("click",e=>{if(e.target.classList&&e.target.classList.contains("modal"))e.target.classList.remove("on");});
-let DATA=null,ST=[],RKR="RANGE",RUS="RANGE";
+let DATA=null,ST=[],RKR="RANGE",RUS="RANGE",RTW="RANGE",RDE="RANGE";
 function rg(r){return '<span class="rg '+esc(r)+'">'+esc(r)+'</span>';}
-const flag=m=>m==="US"?"🇺🇸":"🇰🇷";
+const FLAG={US:"🇺🇸",KR:"🇰🇷",TW:"🇹🇼",DE:"🇩🇪"};
+const flag=m=>FLAG[m]||"🏳️";
+const REGOF={US:()=>RUS,KR:()=>RKR,TW:()=>RTW,DE:()=>RDE};
+const IDXLBL={US:"S&P500",KR:"KOSPI",TW:"가권",DE:"DAX"};
+const cnt=m=>ST.filter(s=>s.market===m).length;
 const num=v=>v==null?'–':Number(v).toLocaleString();
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
- DATA=d;ST=d.stocks;RKR=d.regime_kr;RUS=d.regime_us;
+ DATA=d;ST=d.stocks;RKR=d.regime_kr;RUS=d.regime_us;RTW=d.regime_tw||"RANGE";RDE=d.regime_de||"RANGE";
  $("#gen").textContent="· "+d.generated+" · "+ST.length+"종목";
  $("#mkt").innerHTML='<div class="mcard">🇺🇸 S&amp;P500 '+rg(RUS)+'</div><div class="mcard">🇰🇷 KOSPI '+rg(RKR)+'</div>'+
-   '<div class="mcard">🇺🇸 '+ST.filter(s=>s.market==="US").length+' · 🇰🇷 '+ST.filter(s=>s.market==="KR").length+'</div>';
+   '<div class="mcard">🇹🇼 가권 '+rg(RTW)+'</div><div class="mcard">🇩🇪 DAX '+rg(RDE)+'</div>'+
+   '<div class="mcard">🇺🇸'+cnt("US")+' · 🇰🇷'+cnt("KR")+' · 🇹🇼'+cnt("TW")+' · 🇩🇪'+cnt("DE")+'</div>';
  renderThemes();
 });
 const avg=g=>g.reduce((a,s)=>a+s.chg,0)/g.length;
 function renderThemes(){
  let html="";
- [["US","🇺🇸 미국"],["KR","🇰🇷 한국"]].forEach(([mk,label])=>{
+ [["US","🇺🇸 미국"],["KR","🇰🇷 한국"],["TW","🇹🇼 대만"],["DE","🇩🇪 독일"]].forEach(([mk,label])=>{
    const arr=ST.filter(s=>s.market===mk);if(!arr.length)return;
    const groups={};arr.forEach(s=>{(groups[s.theme]=groups[s.theme]||[]).push(s);});
    const themes=Object.keys(groups).sort((a,b)=>avg(groups[b])-avg(groups[a]));
@@ -149,14 +154,14 @@ function render(s){
  drawChart(s.chart);renderSide(s);
 }
 function renderSide(s){
- const t=s.trend,reg=s.market==="US"?RUS:RKR;
+ const t=s.trend,reg=(REGOF[s.market]||REGOF.US)();
  const arrow=t.label==="상승추세"?"📈":(t.label==="하락추세"?"📉":"↔️");
  let h='<h3>📈 추세 상태</h3>';
  h+='<div class="kv"><span class="k">추세</span><span><b>'+arrow+' '+esc(t.label)+'</b></span></div>';
  h+='<div class="kv"><span class="k">정배열(20&gt;60&gt;120)</span><span>'+(t.aligned?'✅ 예':'—')+'</span></div>';
  h+='<div class="kv"><span class="k">120일선</span><span>'+(t.above120?'위 ↑':'아래 ↓')+'</span></div>';
  if(t.slope60_pct!=null)h+='<div class="kv"><span class="k">최근 60일 기울기</span><span class="'+(t.slope60_pct>=0?'up':'dn')+'">'+(t.slope60_pct>=0?'+':'')+t.slope60_pct+'%</span></div>';
- h+='<div class="kv"><span class="k">장세('+(s.market==="US"?"S&P500":"KOSPI")+')</span><span>'+rg(reg)+'</span></div>';
+ h+='<div class="kv"><span class="k">장세('+(IDXLBL[s.market]||"S&P500")+')</span><span>'+rg(reg)+'</span></div>';
  h+='<h3 style="margin-top:14px">💵 밸류 <span class="note" style="margin:0">컨센서스 추정 ⚠</span></h3>';
  h+='<div class="kv"><span class="k">forward P/E</span><span>'+(s.fpe!=null?'<b>'+s.fpe+'</b> 배':'–')+'</span></div>';
  if(s.tpe!=null)h+='<div class="kv"><span class="k">trailing P/E(과거)</span><span>'+s.tpe+' 배</span></div>';
