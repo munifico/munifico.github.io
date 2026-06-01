@@ -1,0 +1,192 @@
+<!doctype html><html lang="ko" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📊 종목 추세·펀더 요약</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--mut:#6b7280;--line:#e5e7eb;--acc:#7c3aed;--pos:#dc2626;--neg:#2563eb;--rev:#7c3aed;--op:#16a34a;--np:#f59e0b}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--mut:#9ca3af;--line:#2d3138;--acc:#a78bfa;--pos:#f87171;--neg:#60a5fa;--rev:#a78bfa;--op:#22c55e;--np:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:16px}
+.head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font-size:19px;margin:6px 0}.sub{color:var(--mut);font-size:12px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 11px;font-size:13px}
+.btn.acc{color:var(--acc)}.spacer{margin-left:auto}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.tab{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 12px;font-size:13px}
+.tab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.rg{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:700}
+.rg.BULL{background:rgba(220,38,38,.15);color:var(--pos)}.rg.BEAR{background:rgba(37,99,235,.15);color:var(--neg)}.rg.RANGE{background:var(--line);color:var(--mut)}
+.layout{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.sh{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+.sh .nm{font-size:18px;font-weight:700}
+.chip{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.px{margin-left:auto;text-align:right}.px b{font-size:18px}
+.up{color:var(--pos)}.dn{color:var(--neg)}
+canvas{width:100%;height:auto;display:block}
+.lgd{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-top:6px}
+.lgd i{display:inline-block;width:14px;height:0;border-top:2px solid;margin-right:3px;vertical-align:middle}
+h3{font-size:14px;margin:2px 0 8px}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--line);font-size:13px}
+.kv:first-of-type{border-top:0}.kv .k{color:var(--mut)}
+.bars{margin:8px 0}
+.barrow{display:flex;align-items:center;gap:8px;font-size:12px;margin:3px 0}
+.barrow .yr{flex:0 0 38px;color:var(--mut)}
+.bartrack{flex:1;display:flex;align-items:center;gap:6px}
+.bar{height:14px;border-radius:3px;min-width:1px}
+.bar.rev{background:var(--rev)}.bar.op{background:var(--op)}.bar.np{background:var(--np)}
+.barval{font-size:11px;color:var(--mut)}
+.note{color:var(--mut);font-size:11px;margin-top:8px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;padding:16px;overflow:auto}
+.modal.on{display:block}
+.mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.mbox h2{font-size:15px;margin:13px 0 5px}.mbox h2:first-child{margin-top:0}.mbox p{margin:4px 0}.mbox .t{color:var(--mut);font-size:12px}
+.mclose{float:right;cursor:pointer;color:var(--mut);font-size:22px;line-height:1}
+</style></head><body>
+<div class="wrap">
+<div class="head">
+  <h1>📊 종목 추세·펀더 요약 <span class="sub" id="gen"></span></h1>
+  <button class="btn acc spacer" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button>
+  <button class="btn" id="themeBtn">🌙</button>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="layout">
+  <div class="card" id="chartCard"></div>
+  <div class="card" id="sideCard"></div>
+</div>
+</div>
+<div class="modal" id="m"><div class="mbox">
+<span class="mclose" onclick="document.getElementById('m').classList.remove('on')">×</span>
+<h2>이 화면은?</h2>
+<p>종목별 <b>추세(주가)</b>와 <b>펀더(재무제표)</b>를 한눈에 봅니다. <b>'AI 주가예측' 같은 점 예측가는 의도적으로 넣지 않습니다</b> — 가격만으로 미래를 맞히는 건 검증되지 않기 때문입니다. 대신 검증 가능한 <b>추세선·이동평균·실적</b>만 보여줍니다.</p>
+<h2>차트</h2>
+<p>종가 + 이동평균(20/60/120일) + <b>MTS 자동추세선</b>(빨강 저항 / 파랑 지지). 추세선은 두 고점/저점을 잇되 그 사이 봉이 선을 뚫지 않은 것만 살아남습니다.</p>
+<h2>추세 상태</h2>
+<p><b>상승추세</b> = 정배열(20&gt;60&gt;120) · <b>하락추세</b> = 역배열 · 그 외 혼조. 120일선 위/아래와 최근 60일 기울기도 함께 표시. 장세(regime)는 KOSPI 20일선 기준.</p>
+<h2>펀더 (DART 전자공시)</h2>
+<p>최근 4년 <b>매출/영업이익/당기순이익</b> 막대 + <b>EPS</b> 추이 + 배당수익률 + 적정주가(직전 EPS×PER 12배) + PEG(1 미만 저평가). 30일 캐시.</p>
+<p class="t">※ 매수 추천이 아니라 관찰 보조이며, 최종 판단은 본인 몫입니다.</p>
+</div></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const tb=$("#themeBtn");
+function setTh(t){document.documentElement.setAttribute("data-theme",t);tb.textContent=t==="dark"?"☀️ 라이트":"🌙 다크";localStorage.setItem("theme",t);}
+setTh(localStorage.getItem("theme")||"light");
+tb.onclick=()=>{setTh(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");if(window._cur)render(window._cur);};
+window.addEventListener("click",e=>{if(e.target.classList&&e.target.classList.contains("modal"))e.target.classList.remove("on");});
+let DATA=null,REGIME="RANGE";
+function rg(r){return '<span class="rg '+esc(r)+'">'+esc(r)+'</span>';}
+const won=v=>v==null?'–':Number(v).toLocaleString();
+const eok=v=>v==null?null:v/1e8;  // 원 → 억원
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
+ DATA=d;REGIME=d.regime;
+ $("#gen").textContent="· "+d.generated+" · 장세 ";
+ $("#gen").innerHTML+=rg(d.regime);
+ $("#tabs").innerHTML=d.stocks.map((s,i)=>'<div class="tab'+(i===0?' on':'')+'" data-i="'+i+'">'+esc(s.name)+'</div>').join("");
+ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+   t.classList.add("on");render(d.stocks[+t.dataset.i]);});
+ if(d.stocks.length)render(d.stocks[0]);
+});
+function render(s){
+ window._cur=s;
+ const up=s.chg>=0?'up':'dn';
+ $("#chartCard").innerHTML=
+  '<div class="sh"><a class="nm" style="color:var(--acc);text-decoration:none" href="https://stock.naver.com/domestic/stock/'+esc(s.code)+'/price" target="_blank" rel="noopener">'+esc(s.name)+'</a>'+
+  '<span class="chip">'+esc(s.code)+'</span>'+(s.theme?'<span class="chip">'+esc(s.theme)+'</span>':'')+
+  '<span class="px"><b class="'+up+'">'+won(s.close)+'</b> <span class="'+up+'">'+(s.chg>=0?'+':'')+s.chg+'%</span></span></div>'+
+  '<canvas id="cv"></canvas>'+
+  '<div class="lgd"><span><i style="border-color:var(--fg)"></i>종가</span>'+
+  '<span><i style="border-color:#3b82f6"></i>MA20</span><span><i style="border-color:#10b981"></i>MA60</span>'+
+  '<span><i style="border-color:#f59e0b"></i>MA120</span>'+
+  '<span><i style="border-color:var(--pos)"></i>저항선</span><span><i style="border-color:var(--neg)"></i>지지선</span></div>';
+ drawChart(s.chart);
+ renderSide(s);
+}
+function renderSide(s){
+ const t=s.trend;
+ const arrow=t.label==="상승추세"?"📈":(t.label==="하락추세"?"📉":"↔️");
+ let h='<h3>📈 추세 상태</h3>';
+ h+='<div class="kv"><span class="k">추세</span><span><b>'+arrow+' '+esc(t.label)+'</b></span></div>';
+ h+='<div class="kv"><span class="k">정배열(20&gt;60&gt;120)</span><span>'+(t.aligned?'✅ 예':'—')+'</span></div>';
+ h+='<div class="kv"><span class="k">120일선</span><span>'+(t.above120?'위 ↑':'아래 ↓')+'</span></div>';
+ if(t.slope60_pct!=null)h+='<div class="kv"><span class="k">최근 60일 기울기</span><span class="'+(t.slope60_pct>=0?'up':'dn')+'">'+(t.slope60_pct>=0?'+':'')+t.slope60_pct+'%</span></div>';
+ h+='<div class="kv"><span class="k">장세(KOSPI)</span><span>'+rg(REGIME)+'</span></div>';
+
+ const f=s.fund||{};
+ h+='<h3 style="margin-top:14px">💰 재무 (DART 4년)</h3>';
+ const rev=(f.revenue||[]).filter(r=>r.revenue!=null);
+ if(rev.length){
+   const mx=Math.max(...rev.map(r=>Math.abs(eok(r.revenue)||0)));
+   const W=v=>v==null?0:Math.max(1,Math.abs(eok(v))/mx*100);
+   const fmt=v=>v==null?'–':Math.round(eok(v)).toLocaleString()+'억';
+   h+='<div class="bars">';
+   rev.forEach(r=>{
+     h+='<div class="barrow"><span class="yr">'+r.year+'</span><div class="bartrack">'+
+        '<div class="bar rev" style="width:'+W(r.revenue)+'%"></div></div><span class="barval">'+fmt(r.revenue)+'</span></div>';
+   });
+   h+='</div>';
+   h+='<div class="lgd"><span><i style="border-color:var(--rev);border-top-width:8px"></i>매출</span>'+
+      '<span><i style="border-color:var(--op);border-top-width:8px"></i>영업이익</span>'+
+      '<span><i style="border-color:var(--np);border-top-width:8px"></i>순이익</span></div>';
+   // 영업이익/순이익 작은 행
+   h+='<div class="bars" style="margin-top:6px">';
+   rev.forEach(r=>{
+     h+='<div class="barrow"><span class="yr">'+r.year+'</span><div class="bartrack">'+
+        '<div class="bar op" style="width:'+W(r.op_profit)+'%"></div>'+
+        '<div class="bar np" style="width:'+W(r.net_profit)+'%"></div></div>'+
+        '<span class="barval">영 '+fmt(r.op_profit)+' / 순 '+fmt(r.net_profit)+'</span></div>';
+   });
+   h+='</div>';
+ }else{ h+='<p class="note">매출 데이터 없음 (DART 키 또는 공시 미존재)</p>'; }
+
+ const eps=(f.eps||[]).filter(e=>e.eps!=null);
+ if(eps.length) h+='<div class="kv"><span class="k">EPS 추이</span><span>'+eps.map(e=>e.year+': '+Number(e.eps).toLocaleString()).join(' · ')+'</span></div>';
+ if(f.div_yield!=null) h+='<div class="kv"><span class="k">배당수익률</span><span>'+f.div_yield+'%'+(f.div_yield>=3.5?' ✅':'')+'</span></div>';
+ if(f.fair_per!=null) h+='<div class="kv"><span class="k">적정주가(PER12×EPS)</span><span>'+won(f.fair_per)+(s.fair_gap!=null?' <span class="'+(s.fair_gap>=0?'up':'dn')+'">('+(s.fair_gap>=0?'+':'')+s.fair_gap+'%)</span>':'')+'</span></div>';
+ if(f.peg!=null) h+='<div class="kv"><span class="k">PEG</span><span>'+f.peg+(f.peg<1?' (저평가)':(f.peg>2?' (고평가)':''))+'</span></div>';
+ h+='<p class="note">※ 매수 추천 아님 · 예측가 미제공(검증 불가) · 최종 판단은 본인</p>';
+ $("#sideCard").innerHTML=h;
+}
+function drawChart(c){
+ const cv=$("#cv");if(!cv)return;
+ const dark=document.documentElement.getAttribute("data-theme")==="dark";
+ const W=cv.clientWidth||640,H=300,dpr=window.devicePixelRatio||1;
+ cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
+ const ctx=cv.getContext("2d");ctx.scale(dpr,dpr);
+ const padL=46,padR=8,padT=10,padB=20;
+ const n=c.close.length;
+ let lo=Infinity,hi=-Infinity;
+ const consider=[c.close,c.ma20,c.ma60,c.ma120];
+ consider.forEach(arr=>arr.forEach(v=>{if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v;}}));
+ [c.lines.res,c.lines.sup].forEach(l=>{if(l){[l.y0,l.y1].forEach(v=>{if(v<lo)lo=v;if(v>hi)hi=v;});}});
+ if(!isFinite(lo)||!isFinite(hi)||hi<=lo){lo=0;hi=1;}
+ const pad=(hi-lo)*0.06;lo-=pad;hi+=pad;
+ const X=i=>padL+(W-padL-padR)*(n<=1?0:i/(n-1));
+ const Y=v=>padT+(H-padT-padB)*(1-(v-lo)/(hi-lo));
+ const grid=dark?"#2d3138":"#eef0f3",mut=dark?"#9ca3af":"#6b7280",fg=dark?"#e5e7eb":"#1a1d23";
+ ctx.clearRect(0,0,W,H);
+ // y grid + labels
+ ctx.font="10px sans-serif";ctx.fillStyle=mut;ctx.textAlign="right";ctx.textBaseline="middle";
+ for(let g=0;g<=4;g++){const v=lo+(hi-lo)*g/4,y=Y(v);
+   ctx.strokeStyle=grid;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+   ctx.fillText(Math.round(v).toLocaleString(),padL-4,y);}
+ // x labels (몇 개만)
+ ctx.textAlign="center";ctx.textBaseline="top";
+ const step=Math.max(1,Math.floor(n/5));
+ for(let i=0;i<n;i+=step){const d=c.dates[i];if(!d)continue;
+   ctx.fillText(d.slice(4,6)+"/"+d.slice(6,8),X(i),H-padB+3);}
+ const line=(arr,color,w)=>{ctx.strokeStyle=color;ctx.lineWidth=w;ctx.beginPath();let st=false;
+   for(let i=0;i<n;i++){const v=arr[i];if(v==null){st=false;continue;}
+     const x=X(i),y=Y(v);if(!st){ctx.moveTo(x,y);st=true;}else ctx.lineTo(x,y);}ctx.stroke();};
+ line(c.ma120,"#f59e0b",1);line(c.ma60,"#10b981",1);line(c.ma20,"#3b82f6",1);
+ line(c.close,fg,1.6);
+ const tl=(l,color)=>{if(!l)return;ctx.strokeStyle=color;ctx.lineWidth=1.4;ctx.setLineDash([5,3]);
+   ctx.beginPath();ctx.moveTo(X(l.x0),Y(l.y0));ctx.lineTo(X(l.x1),Y(l.y1));ctx.stroke();ctx.setLineDash([]);};
+ tl(c.lines.res,dark?"#f87171":"#dc2626");
+ tl(c.lines.sup,dark?"#60a5fa":"#2563eb");
+}
+window.addEventListener("resize",()=>{if(window._cur)drawChart(window._cur.chart);});
+</script></body></html>
