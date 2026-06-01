@@ -11,9 +11,15 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,B
 h1{font-size:19px;margin:6px 0}.sub{color:var(--mut);font-size:12px}
 .btn{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 11px;font-size:13px}
 .btn.acc{color:var(--acc)}.spacer{margin-left:auto}
-.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
-.tab{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 12px;font-size:13px}
-.tab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.search{position:relative;margin:12px 0;max-width:440px}
+.search input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font-size:14px}
+.search input:focus{outline:none;border-color:var(--acc)}
+.dd{display:none;position:absolute;top:100%;left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--line);border-radius:9px;margin-top:4px;max-height:340px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.dd.on{display:block}
+.ddi{padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.ddi:last-child{border-bottom:0}.ddi:hover{background:var(--bg)}
+.ddc{color:var(--mut);font-size:11px}
+.ddi.mut{color:var(--mut);cursor:default;justify-content:flex-start}
 .rg{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:700}
 .rg.BULL{background:rgba(220,38,38,.15);color:var(--pos)}.rg.BEAR{background:rgba(37,99,235,.15);color:var(--neg)}.rg.RANGE{background:var(--line);color:var(--mut)}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
@@ -54,7 +60,10 @@ h3{font-size:14px;margin:2px 0 8px}
   <button class="btn acc spacer" onclick="document.getElementById('m').classList.add('on')">❓ 도움말</button>
   <button class="btn" id="themeBtn">🌙</button>
 </div>
-<div class="tabs" id="tabs"></div>
+<div class="search">
+  <input id="q" type="text" placeholder="🔍 종목명 또는 코드 검색 (예: 삼성전자 / 005930)" autocomplete="off">
+  <div class="dd" id="dd"></div>
+</div>
 <div class="layout">
   <div class="card" id="chartCard"></div>
   <div class="card" id="sideCard"></div>
@@ -86,20 +95,32 @@ function setTh(t){document.documentElement.setAttribute("data-theme",t);tb.textC
 setTh(localStorage.getItem("theme")||"light");
 tb.onclick=()=>{setTh(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");if(window._cur)render(window._cur);};
 window.addEventListener("click",e=>{if(e.target.classList&&e.target.classList.contains("modal"))e.target.classList.remove("on");});
-let DATA=null,REGIME="RANGE";
+let DATA=null,REGIME="RANGE",ST=[];
 function rg(r){return '<span class="rg '+esc(r)+'">'+esc(r)+'</span>';}
 const won=v=>v==null?'–':Number(v).toLocaleString();
 const eok=v=>v==null?null:v/1e8;  // 원 → 억원
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
- DATA=d;REGIME=d.regime;
- $("#gen").textContent="· "+d.generated+" · 장세 ";
+ DATA=d;REGIME=d.regime;ST=d.stocks;
+ $("#gen").textContent="· "+d.generated+" · "+ST.length+"종목 · 장세 ";
  $("#gen").innerHTML+=rg(d.regime);
- $("#tabs").innerHTML=d.stocks.map((s,i)=>'<div class="tab'+(i===0?' on':'')+'" data-i="'+i+'">'+esc(s.name)+'</div>').join("");
- document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
-   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
-   t.classList.add("on");render(d.stocks[+t.dataset.i]);});
- if(d.stocks.length)render(d.stocks[0]);
+ initSearch();
+ if(ST.length)render(ST[0]);
 });
+function initSearch(){
+ const q=$("#q"),dd=$("#dd");
+ const filt=()=>{const v=q.value.trim().toLowerCase();
+   return ST.filter(s=>!v||s.name.toLowerCase().includes(v)||String(s.code).toLowerCase().includes(v));};
+ const draw=items=>{dd.innerHTML=items.slice(0,60).map(s=>
+   '<div class="ddi" data-code="'+esc(s.code)+'"><span>'+esc(s.name)+'</span>'+
+   '<span class="ddc">'+esc(s.code)+(s.theme?' · '+esc(s.theme):'')+'</span></div>').join("")
+   ||'<div class="ddi mut">결과 없음</div>';};
+ const open=()=>{draw(filt());dd.classList.add("on");};
+ q.addEventListener("focus",open);
+ q.addEventListener("input",open);
+ dd.addEventListener("click",e=>{const it=e.target.closest(".ddi");if(!it||!it.dataset.code)return;
+   const s=ST.find(x=>String(x.code)===it.dataset.code);if(s){render(s);q.value=s.name;dd.classList.remove("on");}});
+ document.addEventListener("click",e=>{if(!e.target.closest(".search"))dd.classList.remove("on");});
+}
 function render(s){
  window._cur=s;
  const up=s.chg>=0?'up':'dn';
