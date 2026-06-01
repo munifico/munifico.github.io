@@ -11,8 +11,9 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,B
 h1{font-size:19px;margin:6px 0}.sub{color:var(--mut);font-size:12px}
 .btn{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 11px;font-size:13px}
 .btn.acc{color:var(--acc)}.spacer{margin-left:auto}
-.search{position:relative;margin:12px 0;max-width:440px}
-.search input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font-size:14px}
+.search{position:relative;margin:12px 0;max-width:580px;display:flex;gap:8px}
+.search input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font-size:14px}
+.search select{flex:0 0 auto;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font-size:13px;cursor:pointer}
 .search input:focus{outline:none;border-color:var(--acc)}
 .dd{display:none;position:absolute;top:100%;left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--line);border-radius:9px;margin-top:4px;max-height:340px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.14)}
 .dd.on{display:block}
@@ -20,6 +21,7 @@ h1{font-size:19px;margin:6px 0}.sub{color:var(--mut);font-size:12px}
 .ddi:last-child{border-bottom:0}.ddi:hover{background:var(--bg)}
 .ddc{color:var(--mut);font-size:11px}
 .ddi.mut{color:var(--mut);cursor:default;justify-content:flex-start}
+.zl{color:var(--neg);font-size:11px;font-weight:700}.za{color:var(--pos);font-size:11px;font-weight:700}
 .rg{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:700}
 .rg.BULL{background:rgba(220,38,38,.15);color:var(--pos)}.rg.BEAR{background:rgba(37,99,235,.15);color:var(--neg)}.rg.RANGE{background:var(--line);color:var(--mut)}
 .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
@@ -62,6 +64,12 @@ h3{font-size:14px;margin:2px 0 8px}
 </div>
 <div class="search">
   <input id="q" type="text" placeholder="🔍 종목명 또는 코드 검색 (예: 삼성전자 / 005930)" autocomplete="off">
+  <select id="zonef">
+    <option value="">전체</option>
+    <option value="lower">🔻 하단 터치·근접</option>
+    <option value="above">🔺 상단 이탈</option>
+    <option value="inside">↔ 밴드 안</option>
+  </select>
   <div class="dd" id="dd"></div>
 </div>
 <div class="layout">
@@ -106,17 +114,31 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
  initSearch();
  if(ST.length)render(ST[0]);
 });
+function zoneOf(s){const L=s.levels;if(!L)return "inside";
+ if(L.zone==="above")return "above";
+ if(L.zone==="below"||(L.pos_vs_lower!=null&&L.pos_vs_lower<=5))return "lower";
+ return "inside";}
 function initSearch(){
- const q=$("#q"),dd=$("#dd");
- const filt=()=>{const v=q.value.trim().toLowerCase();
-   return ST.filter(s=>!v||s.name.toLowerCase().includes(v)||String(s.code).toLowerCase().includes(v));};
- const draw=items=>{dd.innerHTML=items.slice(0,60).map(s=>
-   '<div class="ddi" data-code="'+esc(s.code)+'"><span>'+esc(s.name)+'</span>'+
+ const q=$("#q"),dd=$("#dd"),zf=$("#zonef");
+ const filt=()=>{const v=q.value.trim().toLowerCase(),z=zf.value;
+   return ST.filter(s=>(!v||s.name.toLowerCase().includes(v)||String(s.code).toLowerCase().includes(v))
+     &&(!z||zoneOf(s)===z));};
+ const tag=s=>{const z=zoneOf(s);if(z==="lower")return ' <span class="zl">🔻'+(s.levels.pos_vs_lower>=0?'+'+s.levels.pos_vs_lower:'터치')+'</span>';
+   if(z==="above")return ' <span class="za">🔺+'+s.levels.pos_vs_upper+'%</span>';return '';};
+ const draw=items=>{dd.innerHTML=items.slice(0,80).map(s=>
+   '<div class="ddi" data-code="'+esc(s.code)+'"><span>'+esc(s.name)+tag(s)+'</span>'+
    '<span class="ddc">'+esc(s.code)+(s.theme?' · '+esc(s.theme):'')+'</span></div>').join("")
    ||'<div class="ddi mut">결과 없음</div>';};
  const open=()=>{draw(filt());dd.classList.add("on");};
+ // 옵션별 카운트
+ const cnt={lower:0,above:0,inside:0};ST.forEach(s=>cnt[zoneOf(s)]++);
+ const setOpt=(v,t)=>{const o=zf.querySelector('option[value="'+v+'"]');if(o)o.textContent=t;};
+ setOpt("lower","🔻 하단 터치·근접 ("+cnt.lower+")");
+ setOpt("above","🔺 상단 이탈 ("+cnt.above+")");
+ setOpt("inside","↔ 밴드 안 ("+cnt.inside+")");
  q.addEventListener("focus",open);
  q.addEventListener("input",open);
+ zf.addEventListener("change",open);
  dd.addEventListener("click",e=>{const it=e.target.closest(".ddi");if(!it||!it.dataset.code)return;
    const s=ST.find(x=>String(x.code)===it.dataset.code);if(s){render(s);q.value=s.name;dd.classList.remove("on");}});
  document.addEventListener("click",e=>{if(!e.target.closest(".search"))dd.classList.remove("on");});
