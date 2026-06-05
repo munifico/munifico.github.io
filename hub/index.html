@@ -125,7 +125,7 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   </div>
 
   <!-- 미국 위험·심리 게이지 -->
-  <div class="sec-title">🇺🇸 미국 위험·심리 게이지 <span class="sub">FRED + CNN · 침체 맥락=금리차 역전+HY 확대</span></div>
+  <div class="sec-title">🚨 위험·심리 게이지 <span class="sub">🇺🇸 FRED+CNN+DXY · 🇰🇷 VKOSPI · 침체 맥락=금리차 역전+HY 확대</span></div>
   <div class="card" id="riskCard"><div class="empty">불러오는 중…</div></div>
 
   <!-- 마켓 오버뷰 -->
@@ -218,7 +218,7 @@ function renderRisk(b){
   '<div class="pain-sub">'+esc(it.note)+'</div></div>').join("");
  const ovc=b.overall==="위험"?"lvl-bad":(b.overall==="주의"?"lvl-warn":"lvl-ok");
  card.innerHTML='<div class="pain-head"><span class="pain-level '+ovc+'">'+esc(b.overall)+'</span>'+
-  '<span class="pain-sub" style="margin-left:8px">4개 게이지 종합</span></div>'+rows+
+  '<span class="pain-sub" style="margin-left:8px">'+b.items.length+'개 게이지 종합</span></div>'+rows+
   '<details class="help"><summary>📖 지표 설명</summary><div>'+esc(b.help)+'</div></details>';
 }
 
