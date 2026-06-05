@@ -87,6 +87,18 @@ details.help{margin-top:8px}
 details.help summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
 details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6px}
 .err{padding:30px;text-align:center;color:var(--muted)}
+.vk-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.vk-head .lvl{font-size:22px;font-weight:800}
+.vk-head .tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px}
+.vk-head .tag.warn{background:#fef3c7;color:#92400e}.vk-head .tag.ok{background:#dcfce7;color:#166534}
+.vk-periods{display:flex;gap:6px;margin-bottom:8px}
+.vk-periods button{font:inherit;font-size:12px;padding:4px 10px;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;cursor:pointer}
+.vk-periods button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.vk-canvas-wrap{position:relative;width:100%}
+#vkCanvas{width:100%;display:block}
+.vk-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.vk-legend i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:4px}
+.vk-tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.5;display:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:5}
 </style>
 </head>
 <body>
@@ -127,6 +139,30 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   <!-- 미국 위험·심리 게이지 -->
   <div class="sec-title">🚨 위험·심리 게이지 <span class="sub">🇺🇸 FRED+CNN+DXY · 🇰🇷 VKOSPI · 침체 맥락=금리차 역전+HY 확대</span></div>
   <div class="card" id="riskCard"><div class="empty">불러오는 중…</div></div>
+
+  <!-- VKOSPI 추이 -->
+  <div class="sec-title">🇰🇷 VKOSPI 추이 <span class="sub">공포지수 + 9일선 + 🔴정점통과 · KOSPI 오버레이</span></div>
+  <div class="card" id="vkCard">
+    <div id="vkHead" class="vk-head"><span class="empty">불러오는 중…</span></div>
+    <div class="vk-periods" id="vkPeriods" style="display:none">
+      <button data-p="125">6개월</button><button data-p="250" class="on">1년</button>
+      <button data-p="500">2년</button><button data-p="0">전체</button>
+    </div>
+    <div class="vk-canvas-wrap"><canvas id="vkCanvas" height="320"></canvas></div>
+    <div class="vk-legend">
+      <span><i style="background:#f59e0b"></i>VKOSPI</span>
+      <span><i style="background:#3b82f6"></i>9일선</span>
+      <span><i style="background:#94a3b8"></i>KOSPI(우축)</span>
+      <span><i style="background:#ef4444;border-radius:50%"></i>정점통과(공포≥30 &amp; 9일선 하회)</span>
+    </div>
+    <details class="help"><summary>📈 investing.com 실시간 차트</summary>
+      <div style="margin:6px 0"><a href="https://kr.investing.com/indices/kospi-volatility-chart" target="_blank" rel="noopener">↗ investing.com에서 열기(실시간 틱)</a></div>
+      <iframe src="https://kr.investing.com/indices/kospi-volatility-chart" loading="lazy"
+        style="width:100%;height:520px;border:1px solid var(--bd,#ddd);border-radius:8px"
+        title="VKOSPI investing.com"></iframe>
+      <div class="pain-sub">임베드가 비어 보이면 위 링크로 열어주세요(사이트 정책에 따라 차단될 수 있음). 우리 차트는 9일선·정점통과를 함께 표시합니다.</div>
+    </details>
+  </div>
 
   <!-- 마켓 오버뷰 -->
   <div class="sec-title">🌐 마켓 오버뷰 <span class="sub" id="mktAsof"></span></div>
@@ -265,11 +301,65 @@ fetch("../signal_dashboard/data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
 }).catch(()=>{document.getElementById("sigPrev").textContent="미리보기 실패"});
 
 /* 허브 자체 데이터 (미장 + 마켓) */
+/* VKOSPI 차트 */
+let _vk=null,_vkP=250;
+function renderVk(d){
+ const card=document.getElementById("vkCard");
+ if(!d||!d.dates||!d.dates.length){card.style.display="none";return}
+ _vk=d;document.getElementById("vkPeriods").style.display="flex";
+ const n=d.dates.length-1,lvl=d.vk[n],ma=d.ma9[n],peaked=d.peaks[n]===1;
+ const tag=lvl>=30&&!peaked?'<span class="tag warn">정점 미확인(칼날 주의)</span>':
+   (lvl>=30&&peaked?'<span class="tag ok">정점통과✓ 반등 관찰</span>':
+   (lvl<15?'<span class="tag warn">안일(저변동)</span>':'<span class="tag ok">중립</span>'));
+ document.getElementById("vkHead").innerHTML='<span class="lvl">VKOSPI '+lvl+'</span>'+
+   '<span class="pain-sub">9일선 '+(ma==null?"–":ma)+' · '+d.dates[n]+'</span>'+tag;
+ document.querySelectorAll("#vkPeriods button").forEach(b=>b.onclick=()=>{_vkP=+b.dataset.p;
+   document.querySelectorAll("#vkPeriods button").forEach(x=>x.classList.remove("on"));b.classList.add("on");drawVk();});
+ drawVk();
+}
+function drawVk(){
+ if(!_vk)return;const cv=document.getElementById("vkCanvas"),wrap=cv.parentNode;
+ const W=wrap.clientWidth,H=320,dpr=window.devicePixelRatio||1;
+ cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
+ const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+ const all=_vk.dates.length,cnt=_vkP>0?Math.min(_vkP,all):all,s=all-cnt;
+ const dates=_vk.dates.slice(s),vk=_vk.vk.slice(s),ma9=_vk.ma9.slice(s),ks=_vk.ks.slice(s),pk=_vk.peaks.slice(s);
+ const padL=34,padR=46,padT=10,padB=20,pw=W-padL-padR,ph=H-padT-padB;
+ const vv=vk.filter(v=>v!=null),mv=ma9.filter(v=>v!=null);
+ let vmax=Math.max(...vv,...mv)*1.05,vmin=Math.max(0,Math.min(...vv)*0.9);
+ const ksv=ks.filter(v=>v!=null);let kmax=Math.max(...ksv),kmin=Math.min(...ksv);if(!isFinite(kmax)){kmax=1;kmin=0}
+ const x=i=>padL+pw*(cnt<=1?0:i/(cnt-1)),yV=v=>padT+ph*(1-(v-vmin)/(vmax-vmin||1)),yK=v=>padT+ph*(1-(v-kmin)/(kmax-kmin||1));
+ const css=getComputedStyle(document.documentElement),grid=css.getPropertyValue("--line")||"#eee",muted=css.getPropertyValue("--muted")||"#888";
+ ctx.font="10px system-ui";ctx.fillStyle=muted;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.textAlign="right";
+ for(let g=0;g<=4;g++){const v=vmin+(vmax-vmin)*g/4,yy=yV(v);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR,yy);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(v.toFixed(0),padL-4,yy+3)}
+ if(30>vmin&&30<vmax){ctx.strokeStyle="#ef4444";ctx.setLineDash([4,3]);ctx.globalAlpha=.45;ctx.beginPath();ctx.moveTo(padL,yV(30));ctx.lineTo(W-padR,yV(30));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1}
+ ctx.fillStyle=muted;ctx.textAlign="center";
+ for(let g=0;g<=4;g++){const i=Math.round((cnt-1)*g/4);ctx.fillText((dates[i]||"").slice(2),x(i),H-5)}
+ ctx.strokeStyle="#94a3b8";ctx.lineWidth=1.2;ctx.beginPath();let st=false;
+ for(let i=0;i<cnt;i++){if(ks[i]==null){st=false;continue}const xx=x(i),yy=yK(ks[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true}ctx.stroke();
+ ctx.strokeStyle="#3b82f6";ctx.lineWidth=1.4;ctx.setLineDash([5,3]);ctx.beginPath();st=false;
+ for(let i=0;i<cnt;i++){if(ma9[i]==null){st=false;continue}const xx=x(i),yy=yV(ma9[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true}ctx.stroke();ctx.setLineDash([]);
+ ctx.strokeStyle="#f59e0b";ctx.lineWidth=1.8;ctx.beginPath();
+ for(let i=0;i<cnt;i++){const xx=x(i),yy=yV(vk[i]);i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)}ctx.stroke();
+ ctx.fillStyle="#ef4444";for(let i=0;i<cnt;i++){if(pk[i]){ctx.beginPath();ctx.arc(x(i),yV(vk[i]),2.4,0,7);ctx.fill()}}
+ ctx.fillStyle=muted;ctx.textAlign="left";
+ for(let g=0;g<=4;g++){const v=kmin+(kmax-kmin)*g/4;ctx.fillText((v/1000).toFixed(1)+"k",W-padR+3,yK(v)+3)}
+ cv._geom={cnt,x,padL,pw,dates,vk,ma9,ks};
+}
+(function(){const cv=document.getElementById("vkCanvas"),wrap=cv.parentNode;
+ const tip=document.createElement("div");tip.className="vk-tip";wrap.appendChild(tip);
+ cv.addEventListener("mousemove",e=>{const g=cv._geom;if(!g)return;const r=cv.getBoundingClientRect();
+   let i=Math.round((e.clientX-r.left-g.padL)/g.pw*(g.cnt-1));i=Math.max(0,Math.min(g.cnt-1,i));
+   tip.style.display="block";tip.innerHTML=g.dates[i]+"<br>VKOSPI <b>"+g.vk[i]+"</b> · 9일선 "+(g.ma9[i]==null?"–":g.ma9[i])+(g.ks[i]!=null?"<br>KOSPI "+g.ks[i].toLocaleString():"");
+   let tx=g.x(i)+8;if(tx>r.width-130)tx=g.x(i)-130;tip.style.left=tx+"px";tip.style.top="6px"});
+ cv.addEventListener("mouseleave",()=>tip.style.display="none");
+ window.addEventListener("resize",()=>{if(_vk)drawVk()});})();
+
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket(j.market);
+ renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket(j.market);renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 </script>
