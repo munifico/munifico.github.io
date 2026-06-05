@@ -141,7 +141,7 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   <div class="card" id="riskCard"><div class="empty">불러오는 중…</div></div>
 
   <!-- VKOSPI 추이 -->
-  <div class="sec-title">🇰🇷 VKOSPI 추이 <span class="sub">공포지수 + 9일선 + 🔴정점통과 · KOSPI 오버레이</span></div>
+  <div class="sec-title">🇰🇷 VKOSPI 추이 <span class="sub">공포지수 + 9일선 + 🔴정점통과 · KOSPI 오버레이 · 휠 줌/드래그 이동/더블클릭 초기화</span></div>
   <div class="card" id="vkCard">
     <div id="vkHead" class="vk-head"><span class="empty">불러오는 중…</span></div>
     <div class="vk-periods" id="vkPeriods" style="display:none">
@@ -301,29 +301,33 @@ fetch("../signal_dashboard/data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
 }).catch(()=>{document.getElementById("sigPrev").textContent="미리보기 실패"});
 
 /* 허브 자체 데이터 (미장 + 마켓) */
-/* VKOSPI 차트 */
-let _vk=null,_vkP=250;
+/* VKOSPI 차트 (휠 줌 · 드래그/핀치 팬) */
+let _vk=null,_vkLo=null,_vkHi=null;
+function _vkClamp(){const all=_vk.dates.length;
+ if(_vkLo==null||_vkHi==null){_vkLo=Math.max(0,all-250);_vkHi=all-1;}
+ _vkLo=Math.max(0,Math.min(_vkLo,all-2));_vkHi=Math.min(all-1,Math.max(_vkHi,_vkLo+14));}
+function setVkRange(p){const all=_vk.dates.length;if(p<=0){_vkLo=0;_vkHi=all-1;}else{_vkHi=all-1;_vkLo=Math.max(0,all-p);}drawVk();}
 function renderVk(d){
  const card=document.getElementById("vkCard");
  if(!d||!d.dates||!d.dates.length){card.style.display="none";return}
- _vk=d;document.getElementById("vkPeriods").style.display="flex";
+ _vk=d;_vkLo=null;_vkHi=null;document.getElementById("vkPeriods").style.display="flex";
  const n=d.dates.length-1,lvl=d.vk[n],ma=d.ma9[n],peaked=d.peaks[n]===1;
  const tag=lvl>=30&&!peaked?'<span class="tag warn">정점 미확인(칼날 주의)</span>':
    (lvl>=30&&peaked?'<span class="tag ok">정점통과✓ 반등 관찰</span>':
    (lvl<15?'<span class="tag warn">안일(저변동)</span>':'<span class="tag ok">중립</span>'));
  document.getElementById("vkHead").innerHTML='<span class="lvl">VKOSPI '+lvl+'</span>'+
    '<span class="pain-sub">9일선 '+(ma==null?"–":ma)+' · '+d.dates[n]+'</span>'+tag;
- document.querySelectorAll("#vkPeriods button").forEach(b=>b.onclick=()=>{_vkP=+b.dataset.p;
-   document.querySelectorAll("#vkPeriods button").forEach(x=>x.classList.remove("on"));b.classList.add("on");drawVk();});
+ document.querySelectorAll("#vkPeriods button").forEach(b=>b.onclick=()=>{
+   document.querySelectorAll("#vkPeriods button").forEach(x=>x.classList.remove("on"));b.classList.add("on");setVkRange(+b.dataset.p);});
  drawVk();
 }
 function drawVk(){
- if(!_vk)return;const cv=document.getElementById("vkCanvas"),wrap=cv.parentNode;
+ if(!_vk)return;_vkClamp();const cv=document.getElementById("vkCanvas"),wrap=cv.parentNode;
  const W=wrap.clientWidth,H=320,dpr=window.devicePixelRatio||1;
  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
- const all=_vk.dates.length,cnt=_vkP>0?Math.min(_vkP,all):all,s=all-cnt;
- const dates=_vk.dates.slice(s),vk=_vk.vk.slice(s),ma9=_vk.ma9.slice(s),ks=_vk.ks.slice(s),pk=_vk.peaks.slice(s);
+ const all=_vk.dates.length,s=_vkLo,cnt=_vkHi-_vkLo+1;
+ const dates=_vk.dates.slice(s,_vkHi+1),vk=_vk.vk.slice(s,_vkHi+1),ma9=_vk.ma9.slice(s,_vkHi+1),ks=_vk.ks.slice(s,_vkHi+1),pk=_vk.peaks.slice(s,_vkHi+1);
  const padL=34,padR=46,padT=10,padB=20,pw=W-padL-padR,ph=H-padT-padB;
  const vv=vk.filter(v=>v!=null),mv=ma9.filter(v=>v!=null);
  let vmax=Math.max(...vv,...mv)*1.05,vmin=Math.max(0,Math.min(...vv)*0.9);
@@ -348,11 +352,34 @@ function drawVk(){
 }
 (function(){const cv=document.getElementById("vkCanvas"),wrap=cv.parentNode;
  const tip=document.createElement("div");tip.className="vk-tip";wrap.appendChild(tip);
+ cv.style.cursor="grab";let drag=null,tDrag=null,tPinch=null;
+ const allN=()=>_vk?_vk.dates.length:0;
+ cv.addEventListener("mousedown",e=>{if(!_vk)return;drag={x:e.clientX,lo:_vkLo,hi:_vkHi};cv.style.cursor="grabbing";tip.style.display="none"});
+ window.addEventListener("mouseup",()=>{if(drag){drag=null;cv.style.cursor="grab"}});
  cv.addEventListener("mousemove",e=>{const g=cv._geom;if(!g)return;const r=cv.getBoundingClientRect();
+   if(drag){const span=drag.hi-drag.lo,dIdx=Math.round(-(e.clientX-drag.x)/g.pw*span);
+     let lo=Math.max(0,Math.min(drag.lo+dIdx,allN()-1-span));_vkLo=lo;_vkHi=lo+span;drawVk();return;}
    let i=Math.round((e.clientX-r.left-g.padL)/g.pw*(g.cnt-1));i=Math.max(0,Math.min(g.cnt-1,i));
    tip.style.display="block";tip.innerHTML=g.dates[i]+"<br>VKOSPI <b>"+g.vk[i]+"</b> · 9일선 "+(g.ma9[i]==null?"–":g.ma9[i])+(g.ks[i]!=null?"<br>KOSPI "+g.ks[i].toLocaleString():"");
    let tx=g.x(i)+8;if(tx>r.width-130)tx=g.x(i)-130;tip.style.left=tx+"px";tip.style.top="6px"});
  cv.addEventListener("mouseleave",()=>tip.style.display="none");
+ cv.addEventListener("wheel",e=>{e.preventDefault();const g=cv._geom;if(!g)return;const r=cv.getBoundingClientRect();
+   const frac=Math.max(0,Math.min(1,(e.clientX-r.left-g.padL)/g.pw)),all=allN();
+   const anchor=_vkLo+frac*(_vkHi-_vkLo);let span=(_vkHi-_vkLo)*(e.deltaY>0?1.18:0.84);
+   span=Math.max(14,Math.min(all-1,span));let lo=Math.round(anchor-frac*span);
+   lo=Math.max(0,Math.min(lo,all-1-Math.round(span)));_vkLo=lo;_vkHi=Math.min(all-1,lo+Math.round(span));drawVk();},{passive:false});
+ cv.addEventListener("dblclick",()=>{if(_vk)setVkRange(0)});
+ cv.addEventListener("touchstart",e=>{if(!_vk)return;
+   if(e.touches.length===1){tDrag={x:e.touches[0].clientX,lo:_vkLo,hi:_vkHi};tPinch=null}
+   else if(e.touches.length===2){tPinch={d:Math.abs(e.touches[0].clientX-e.touches[1].clientX)||1,lo:_vkLo,hi:_vkHi};tDrag=null}},{passive:true});
+ cv.addEventListener("touchmove",e=>{const g=cv._geom;if(!g)return;const all=allN();
+   if(tDrag&&e.touches.length===1){const span=tDrag.hi-tDrag.lo,dIdx=Math.round(-(e.touches[0].clientX-tDrag.x)/g.pw*span);
+     let lo=Math.max(0,Math.min(tDrag.lo+dIdx,all-1-span));_vkLo=lo;_vkHi=lo+span;drawVk();e.preventDefault()}
+   else if(tPinch&&e.touches.length===2){const nd=Math.abs(e.touches[0].clientX-e.touches[1].clientX)||1;
+     let span=(tPinch.hi-tPinch.lo)*(tPinch.d/nd);span=Math.max(14,Math.min(all-1,span));
+     const mid=(tPinch.lo+tPinch.hi)/2;let lo=Math.max(0,Math.min(Math.round(mid-span/2),all-1-Math.round(span)));
+     _vkLo=lo;_vkHi=Math.min(all-1,lo+Math.round(span));drawVk();e.preventDefault()}},{passive:false});
+ cv.addEventListener("touchend",()=>{tDrag=null;tPinch=null});
  window.addEventListener("resize",()=>{if(_vk)drawVk()});})();
 
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
