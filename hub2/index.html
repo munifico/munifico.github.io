@@ -45,7 +45,8 @@ var SERIES=[
  {key:"vk",   label:"VKOSPI",        color:"#f59e0b", axis:"L", on:true,  dash:false},
  {key:"ma9",  label:"VKOSPI 9일선",  color:"#3b82f6", axis:"L", on:false, dash:true},
  {key:"ksadr",label:"코스피 ADR",     color:"#ef4444", axis:"R", on:true,  dash:false},
- {key:"kqadr",label:"코스닥 ADR",     color:"#10b981", axis:"R", on:true,  dash:false}
+ {key:"kqadr",label:"코스닥 ADR",     color:"#10b981", axis:"R", on:true,  dash:false},
+ {key:"ks",   label:"KOSPI(추세)",    color:"#94a3b8", axis:"N", on:true,  dash:false}
 ];
 var D=null,lo=null,hi=null;
 function clamp(){var n=D.dates.length;if(lo==null||hi==null){lo=Math.max(0,n-250);hi=n-1;}
@@ -60,13 +61,14 @@ function draw(){
  var ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
  var cnt=hi-lo+1,dates=D.dates.slice(lo,hi+1);
  var slice={};SERIES.forEach(function(s){slice[s.key]=D[s.key].slice(lo,hi+1);});
- var Lon=SERIES.filter(function(s){return s.on&&s.axis==="L";}),Ron=SERIES.filter(function(s){return s.on&&s.axis==="R";});
+ var Lon=SERIES.filter(function(s){return s.on&&s.axis==="L";}),Ron=SERIES.filter(function(s){return s.on&&s.axis==="R";}),Non=SERIES.filter(function(s){return s.on&&s.axis==="N";});
  var padL=Lon.length?38:8,padR=Ron.length?44:8,padT=12,padB=22,pw=W-padL-padR,ph=H-padT-padB;
- var Lr=minmax(Lon.map(function(s){return slice[s.key];})),Rr=minmax(Ron.map(function(s){return slice[s.key];}));
- var Lmin=Math.max(0,Lr[0]*0.9),Lmax=Lr[1]*1.06,Rmin=Math.max(0,Rr[0]*0.9),Rmax=Rr[1]*1.06;
+ var Lr=minmax(Lon.map(function(s){return slice[s.key];})),Rr=minmax(Ron.map(function(s){return slice[s.key];})),Nr=minmax(Non.map(function(s){return slice[s.key];}));
+ var Lmin=Math.max(0,Lr[0]*0.9),Lmax=Lr[1]*1.06,Rmin=Math.max(0,Rr[0]*0.9),Rmax=Rr[1]*1.06,Nmin=Nr[0]*0.98,Nmax=Nr[1]*1.02;
  var x=function(i){return padL+pw*(cnt<=1?0:i/(cnt-1));};
  var yL=function(v){return padT+ph*(1-(v-Lmin)/(Lmax-Lmin||1));};
  var yR=function(v){return padT+ph*(1-(v-Rmin)/(Rmax-Rmin||1));};
+ var yN=function(v){return padT+ph*(1-(v-Nmin)/(Nmax-Nmin||1));};
  var css=getComputedStyle(document.documentElement),grid=css.getPropertyValue("--line")||"#eee",muted=css.getPropertyValue("--muted")||"#888";
  ctx.font="10px system-ui";ctx.strokeStyle=grid;ctx.lineWidth=1;
  // 가로 그리드 + 좌축 눈금
@@ -83,8 +85,8 @@ function draw(){
  ctx.fillStyle=muted;ctx.textAlign="center";
  for(var g=0;g<=4;g++){var i=Math.round((cnt-1)*g/4);ctx.fillText((dates[i]||"").slice(2),x(i),H-6);}
  // 시리즈 라인
- SERIES.forEach(function(s){if(!s.on)return;var a=slice[s.key],yf=s.axis==="L"?yL:yR;
-   ctx.strokeStyle=s.color;ctx.lineWidth=s.dash?1.4:1.8;ctx.setLineDash(s.dash?[5,3]:[]);
+ SERIES.forEach(function(s){if(!s.on)return;var a=slice[s.key],yf=s.axis==="L"?yL:(s.axis==="R"?yR:yN);
+   ctx.strokeStyle=s.color;ctx.lineWidth=s.axis==="N"?1.2:(s.dash?1.4:1.8);ctx.setLineDash(s.dash?[5,3]:[]);
    ctx.beginPath();var st=false;for(var i=0;i<cnt;i++){if(a[i]==null){st=false;continue;}var xx=x(i),yy=yf(a[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true;}ctx.stroke();ctx.setLineDash([]);});
  cv._geom={cnt:cnt,x:x,padL:padL,pw:pw,dates:dates,slice:slice};
 }
@@ -100,7 +102,7 @@ function renderLegend(){var L=document.getElementById("legend");L.innerHTML="";
  cv.addEventListener("mousemove",function(e){var g=cv._geom;if(!g)return;var r=cv.getBoundingClientRect();
    if(drag){var span=drag.hi-drag.lo,d=Math.round(-(e.clientX-drag.x)/g.pw*span);var l=Math.max(0,Math.min(drag.lo+d,allN()-1-span));lo=l;hi=l+span;draw();return;}
    var i=Math.round((e.clientX-r.left-g.padL)/g.pw*(g.cnt-1));i=Math.max(0,Math.min(g.cnt-1,i));
-   var html=g.dates[i];SERIES.forEach(function(s){if(!s.on)return;var v=g.slice[s.key][i];html+="<br><span style='color:"+s.color+"'>●</span> "+s.label+" <b>"+(v==null?"–":v)+"</b>"+(s.axis==="R"?"%":"");});
+   var html=g.dates[i];SERIES.forEach(function(s){if(!s.on)return;var v=g.slice[s.key][i];var vs=v==null?"–":(s.axis==="N"?v.toLocaleString():v);html+="<br><span style='color:"+s.color+"'>●</span> "+s.label+" <b>"+vs+"</b>"+(s.axis==="R"?"%":"");});
    tip.style.display="block";tip.innerHTML=html;var tx=g.x(i)+8;if(tx>r.width-150)tx=g.x(i)-150;tip.style.left=tx+"px";tip.style.top="6px";});
  cv.addEventListener("mouseleave",function(){tip.style.display="none";});
  cv.addEventListener("wheel",function(e){e.preventDefault();var g=cv._geom;if(!g)return;var r=cv.getBoundingClientRect();
