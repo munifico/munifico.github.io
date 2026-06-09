@@ -97,8 +97,11 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
 .vk-periods button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .vk-canvas-wrap{position:relative;width:100%}
 #vkCanvas{width:100%;display:block}
-.vk-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
-.vk-legend i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:4px}
+.vk-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.vk-legend button{font:inherit;font-size:12px;padding:4px 10px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:6px;opacity:.45}
+.vk-legend button.on{opacity:1}
+.vk-legend i{display:inline-block;width:12px;height:3px;border-radius:2px}
+.vk-legend i.dot{width:9px;height:9px;border-radius:50%}
 .vk-tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.5;display:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:5}
 </style>
 </head>
@@ -142,20 +145,15 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   <div class="card" id="riskCard"><div class="empty">불러오는 중…</div></div>
 
   <!-- VKOSPI 추이 -->
-  <div class="sec-title">🇰🇷 VKOSPI 추이 <span class="sub">공포지수 + 9일선 + 🔴정점통과 · KOSPI 오버레이 · 휠 줌/드래그 이동/더블클릭 초기화</span></div>
+  <div class="sec-title">🇰🇷 VKOSPI × 시장 폭(ADR) <span class="sub">공포지수 + 9일선 + 🔴정점통과 · 코스피 ADR(우축%) · KOSPI 추세 · 범례 클릭 토글 · 휠 줌/드래그/더블클릭 초기화</span></div>
   <div class="card" id="vkCard">
     <div id="vkHead" class="vk-head"><span class="empty">불러오는 중…</span></div>
     <div class="vk-periods" id="vkPeriods" style="display:none">
       <button data-p="125">6개월</button><button data-p="250" class="on">1년</button>
-      <button data-p="500">2년</button><button data-p="0">전체</button>
+      <button data-p="500">2년</button><button data-p="1250">5년</button><button data-p="0">전체</button>
     </div>
     <div class="vk-canvas-wrap"><canvas id="vkCanvas" height="320"></canvas></div>
-    <div class="vk-legend">
-      <span><i style="background:#f59e0b"></i>VKOSPI</span>
-      <span><i style="background:#3b82f6"></i>9일선</span>
-      <span><i style="background:#94a3b8"></i>KOSPI(우축)</span>
-      <span><i style="background:#ef4444;border-radius:50%"></i>정점통과(공포≥30 &amp; 9일선 하회)</span>
-    </div>
+    <div class="vk-legend" id="vkLegend"></div>
     <details class="help"><summary>📈 investing.com 실시간 차트</summary>
       <div style="margin:6px 0"><a href="https://kr.investing.com/indices/kospi-volatility-chart" target="_blank" rel="noopener">↗ investing.com에서 열기(실시간 틱)</a></div>
       <iframe src="https://kr.investing.com/indices/kospi-volatility-chart" loading="lazy"
@@ -314,24 +312,38 @@ fetch("../signal_dashboard/data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
 }).catch(()=>{document.getElementById("sigPrev").textContent="미리보기 실패"});
 
 /* 허브 자체 데이터 (미장 + 마켓) */
-/* VKOSPI 차트 (휠 줌 · 드래그/핀치 팬) */
+/* VKOSPI × ADR 멀티시리즈 차트 (범례 토글 · 휠 줌 · 드래그/핀치 팬) */
+var VK_SERIES=[
+ {key:"vk",   label:"VKOSPI",      color:"#f59e0b", axis:"L", on:true,  dash:false},
+ {key:"ma9",  label:"9일선",        color:"#3b82f6", axis:"L", on:false, dash:true},
+ {key:"ksadr",label:"코스피 ADR",   color:"#ef4444", axis:"R", on:true,  dash:false},
+ {key:"ks",   label:"KOSPI(추세)",  color:"#94a3b8", axis:"N", on:true,  dash:false}
+];
 let _vk=null,_vkLo=null,_vkHi=null;
 function _vkClamp(){const all=_vk.dates.length;
  if(_vkLo==null||_vkHi==null){_vkLo=Math.max(0,all-250);_vkHi=all-1;}
  _vkLo=Math.max(0,Math.min(_vkLo,all-2));_vkHi=Math.min(all-1,Math.max(_vkHi,_vkLo+14));}
 function setVkRange(p){const all=_vk.dates.length;if(p<=0){_vkLo=0;_vkHi=all-1;}else{_vkHi=all-1;_vkLo=Math.max(0,all-p);}drawVk();}
+function _vkMM(arrs){let mn=Infinity,mx=-Infinity;arrs.forEach(a=>a.forEach(v=>{if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}}));if(!isFinite(mn)){mn=0;mx=1;}if(mn===mx)mx=mn+1;return[mn,mx];}
 function renderVk(d){
  const card=document.getElementById("vkCard");
  if(!d||!d.dates||!d.dates.length){card.style.display="none";return}
+ if(!d.ksadr)d.ksadr=d.dates.map(()=>null);
  _vk=d;_vkLo=null;_vkHi=null;document.getElementById("vkPeriods").style.display="flex";
- const n=d.dates.length-1,lvl=d.vk[n],ma=d.ma9[n],peaked=d.peaks[n]===1;
+ const n=d.dates.length-1,lvl=d.vk[n],ma=d.ma9[n],peaked=d.peaks[n]===1,adr=d.ksadr[n];
  const tag=lvl>=30&&!peaked?'<span class="tag warn">정점 미확인(칼날 주의)</span>':
    (lvl>=30&&peaked?'<span class="tag ok">정점통과✓ 반등 관찰</span>':
    (lvl<15?'<span class="tag warn">안일(저변동)</span>':'<span class="tag ok">중립</span>'));
  document.getElementById("vkHead").innerHTML='<span class="lvl">VKOSPI '+lvl+'</span>'+
-   '<span class="pain-sub">9일선 '+(ma==null?"–":ma)+' · '+d.dates[n]+'</span>'+tag;
+   '<span class="pain-sub">9일선 '+(ma==null?"–":ma)+' · 코스피 ADR '+(adr==null?"–":adr+"%")+' · '+d.dates[n]+'</span>'+tag;
  document.querySelectorAll("#vkPeriods button").forEach(b=>b.onclick=()=>{
    document.querySelectorAll("#vkPeriods button").forEach(x=>x.classList.remove("on"));b.classList.add("on");setVkRange(+b.dataset.p);});
+ const L=document.getElementById("vkLegend");L.innerHTML="";
+ VK_SERIES.forEach((se,idx)=>{const b=document.createElement("button");b.className=se.on?"on":"";
+  b.innerHTML='<i style="background:'+se.color+'"></i>'+se.label+(se.axis==="R"?" %":"");
+  b.onclick=()=>{VK_SERIES[idx].on=!VK_SERIES[idx].on;b.className=VK_SERIES[idx].on?"on":"";drawVk();};L.appendChild(b);});
+ const pb=document.createElement("button");pb.className="on";pb.style.cursor="default";
+ pb.innerHTML='<i class="dot" style="background:#ef4444"></i>정점통과';pb.title="공포≥30 & 9일선 하회";L.appendChild(pb);
  drawVk();
 }
 function drawVk(){
@@ -339,29 +351,30 @@ function drawVk(){
  const W=wrap.clientWidth,H=320,dpr=window.devicePixelRatio||1;
  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
- const all=_vk.dates.length,s=_vkLo,cnt=_vkHi-_vkLo+1;
- const dates=_vk.dates.slice(s,_vkHi+1),vk=_vk.vk.slice(s,_vkHi+1),ma9=_vk.ma9.slice(s,_vkHi+1),ks=_vk.ks.slice(s,_vkHi+1),pk=_vk.peaks.slice(s,_vkHi+1);
- const padL=34,padR=46,padT=10,padB=20,pw=W-padL-padR,ph=H-padT-padB;
- const vv=vk.filter(v=>v!=null),mv=ma9.filter(v=>v!=null);
- let vmax=Math.max(...vv,...mv)*1.05,vmin=Math.max(0,Math.min(...vv)*0.9);
- const ksv=ks.filter(v=>v!=null);let kmax=Math.max(...ksv),kmin=Math.min(...ksv);if(!isFinite(kmax)){kmax=1;kmin=0}
- const x=i=>padL+pw*(cnt<=1?0:i/(cnt-1)),yV=v=>padT+ph*(1-(v-vmin)/(vmax-vmin||1)),yK=v=>padT+ph*(1-(v-kmin)/(kmax-kmin||1));
+ const s=_vkLo,cnt=_vkHi-_vkLo+1;
+ const dates=_vk.dates.slice(s,_vkHi+1),pk=_vk.peaks.slice(s,_vkHi+1),slice={};
+ VK_SERIES.forEach(se=>slice[se.key]=_vk[se.key].slice(s,_vkHi+1));
+ const Lon=VK_SERIES.filter(x=>x.on&&x.axis==="L"),Ron=VK_SERIES.filter(x=>x.on&&x.axis==="R"),Non=VK_SERIES.filter(x=>x.on&&x.axis==="N");
+ const padL=Lon.length?34:8,padR=Ron.length?44:8,padT=10,padB=20,pw=W-padL-padR,ph=H-padT-padB;
+ const Lr=_vkMM(Lon.map(x=>slice[x.key])),Rr=_vkMM(Ron.map(x=>slice[x.key])),Nr=_vkMM(Non.map(x=>slice[x.key]));
+ const Lmin=Math.max(0,Lr[0]*0.9),Lmax=Lr[1]*1.06,Rmin=Math.max(0,Rr[0]*0.9),Rmax=Rr[1]*1.06,Nmin=Nr[0]*0.98,Nmax=Nr[1]*1.02;
+ const x=i=>padL+pw*(cnt<=1?0:i/(cnt-1));
+ const yL=v=>padT+ph*(1-(v-Lmin)/(Lmax-Lmin||1)),yR=v=>padT+ph*(1-(v-Rmin)/(Rmax-Rmin||1)),yN=v=>padT+ph*(1-(v-Nmin)/(Nmax-Nmin||1));
  const css=getComputedStyle(document.documentElement),grid=css.getPropertyValue("--line")||"#eee",muted=css.getPropertyValue("--muted")||"#888";
- ctx.font="10px system-ui";ctx.fillStyle=muted;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.textAlign="right";
- for(let g=0;g<=4;g++){const v=vmin+(vmax-vmin)*g/4,yy=yV(v);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR,yy);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(v.toFixed(0),padL-4,yy+3)}
- if(30>vmin&&30<vmax){ctx.strokeStyle="#ef4444";ctx.setLineDash([4,3]);ctx.globalAlpha=.45;ctx.beginPath();ctx.moveTo(padL,yV(30));ctx.lineTo(W-padR,yV(30));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1}
+ ctx.font="10px system-ui";ctx.strokeStyle=grid;ctx.lineWidth=1;
+ for(let g=0;g<=4;g++){const yy=padT+ph*g/4;ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR,yy);ctx.stroke();ctx.globalAlpha=1;}
+ ctx.fillStyle=muted;
+ if(Lon.length){ctx.textAlign="right";for(let g=0;g<=4;g++){const v=Lmin+(Lmax-Lmin)*(1-g/4);ctx.fillText(v.toFixed(0),padL-4,padT+ph*g/4+3);}}
+ if(Ron.length){ctx.textAlign="left";for(let g=0;g<=4;g++){const v=Rmin+(Rmax-Rmin)*(1-g/4);ctx.fillText(v.toFixed(0),W-padR+4,padT+ph*g/4+3);}}
+ if(Lon.some(x=>x.key==="vk")&&30>Lmin&&30<Lmax){ctx.strokeStyle="#ef4444";ctx.setLineDash([4,3]);ctx.globalAlpha=.4;ctx.beginPath();ctx.moveTo(padL,yL(30));ctx.lineTo(W-padR,yL(30));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}
+ if(Ron.length){[[100,"#94a3b8",.5],[75,"#10b981",.35],[120,"#ef4444",.35]].forEach(b=>{if(b[0]>Rmin&&b[0]<Rmax){ctx.strokeStyle=b[1];ctx.setLineDash([3,3]);ctx.globalAlpha=b[2];ctx.beginPath();ctx.moveTo(padL,yR(b[0]));ctx.lineTo(W-padR,yR(b[0]));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}});}
  ctx.fillStyle=muted;ctx.textAlign="center";
- for(let g=0;g<=4;g++){const i=Math.round((cnt-1)*g/4);ctx.fillText((dates[i]||"").slice(2),x(i),H-5)}
- ctx.strokeStyle="#94a3b8";ctx.lineWidth=1.2;ctx.beginPath();let st=false;
- for(let i=0;i<cnt;i++){if(ks[i]==null){st=false;continue}const xx=x(i),yy=yK(ks[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true}ctx.stroke();
- ctx.strokeStyle="#3b82f6";ctx.lineWidth=1.4;ctx.setLineDash([5,3]);ctx.beginPath();st=false;
- for(let i=0;i<cnt;i++){if(ma9[i]==null){st=false;continue}const xx=x(i),yy=yV(ma9[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true}ctx.stroke();ctx.setLineDash([]);
- ctx.strokeStyle="#f59e0b";ctx.lineWidth=1.8;ctx.beginPath();
- for(let i=0;i<cnt;i++){const xx=x(i),yy=yV(vk[i]);i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)}ctx.stroke();
- ctx.fillStyle="#ef4444";for(let i=0;i<cnt;i++){if(pk[i]){ctx.beginPath();ctx.arc(x(i),yV(vk[i]),2.4,0,7);ctx.fill()}}
- ctx.fillStyle=muted;ctx.textAlign="left";
- for(let g=0;g<=4;g++){const v=kmin+(kmax-kmin)*g/4;ctx.fillText((v/1000).toFixed(1)+"k",W-padR+3,yK(v)+3)}
- cv._geom={cnt,x,padL,pw,dates,vk,ma9,ks};
+ for(let g=0;g<=4;g++){const i=Math.round((cnt-1)*g/4);ctx.fillText((dates[i]||"").slice(2),x(i),H-5);}
+ VK_SERIES.forEach(se=>{if(!se.on)return;const a=slice[se.key],yf=se.axis==="L"?yL:(se.axis==="R"?yR:yN);
+   ctx.strokeStyle=se.color;ctx.lineWidth=se.axis==="N"?1.2:(se.dash?1.4:1.8);ctx.setLineDash(se.dash?[5,3]:[]);
+   ctx.beginPath();let st=false;for(let i=0;i<cnt;i++){if(a[i]==null){st=false;continue}const xx=x(i),yy=yf(a[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true}ctx.stroke();ctx.setLineDash([]);});
+ if(Lon.some(x=>x.key==="vk")){ctx.fillStyle="#ef4444";for(let i=0;i<cnt;i++){if(pk[i]){ctx.beginPath();ctx.arc(x(i),yL(slice.vk[i]),2.4,0,7);ctx.fill();}}}
+ cv._geom={cnt,x,padL,pw,dates,slice};
 }
 (function(){const cv=document.getElementById("vkCanvas"),wrap=cv.parentNode;
  const tip=document.createElement("div");tip.className="vk-tip";wrap.appendChild(tip);
@@ -373,8 +386,9 @@ function drawVk(){
    if(drag){const span=drag.hi-drag.lo,dIdx=Math.round(-(e.clientX-drag.x)/g.pw*span);
      let lo=Math.max(0,Math.min(drag.lo+dIdx,allN()-1-span));_vkLo=lo;_vkHi=lo+span;drawVk();return;}
    let i=Math.round((e.clientX-r.left-g.padL)/g.pw*(g.cnt-1));i=Math.max(0,Math.min(g.cnt-1,i));
-   tip.style.display="block";tip.innerHTML=g.dates[i]+"<br>VKOSPI <b>"+g.vk[i]+"</b> · 9일선 "+(g.ma9[i]==null?"–":g.ma9[i])+(g.ks[i]!=null?"<br>KOSPI "+g.ks[i].toLocaleString():"");
-   let tx=g.x(i)+8;if(tx>r.width-130)tx=g.x(i)-130;tip.style.left=tx+"px";tip.style.top="6px"});
+   let html=g.dates[i];VK_SERIES.forEach(se=>{if(!se.on)return;const v=g.slice[se.key][i];const vs=v==null?"–":(se.axis==="N"?v.toLocaleString():v);html+="<br><span style='color:"+se.color+"'>●</span> "+se.label+" <b>"+vs+"</b>"+(se.axis==="R"?"%":"");});
+   tip.style.display="block";tip.innerHTML=html;
+   let tx=g.x(i)+8;if(tx>r.width-150)tx=g.x(i)-150;tip.style.left=tx+"px";tip.style.top="6px"});
  cv.addEventListener("mouseleave",()=>tip.style.display="none");
  cv.addEventListener("wheel",e=>{e.preventDefault();const g=cv._geom;if(!g)return;const r=cv.getBoundingClientRect();
    const frac=Math.max(0,Math.min(1,(e.clientX-r.left-g.padL)/g.pw)),all=allN();
