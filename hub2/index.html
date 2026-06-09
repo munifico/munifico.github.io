@@ -167,7 +167,7 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   </div>
 
   <!-- 마켓 오버뷰 -->
-  <div class="sec-title">🌐 마켓 오버뷰 <span class="sub" id="mktAsof"></span></div>
+  <div class="sec-title">🇰🇷 한국 지수 <span class="sub">FDR 종가(실시간 아님) · <span id="mktAsof"></span></span></div>
   <div class="grid2">
     <div class="card" id="marketCard"><div class="empty">불러오는 중…</div></div>
     <div class="card">
@@ -176,7 +176,9 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
       <div id="wxBox" style="margin-top:12px"></div>
     </div>
   </div>
-  <!-- TradingView 임베드 (hub2 PoC) — 우리에 없는 것만: 히트맵·핫리스트·캘린더 -->
+  <!-- TradingView 임베드 (hub2 PoC) — 글로벌 실시간 + 히트맵·핫리스트·캘린더 -->
+  <div class="sec-title">🌐 글로벌 지수·환율·원자재 <span class="sub">TradingView 실시간 · 지수/환율/원자재 탭 (코스피는 위에 FDR 종가)</span></div>
+  <div class="card"><div class="tvmount" id="tv_overview"></div></div>
   <div class="sec-title">🟩 S&amp;P 500 히트맵 <span class="sub">TradingView · 섹터 · 시총 블록 · 등락 색</span></div>
   <div class="card"><div class="tvmount" id="tv_heatmap"></div></div>
   <div class="grid2">
@@ -397,13 +399,14 @@ fetch("../hub/data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket(j.market);renderVk(j.vkchart);
+ renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
 /* hub2: TradingView 임베드 (보조 도구: 히트맵·핫리스트·캘린더) */
 (function(){var TV="https://s3.tradingview.com/external-embedding/";
 function specs(theme){var t={colorTheme:theme,isTransparent:true,locale:"kr"};return[
+ ["tv_overview",TV+"embed-widget-market-overview.js",Object.assign({},t,{dateRange:"1D",showChart:true,width:"100%",height:420,showSymbolLogo:true,showFloatingTooltip:true,tabs:[{title:"지수",symbols:[{s:"FOREXCOM:SPXUSD",d:"S&P 500"},{s:"FOREXCOM:NSXUSD",d:"나스닥 100"},{s:"FOREXCOM:DJI",d:"다우"},{s:"INDEX:NKY",d:"닛케이 225"},{s:"INDEX:DEU40",d:"DAX"}]},{title:"환율",symbols:[{s:"FX_IDC:USDKRW",d:"USD/KRW"},{s:"FX_IDC:JPYKRW",d:"JPY/KRW"},{s:"FX:EURUSD",d:"EUR/USD"},{s:"FX:USDJPY",d:"USD/JPY"}]},{title:"원자재",symbols:[{s:"COMEX:GC1!",d:"금"},{s:"COMEX:SI1!",d:"은"},{s:"NYMEX:CL1!",d:"WTI 원유"},{s:"NYMEX:NG1!",d:"천연가스"}]}]})],
  ["tv_heatmap",TV+"embed-widget-stock-heatmap.js",Object.assign({},t,{dataSource:"SPX500",blockSize:"market_cap_basic",blockColor:"change",grouping:"sector",hasTopBar:false,isDataSetEnabled:false,isZoomEnabled:true,hasSymbolTooltip:true,width:"100%",height:480})],
  ["tv_hotlists",TV+"embed-widget-hotlists.js",Object.assign({},t,{dateRange:"1D",exchange:"US",showChart:false,showSymbolLogo:true,width:"100%",height:460})],
  ["tv_events",TV+"embed-widget-events.js",Object.assign({},t,{width:"100%",height:460,importanceFilter:"0,1",countryFilter:"us,kr,jp,eu,cn"})]
