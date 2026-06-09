@@ -95,7 +95,7 @@ tr.stock:hover td{background:rgba(124,58,237,.06)}
 <script>
 var DATA=null,INV="fore";
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-function eok(v){if(v==null)return"–";var a=Math.abs(v);var s=a>=10000?(v/10000).toFixed(2)+"조":Math.round(v).toLocaleString()+"억";return(v>0?"+":(v<0?"−":""))+s}
+function eok(v){if(v==null)return"–";var a=Math.abs(v);var s=a>=10000?(a/10000).toFixed(2)+"조":Math.round(a).toLocaleString()+"억";return(v>0?"+":(v<0?"−":""))+s}
 function cls(v){return v>0?"up":(v<0?"dn":"flat")}
 
 function applyThemeUI(){document.getElementById("themeBtn").textContent=document.documentElement.getAttribute("data-theme")==="dark"?"☀️ 라이트":"🌙 다크"}
