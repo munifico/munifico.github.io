@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TradingView PoC · hub2</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--accent:#7c3aed}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2d3138;--accent:#a78bfa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+
+header{padding:14px 16px 4px;display:flex;align-items:center;gap:12px}
+h1{font-size:19px;margin:0}
+.poc{font-size:11px;font-weight:700;padding:2px 9px;border-radius:9999px;background:rgba(124,58,237,.14);color:var(--accent)}
+.toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.wrap{padding:8px 16px 48px;max-width:980px;margin:0 auto}
+.intro{color:var(--muted);font-size:12.5px;line-height:1.7;margin:6px 2px 4px}
+.sec-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:24px 2px 10px;display:flex;align-items:baseline;gap:8px}
+.sec-title .sub{font-weight:400;text-transform:none;font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;margin-bottom:12px;overflow:hidden}
+.grid2{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}}
+.tvmount{min-height:60px}
+.note{color:var(--muted);font-size:11.5px;line-height:1.6;margin:4px 4px 0}
+</style>
+</head>
+<body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<header>
+  <h1>🧪 TradingView PoC</h1>
+  <span class="poc">hub2 · 실험</span>
+  <button class="toggle" id="themeBtn">🌙 다크</button>
+</header>
+<div class="wrap">
+  <p class="intro">
+    easyconomics(Fund Easy) 벤치마크(§119)에서 본 <b>TradingView 무료 임베드 위젯</b>을 우리 테마에 얹어 평가하는 실험 페이지입니다.
+    백엔드 없이(위젯이 자체 데이터 fetch) 동작합니다. 괜찮으면 일부를 <a href="../hub/">허브</a>에 이식합니다.
+    테마 토글 시 위젯이 현재 테마로 재렌더됩니다. (심볼 구성·높이는 조정 가능)
+  </p>
+
+  <!-- 상단 스크롤 시세 -->
+  <div class="card"><div class="tvmount" id="tv_tape"></div></div>
+
+  <!-- 마켓 오버뷰 -->
+  <div class="sec-title">🌐 마켓 오버뷰 <span class="sub">지수 / 환율 / 원자재 · 미니차트</span></div>
+  <div class="card"><div class="tvmount" id="tv_overview"></div></div>
+
+  <!-- 히트맵 -->
+  <div class="sec-title">🟩 S&amp;P 500 히트맵 <span class="sub">섹터별 · 시총 블록 · 등락 색</span></div>
+  <div class="card"><div class="tvmount" id="tv_heatmap"></div></div>
+
+  <!-- 핫리스트 + 경제캘린더 -->
+  <div class="grid2">
+    <div>
+      <div class="sec-title">🔥 미국 핫리스트 <span class="sub">급등/급락/활발</span></div>
+      <div class="card"><div class="tvmount" id="tv_hotlists"></div></div>
+    </div>
+    <div>
+      <div class="sec-title">📅 경제 캘린더 <span class="sub">US/KR/JP/EU/CN</span></div>
+      <div class="card"><div class="tvmount" id="tv_events"></div></div>
+    </div>
+  </div>
+
+  <!-- 뉴스 타임라인 (카드뉴스 평가용) -->
+  <div class="sec-title">📰 뉴스 타임라인 <span class="sub">카드뉴스 룩앤필 평가용</span></div>
+  <div class="card"><div class="tvmount" id="tv_timeline"></div></div>
+  <p class="note">⚠ 위젯이 비어 보이면 광고 차단기/네트워크 정책으로 s3.tradingview.com 이 막혔을 수 있습니다. http(GitHub Pages)에서 열어주세요.</p>
+</div>
+
+<script>
+/* THEME 토글 (hub 패턴, 별도 키) */
+function curTheme(){return document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light"}
+function applyThemeUI(){document.getElementById("themeBtn").textContent=curTheme()==="dark"?"☀️ 라이트":"🌙 다크"}
+if(localStorage.getItem("hub2_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");
+applyThemeUI();
+document.getElementById("themeBtn").onclick=function(){
+  const dark=curTheme()==="dark";
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+  localStorage.setItem("hub2_theme",dark?"light":"dark");
+  applyThemeUI();renderAll();
+};
+
+/* TradingView 위젯 스펙 — colorTheme 은 렌더 시 주입 */
+const TV="https://s3.tradingview.com/external-embedding/";
+function specs(theme){
+ const t={colorTheme:theme,isTransparent:true,locale:"kr"};
+ return [
+  ["tv_tape", TV+"embed-widget-ticker-tape.js", Object.assign({},t,{displayMode:"adaptive",
+    symbols:[{proName:"FOREXCOM:SPXUSD",title:"S&P 500"},{proName:"NASDAQ:IXIC",title:"나스닥"},
+     {proName:"FOREXCOM:DJI",title:"다우"},{proName:"KRX:KOSPI",title:"코스피"},{proName:"KRX:KOSDAQ",title:"코스닥"},
+     {proName:"INDEX:NKY",title:"닛케이"},{proName:"FX_IDC:USDKRW",title:"USD/KRW"},
+     {proName:"TVC:GOLD",title:"금"},{proName:"TVC:USOIL",title:"WTI"},{proName:"BITSTAMP:BTCUSD",title:"BTC"}]})],
+  ["tv_overview", TV+"embed-widget-market-overview.js", Object.assign({},t,{dateRange:"1D",showChart:true,
+    width:"100%",height:420,showSymbolLogo:true,showFloatingTooltip:true,
+    tabs:[
+     {title:"지수",symbols:[{s:"FOREXCOM:SPXUSD",d:"S&P 500"},{s:"NASDAQ:IXIC",d:"나스닥 종합"},
+       {s:"FOREXCOM:DJI",d:"다우"},{s:"KRX:KOSPI",d:"코스피"},{s:"KRX:KOSDAQ",d:"코스닥"},{s:"INDEX:NKY",d:"닛케이 225"}]},
+     {title:"환율",symbols:[{s:"FX_IDC:USDKRW",d:"USD/KRW"},{s:"FX_IDC:JPYKRW",d:"JPY/KRW"},
+       {s:"FX:EURUSD",d:"EUR/USD"},{s:"FX:USDJPY",d:"USD/JPY"}]},
+     {title:"원자재",symbols:[{s:"TVC:GOLD",d:"금"},{s:"TVC:SILVER",d:"은"},
+       {s:"TVC:USOIL",d:"WTI 원유"},{s:"TVC:UKOIL",d:"브렌트유"}]}
+    ]})],
+  ["tv_heatmap", TV+"embed-widget-stock-heatmap.js", Object.assign({},t,{dataSource:"SPX500",
+    blockSize:"market_cap_basic",blockColor:"change",grouping:"sector",
+    hasTopBar:false,isDataSetEnabled:false,isZoomEnabled:true,hasSymbolTooltip:true,
+    width:"100%",height:480})],
+  ["tv_hotlists", TV+"embed-widget-hotlists.js", Object.assign({},t,{dateRange:"1D",exchange:"US",
+    showChart:false,showSymbolLogo:true,width:"100%",height:460})],
+  ["tv_events", TV+"embed-widget-events.js", Object.assign({},t,{width:"100%",height:460,
+    importanceFilter:"0,1",countryFilter:"us,kr,jp,eu,cn"})],
+  ["tv_timeline", TV+"embed-widget-timeline.js", Object.assign({},t,{feedMode:"market",market:"stock",
+    displayMode:"regular",width:"100%",height:480})]
+ ];
+}
+function mount(id,src,cfg){
+ const host=document.getElementById(id);if(!host)return;
+ host.innerHTML='<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
+ const s=document.createElement("script");s.type="text/javascript";s.src=src;s.async=true;
+ s.innerHTML=JSON.stringify(cfg);
+ host.firstChild.appendChild(s);
+}
+function renderAll(){specs(curTheme()).forEach(function(w){mount(w[0],w[1],w[2])})}
+renderAll();
+</script>
+</body>
+</html>
