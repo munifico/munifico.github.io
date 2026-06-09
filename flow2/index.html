@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>🐋 수급 무브 트래커 · flow2 PoC</title>
+<title>🐋 수급 무브 트래커 · flow2</title>
 <style>
 :root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--up:#dc2626;--dn:#2563eb;--accent:#7c3aed}
 [data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2d3138;--up:#f87171;--dn:#60a5fa;--accent:#a78bfa}
@@ -27,13 +27,20 @@ h1{font-size:19px;margin:0}
 .toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
 .wrap{padding:8px 16px 48px;max-width:1000px;margin:0 auto}
 .intro{color:var(--muted);font-size:12.5px;line-height:1.7;margin:6px 2px 10px}
+.search{display:flex;gap:8px;margin:4px 0 2px}
+.search input{flex:1;font:inherit;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg)}
+.sresult{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.schip{font-size:13px;padding:5px 11px;border:1px solid var(--line);border-radius:9999px;background:var(--card);cursor:pointer}
+.schip:hover{border-color:var(--accent);color:var(--accent)}
 .tabs{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
 .tabs button{font:inherit;font-size:13px;font-weight:600;padding:7px 14px;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:9999px;cursor:pointer}
 .tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tabs button.div.on{background:var(--up);border-color:var(--up)}
 .cols{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:780px){.cols{grid-template-columns:1fr 1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px;overflow:hidden}
 .col-title{font-size:13px;font-weight:700;padding:6px 6px 8px;display:flex;align-items:center;gap:6px}
+.col-title small{font-weight:400;color:var(--muted)}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th,td{padding:8px 7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
 th{font-size:11px;color:var(--muted);text-transform:uppercase;position:sticky;top:0;background:var(--card)}
@@ -54,33 +61,37 @@ tr.stock:hover td{background:rgba(124,58,237,.06)}
 .sheet .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
 .close{float:right;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;border:none;background:none}
 .bars{display:flex;flex-direction:column;gap:10px}
-.bar-row{display:grid;grid-template-columns:54px 1fr 76px;align-items:center;gap:8px;font-size:13px}
+.bar-row{display:grid;grid-template-columns:54px 1fr 82px;align-items:center;gap:8px;font-size:13px}
 .bar-lab{color:var(--muted);font-weight:600}
 .bar-track{position:relative;height:18px;background:var(--line);border-radius:5px;overflow:hidden}
-.bar-fill{position:absolute;top:0;height:100%;border-radius:5px}
+.bar-fill{position:absolute;top:0;height:100%}
 .bar-fill.pos{background:var(--up);left:50%}
 .bar-fill.neg{background:var(--dn);right:50%}
-.bar-mid{position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--muted);opacity:.4}
+.bar-mid{position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--muted);opacity:.45}
 .bar-val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
 .err{padding:30px;text-align:center;color:var(--muted)}
 </style>
 </head>
 <body>
-<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item active" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
 <header>
   <h1>🐋 수급 무브 트래커</h1>
-  <span class="poc">flow2 · PoC</span>
+  <span class="poc">flow2</span>
   <button class="toggle" id="themeBtn">🌙 다크</button>
 </header>
 <div class="wrap">
   <p class="intro" id="intro">불러오는 중…</p>
+  <div class="search">
+    <input id="q" placeholder="🔎 종목 검색 (이름 또는 코드) — 예: 삼성전자, 005930">
+  </div>
+  <div class="sresult" id="sresult"></div>
   <div class="tabs" id="invTabs"></div>
   <div class="cols">
-    <div class="card"><div class="col-title">🟢 순매수 상위 <span class="cd" id="buyName"></span></div><div id="buyTbl"><div class="empty">…</div></div></div>
-    <div class="card"><div class="col-title">🔴 순매도 상위 <span class="cd" id="sellName"></span></div><div id="sellTbl"><div class="empty">…</div></div></div>
+    <div class="card"><div class="col-title" id="ltitle">🟢 순매수 상위</div><div id="lTbl"><div class="empty">…</div></div></div>
+    <div class="card"><div class="col-title" id="rtitle">🔴 순매도 상위</div><div id="rTbl"><div class="empty">…</div></div></div>
   </div>
-  <p class="note">⚠ <b>5일 누적 순매수 거래대금(억원)</b> 기준. 종목을 누르면 <b>5주체(외국인·투신·사모·연기금·개인)가 각각 얼마 사고/팔았는지</b> 한눈에 비교됩니다.
-    <b>매수신호 아님 = 정보 추적</b>(외인·기관 따라사기는 백테 채택 미달, §106). 컨셉 검증용 PoC.</p>
+  <p class="note">⚠ <b>5일 누적 순매수 거래대금(억원)</b> + 주가Δ(5일). 종목을 누르면 <b>5주체가 각각 얼마 사고/팔았는지</b> 비교됩니다.
+    🔀 다이버전스 = 외인↔기관(투신+사모+연기금) 엇갈림. <b>매수신호 아님 = 정보 추적</b>(따라사기는 백테 채택 미달, §106).</p>
 </div>
 
 <div class="modal" id="modal">
@@ -96,6 +107,7 @@ tr.stock:hover td{background:rgba(124,58,237,.06)}
 var DATA=null,INV="fore";
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function eok(v){if(v==null)return"–";var a=Math.abs(v);var s=a>=10000?(a/10000).toFixed(2)+"조":Math.round(a).toLocaleString()+"억";return(v>0?"+":(v<0?"−":""))+s}
+function pct(v){if(v==null)return'<span class="flat">–</span>';var c=v>0?"up":(v<0?"dn":"flat");return'<span class="num '+c+'">'+(v>0?"+":(v<0?"−":""))+Math.abs(v).toFixed(2)+'%</span>'}
 function cls(v){return v>0?"up":(v<0?"dn":"flat")}
 
 function applyThemeUI(){document.getElementById("themeBtn").textContent=document.documentElement.getAttribute("data-theme")==="dark"?"☀️ 라이트":"🌙 다크"}
@@ -104,32 +116,68 @@ applyThemeUI();
 document.getElementById("themeBtn").onclick=function(){var d=document.documentElement.getAttribute("data-theme")==="dark";
  document.documentElement.setAttribute("data-theme",d?"light":"dark");localStorage.setItem("flow2_theme",d?"light":"dark");applyThemeUI();};
 
-function rowHtml(r){
+/* 투자자 행 */
+function invRow(r){
  return '<tr class="stock" data-code="'+r.code+'"><td><span class="nm">'+esc(r.name)+'</span><span class="mk">'+esc(r.market)+'</span><br><span class="cd">'+r.code+'</span></td>'+
   '<td class="num '+cls(r.net5)+'">'+eok(r.net5)+'</td>'+
   '<td class="num '+cls(r.net1)+'">'+eok(r.net1)+'</td>'+
-  '<td>'+(r.streak>=3?'<span class="badge">'+r.streak+'일</span>':'<span class="flat num">'+r.streak+'</span>')+'</td></tr>';
+  '<td>'+pct(r.p5)+'</td>'+
+  '<td>'+(r.streak>=3?'<span class="badge">'+r.streak+'일</span>':'<span class="flat num">'+(r.streak||0)+'</span>')+'</td></tr>';
 }
-function fillTable(elId,list){
- var el=document.getElementById(elId);
- if(!list||!list.length){el.innerHTML='<div class="empty">데이터 없음</div>';return}
- el.innerHTML='<table><thead><tr><th>종목</th><th>5일누적</th><th>당일</th><th>연속</th></tr></thead><tbody>'+
-  list.map(rowHtml).join("")+'</tbody></table>';
- el.querySelectorAll("tr.stock").forEach(function(tr){tr.onclick=function(){openDetail(tr.dataset.code)}});
+function invTable(list){
+ if(!list||!list.length)return'<div class="empty">데이터 없음</div>';
+ return '<table><thead><tr><th>종목</th><th>5일누적</th><th>당일</th><th>주가Δ5</th><th>연속</th></tr></thead><tbody>'+list.map(invRow).join("")+'</tbody></table>';
 }
+/* 다이버전스 행 */
+function divRow(r){
+ return '<tr class="stock" data-code="'+r.code+'"><td><span class="nm">'+esc(r.name)+'</span><span class="mk">'+esc(r.market)+'</span><br><span class="cd">'+r.code+'</span></td>'+
+  '<td class="num '+cls(r.fore5)+'">'+eok(r.fore5)+'</td>'+
+  '<td class="num '+cls(r.inst5)+'">'+eok(r.inst5)+'</td>'+
+  '<td>'+pct(r.p5)+'</td></tr>';
+}
+function divTable(list){
+ if(!list||!list.length)return'<div class="empty">해당 종목 없음</div>';
+ return '<table><thead><tr><th>종목</th><th>외국인</th><th>기관</th><th>주가Δ5</th></tr></thead><tbody>'+list.map(divRow).join("")+'</tbody></table>';
+}
+function bindRows(){document.querySelectorAll("tr.stock").forEach(function(tr){tr.onclick=function(){openDetail(tr.dataset.code)}})}
+
 function render(){
- if(!DATA)return;var d=DATA.inv[INV]||{buy:[],sell:[]};
- var lab=(DATA.investors.find(function(x){return x.key===INV})||{}).label||INV;
- document.getElementById("buyName").textContent="("+lab+")";
- document.getElementById("sellName").textContent="("+lab+")";
- fillTable("buyTbl",d.buy);fillTable("sellTbl",d.sell);
+ if(!DATA)return;
+ if(INV==="diverge"){
+  document.getElementById("ltitle").innerHTML='🟢 외인 매도 ↔ 기관 매수 <small>스마트머니 매집?</small>';
+  document.getElementById("rtitle").innerHTML='🔴 외인 매수 ↔ 기관 매도 <small>외인 단독</small>';
+  document.getElementById("lTbl").innerHTML=divTable(DATA.diverge.smartbuy);
+  document.getElementById("rTbl").innerHTML=divTable(DATA.diverge.smartsell);
+ }else{
+  var d=DATA.inv[INV]||{buy:[],sell:[]};
+  var lab=(DATA.investors.find(function(x){return x.key===INV})||{}).label||INV;
+  document.getElementById("ltitle").innerHTML='🟢 순매수 상위 <small>('+lab+')</small>';
+  document.getElementById("rtitle").innerHTML='🔴 순매도 상위 <small>('+lab+')</small>';
+  document.getElementById("lTbl").innerHTML=invTable(d.buy);
+  document.getElementById("rTbl").innerHTML=invTable(d.sell);
+ }
+ bindRows();
+}
+
+/* 종목 검색 */
+var _qt=null;
+document.getElementById("q").addEventListener("input",function(){clearTimeout(_qt);var v=this.value.trim();_qt=setTimeout(function(){doSearch(v)},120)});
+function doSearch(v){
+ var box=document.getElementById("sresult");
+ if(!v||!DATA){box.innerHTML="";return}
+ var lo=v.toLowerCase(),out=[];
+ var det=DATA.detail||{};
+ for(var code in det){if(out.length>=12)break;
+  if(code.indexOf(v)>=0||det[code].name.toLowerCase().indexOf(lo)>=0)out.push(code);}
+ box.innerHTML=out.length?out.map(function(c){return '<span class="schip" data-code="'+c+'">'+esc(det[c].name)+' <span class="cd">'+c+'</span></span>'}).join(""):'<span class="cd">검색 결과 없음</span>';
+ box.querySelectorAll(".schip").forEach(function(ch){ch.onclick=function(){openDetail(ch.dataset.code)}});
 }
 
 /* 종목 클릭 → 5주체 비교 바 */
 function openDetail(code){
  var det=(DATA.detail||{})[code];if(!det)return;
  document.getElementById("mTitle").innerHTML=esc(det.name)+' <span class="cd">'+code+'</span> <span class="mk">'+esc(det.market)+'</span>';
- document.getElementById("mSub").textContent="5주체 "+DATA.window+"일 누적 순매수(억원) · "+DATA.win_start+"~"+DATA.asof;
+ document.getElementById("mSub").innerHTML="5주체 "+DATA.window+"일 누적 순매수(억원) · "+DATA.win_start+"~"+DATA.asof+" · 주가Δ5 "+pct(det.p5)+" / 당일 "+pct(det.p1);
  var vals=DATA.investors.map(function(iv){return {label:iv.label,v:det.byinv5[iv.key]||0}});
  var mx=Math.max.apply(null,vals.map(function(x){return Math.abs(x.v)}))||1;
  document.getElementById("mBars").innerHTML=vals.map(function(x){
@@ -146,15 +194,15 @@ document.getElementById("modal").onclick=function(e){if(e.target.id==="modal")th
 
 fetch("data.json?_="+Date.now()).then(function(r){return r.json()}).then(function(j){
  DATA=j;
- document.getElementById("invTabs").innerHTML=j.investors.map(function(iv,i){
-  return '<button data-k="'+iv.key+'"'+(i===0?' class="on"':'')+'>'+iv.label+'</button>';
- }).join("");
+ var tabs=j.investors.map(function(iv,i){return '<button data-k="'+iv.key+'"'+(i===0?' class="on"':'')+'>'+iv.label+'</button>'}).join("");
+ tabs+='<button data-k="diverge" class="div">🔀 다이버전스</button>';
+ document.getElementById("invTabs").innerHTML=tabs;
  document.querySelectorAll("#invTabs button").forEach(function(b){b.onclick=function(){
   document.querySelectorAll("#invTabs button").forEach(function(x){x.classList.remove("on")});b.classList.add("on");INV=b.dataset.k;render();
  }});
- document.getElementById("intro").innerHTML='기준일 <b>'+j.asof+'</b> · 최근 <b>'+j.window+'거래일 누적 순매수</b>('+j.win_start+'~'+j.asof+'). 투자자를 고르면 순매수/순매도 상위가 양쪽에 보이고, 종목을 누르면 5주체 비교가 나옵니다.';
+ document.getElementById("intro").innerHTML='기준일 <b>'+j.asof+'</b> · 최근 <b>'+j.window+'거래일 누적 순매수</b>('+j.win_start+'~'+j.asof+'). 투자자 선택 또는 🔀 다이버전스, 종목 검색·클릭으로 5주체 비교.';
  render();
-}).catch(function(e){document.getElementById("buyTbl").innerHTML='<div class="err">data.json 로드 실패 — http 로 열어주세요. '+e+'</div>'});
+}).catch(function(e){document.getElementById("lTbl").innerHTML='<div class="err">data.json 로드 실패 — http 로 열어주세요. '+e+'</div>'});
 </script>
 </body>
 </html>
