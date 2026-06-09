@@ -31,6 +31,7 @@ h1{font-size:19px;margin:0}
 .grid2{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.tvmount{min-height:60px}
 /* 바로가기 타일 */
 .tile{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-decoration:none;color:inherit;transition:border-color .15s,transform .1s}
 .tile:hover{border-color:var(--accent)}.tile:active{transform:scale(.99)}
@@ -164,8 +165,8 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
     </details>
   </div>
 
-  <!-- 마켓 오버뷰 -->
-  <div class="sec-title">🌐 마켓 오버뷰 <span class="sub" id="mktAsof"></span></div>
+  <!-- 한국 지수 (FDR 종가) + 가상자산·날씨 -->
+  <div class="sec-title">🇰🇷 한국 지수 <span class="sub">FDR 종가(실시간 아님) · <span id="mktAsof"></span></span></div>
   <div class="grid2">
     <div class="card" id="marketCard"><div class="empty">불러오는 중…</div></div>
     <div class="card">
@@ -173,6 +174,18 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
       <div id="cryptoBox"><div class="empty">코인 불러오는 중…</div></div>
       <div id="wxBox" style="margin-top:12px"></div>
     </div>
+  </div>
+
+  <!-- 글로벌 실시간 + 보조 도구 (TradingView 임베드) -->
+  <div class="sec-title">🌐 글로벌 지수·환율·원자재 <span class="sub">TradingView 실시간 · 지수/환율/원자재 탭 (코스피는 위에 FDR 종가)</span></div>
+  <div class="card"><div class="tvmount" id="tv_overview"></div></div>
+  <div class="sec-title">🟩 S&amp;P 500 히트맵 <span class="sub">TradingView · 섹터 · 시총 블록 · 등락 색</span></div>
+  <div class="card"><div class="tvmount" id="tv_heatmap"></div></div>
+  <div class="grid2">
+    <div><div class="sec-title">🔥 미국 핫리스트 <span class="sub">TradingView · 급등/급락/활발</span></div>
+      <div class="card"><div class="tvmount" id="tv_hotlists"></div></div></div>
+    <div><div class="sec-title">📅 경제 캘린더 <span class="sub">TradingView · US/KR/JP/EU/CN</span></div>
+      <div class="card"><div class="tvmount" id="tv_events"></div></div></div>
   </div>
 </div>
 <script>
@@ -187,7 +200,7 @@ function barCls(f){return f==="alert"?"bad":(f==="near"?"warn":"")}
 function theme(){const d=document.documentElement,dark=d.getAttribute("data-theme")==="dark";
  d.setAttribute("data-theme",dark?"light":"dark");
  document.getElementById("themeBtn").textContent=dark?"🌙 다크":"☀️ 라이트";
- localStorage.setItem("hub_theme",dark?"light":"dark")}
+ localStorage.setItem("hub_theme",dark?"light":"dark");if(window.renderTV)renderTV()}
 document.getElementById("themeBtn").onclick=theme;
 if(localStorage.getItem("hub_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
 
@@ -386,9 +399,21 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket(j.market);renderVk(j.vkchart);
+ renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
+
+/* TradingView 임베드 (글로벌 실시간 + 히트맵·핫리스트·캘린더) */
+(function(){var TV="https://s3.tradingview.com/external-embedding/";
+function specs(theme){var t={colorTheme:theme,isTransparent:true,locale:"kr"};return[
+ ["tv_overview",TV+"embed-widget-market-overview.js",Object.assign({},t,{dateRange:"1D",showChart:true,width:"100%",height:420,showSymbolLogo:true,showFloatingTooltip:true,tabs:[{title:"지수",symbols:[{s:"FOREXCOM:SPXUSD",d:"S&P 500"},{s:"FOREXCOM:NSXUSD",d:"나스닥 100"},{s:"FOREXCOM:DJI",d:"다우"},{s:"AMEX:EWY",d:"한국 (EWY)"},{s:"INDEX:NKY",d:"닛케이 225"},{s:"INDEX:DEU40",d:"DAX"}]},{title:"환율",symbols:[{s:"FX_IDC:USDKRW",d:"USD/KRW"},{s:"FX_IDC:JPYKRW",d:"JPY/KRW"},{s:"FX:EURUSD",d:"EUR/USD"},{s:"FX:USDJPY",d:"USD/JPY"}]},{title:"원자재",symbols:[{s:"COMEX:GC1!",d:"금"},{s:"COMEX:SI1!",d:"은"},{s:"NYMEX:CL1!",d:"WTI 원유"},{s:"NYMEX:NG1!",d:"천연가스"}]}]})],
+ ["tv_heatmap",TV+"embed-widget-stock-heatmap.js",Object.assign({},t,{dataSource:"SPX500",blockSize:"market_cap_basic",blockColor:"change",grouping:"sector",hasTopBar:false,isDataSetEnabled:false,isZoomEnabled:true,hasSymbolTooltip:true,width:"100%",height:480})],
+ ["tv_hotlists",TV+"embed-widget-hotlists.js",Object.assign({},t,{dateRange:"1D",exchange:"US",showChart:false,showSymbolLogo:true,width:"100%",height:460})],
+ ["tv_events",TV+"embed-widget-events.js",Object.assign({},t,{width:"100%",height:460,importanceFilter:"0,1",countryFilter:"us,kr,jp,eu,cn"})]
+];}
+function mount(id,src,cfg){var host=document.getElementById(id);if(!host)return;host.innerHTML='<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';var s=document.createElement("script");s.type="text/javascript";s.src=src;s.async=true;s.innerHTML=JSON.stringify(cfg);host.firstChild.appendChild(s);}
+window.renderTV=function(){var th=document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light";specs(th).forEach(function(w){mount(w[0],w[1],w[2]);});};
+window.renderTV();})();
 </script>
 </body>
 </html>
