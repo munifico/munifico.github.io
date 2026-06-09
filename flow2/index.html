@@ -28,9 +28,15 @@ h1{font-size:19px;margin:0}
 .wrap{padding:8px 16px 48px;max-width:1000px;margin:0 auto}
 .intro{color:var(--muted);font-size:12.5px;line-height:1.7;margin:6px 2px 10px}
 .search{display:flex;gap:8px;margin:4px 0 2px}
-.search input{flex:1;font:inherit;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg)}
-.search button{font:inherit;font-size:18px;line-height:1;width:40px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--muted);cursor:pointer}
-.search button:hover{color:var(--fg);border-color:var(--accent)}
+.ibox{position:relative;flex:1}
+.search input{width:100%;font:inherit;padding:9px 38px 9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg)}
+.qx{position:absolute;right:4px;top:0;bottom:0;border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:0 10px;display:none}
+.qx.on{display:block}
+.qx:hover{color:var(--fg)}
+.help-body{font-size:13px;line-height:1.75;color:var(--fg)}
+.help-body h4{margin:14px 0 4px;font-size:14px}
+.help-body p{margin:4px 0}.help-body b{color:var(--accent)}
+.help-body .warn{color:var(--muted);font-size:12px;margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
 .sresult{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
 .schip{font-size:13px;padding:5px 11px;border:1px solid var(--line);border-radius:9999px;background:var(--card);cursor:pointer}
 .schip:hover{border-color:var(--accent);color:var(--accent)}
@@ -79,13 +85,16 @@ tr.stock:hover td{background:rgba(124,58,237,.06)}
 <header>
   <h1>🐋 수급 무브 트래커</h1>
   <span class="poc">flow2</span>
+  <button class="toggle" id="helpBtn">❓ 도움말</button>
   <button class="toggle" id="themeBtn">🌙 다크</button>
 </header>
 <div class="wrap">
   <p class="intro" id="intro">불러오는 중…</p>
   <div class="search">
-    <input id="q" placeholder="🔎 종목 검색 (이름 또는 코드) — 예: 삼성전자, 005930">
-    <button id="qclear" title="지우기">×</button>
+    <div class="ibox">
+      <input id="q" autocomplete="off" placeholder="🔎 종목 검색 (이름 또는 코드) — 예: 삼성전자, 005930">
+      <button id="qclear" class="qx" type="button" title="지우기">×</button>
+    </div>
   </div>
   <div class="sresult" id="sresult"></div>
   <div class="tabs" id="invTabs"></div>
@@ -106,12 +115,41 @@ tr.stock:hover td{background:rgba(124,58,237,.06)}
   </div>
 </div>
 
+<div class="modal" id="help">
+  <div class="sheet">
+    <button class="close" id="hClose">×</button>
+    <h3>🐋 수급 무브 트래커 도움말</h3>
+    <div class="help-body">
+      <p>외국인·기관·개인 등 <b>투자자별로 지금 어떤 종목을 사고/파는지</b>를 추적하는 모니터입니다.
+        미국 13F(분기·45일 지연)와 달리 한국 수급은 <b>일별</b>이라 더 빠르게 흐름을 봅니다.</p>
+
+      <h4>📊 지표 — 5일 누적 순매수 거래대금(억원)</h4>
+      <p>· <b>5일누적</b>: 최근 5거래일 그 투자자의 순매수 합(+ 순매수 / − 순매도)<br>
+        · <b>당일</b>: 기준일 하루치 순매수<br>
+        · <b>연속</b>: 며칠째 연속 순매수 중인지<br>
+        · <b>주가Δ5</b>: 최근 5거래일 주가 등락률</p>
+
+      <h4>🔀 다이버전스 — 외국인 ↔ 기관이 엇갈리는 종목</h4>
+      <p>여기서 <b>기관 = 투신 + 사모 + 연기금</b> 합산입니다.<br>
+        · <b>외인 매도 ↔ 기관 매수</b>: 외국인은 파는데 기관이 받아주는 종목. 흔히 "스마트머니가 받는다"고 보지만, <b>확인된 매수신호는 아닙니다.</b><br>
+        · <b>외인 매수 ↔ 기관 매도</b>: 그 반대(외국인 단독 매수).</p>
+
+      <h4>👆 종목 클릭 / 검색</h4>
+      <p>아무 종목이나 누르거나 검색하면 <b>5주체(외국인·투신·사모·연기금·개인)가 각각 얼마 사고/팔았는지</b> 막대로 한눈에 비교됩니다. (+ 주가 등락)</p>
+
+      <p class="warn">⚠ <b>매수신호가 아니라 정보 추적용</b>입니다. 외국인·기관을 따라 사는 전략 자체는 우리 백테에서 채택 기준에 못 미쳤습니다(시간 불안정, §106). "누가 어디로 가는지" 참고용으로만 보세요.
+        데이터: 한국거래소 5주체 일별 순매수(전종목) + 종목명(키움). 기준일은 직전 거래일.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 var DATA=null,INV="fore";
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function eok(v){if(v==null)return"–";var a=Math.abs(v);var s=a>=10000?(a/10000).toFixed(2)+"조":Math.round(a).toLocaleString()+"억";return(v>0?"+":(v<0?"−":""))+s}
 function pct(v){if(v==null)return'<span class="flat">–</span>';var c=v>0?"up":(v<0?"dn":"flat");return'<span class="num '+c+'">'+(v>0?"+":(v<0?"−":""))+Math.abs(v).toFixed(2)+'%</span>'}
 function cls(v){return v>0?"up":(v<0?"dn":"flat")}
+function fmtd(s){s=String(s||"");return s.length>=8?s.slice(0,4)+"."+s.slice(4,6)+"."+s.slice(6,8):s}
 
 function applyThemeUI(){document.getElementById("themeBtn").textContent=document.documentElement.getAttribute("data-theme")==="dark"?"☀️ 라이트":"🌙 다크"}
 if(localStorage.getItem("flow2_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");
@@ -164,8 +202,11 @@ function render(){
 
 /* 종목 검색 */
 var _qt=null;
-document.getElementById("q").addEventListener("input",function(){clearTimeout(_qt);var v=this.value.trim();_qt=setTimeout(function(){doSearch(v)},120)});
-document.getElementById("qclear").onclick=function(){var q=document.getElementById("q");q.value="";document.getElementById("sresult").innerHTML="";q.focus()};
+document.getElementById("q").addEventListener("input",function(){var v=this.value.trim();
+ document.getElementById("qclear").classList.toggle("on",v.length>0);
+ clearTimeout(_qt);_qt=setTimeout(function(){doSearch(v)},120)});
+document.getElementById("qclear").onclick=function(){var q=document.getElementById("q");q.value="";
+ document.getElementById("sresult").innerHTML="";this.classList.remove("on");q.focus()};
 function doSearch(v){
  var box=document.getElementById("sresult");
  if(!v||!DATA){box.innerHTML="";return}
@@ -181,7 +222,7 @@ function doSearch(v){
 function openDetail(code){
  var det=(DATA.detail||{})[code];if(!det)return;
  document.getElementById("mTitle").innerHTML=esc(det.name)+' <span class="cd">'+code+'</span> <span class="mk">'+esc(det.market)+'</span>';
- document.getElementById("mSub").innerHTML="5주체 "+DATA.window+"일 누적 순매수(억원) · "+DATA.win_start+"~"+DATA.asof+" · 주가Δ5 "+pct(det.p5)+" / 당일 "+pct(det.p1);
+ document.getElementById("mSub").innerHTML="5주체 "+DATA.window+"일 누적 순매수(억원) · "+fmtd(DATA.win_start)+"~"+fmtd(DATA.asof)+" · 주가Δ5 "+pct(det.p5)+" / 당일 "+pct(det.p1);
  var vals=DATA.investors.map(function(iv){return {label:iv.label,v:det.byinv5[iv.key]||0}});
  var mx=Math.max.apply(null,vals.map(function(x){return Math.abs(x.v)}))||1;
  document.getElementById("mBars").innerHTML=vals.map(function(x){
@@ -195,6 +236,9 @@ function openDetail(code){
 }
 document.getElementById("mClose").onclick=function(){document.getElementById("modal").classList.remove("on")};
 document.getElementById("modal").onclick=function(e){if(e.target.id==="modal")this.classList.remove("on")};
+document.getElementById("helpBtn").onclick=function(){document.getElementById("help").classList.add("on")};
+document.getElementById("hClose").onclick=function(){document.getElementById("help").classList.remove("on")};
+document.getElementById("help").onclick=function(e){if(e.target.id==="help")this.classList.remove("on")};
 
 fetch("data.json?_="+Date.now()).then(function(r){return r.json()}).then(function(j){
  DATA=j;
@@ -204,7 +248,7 @@ fetch("data.json?_="+Date.now()).then(function(r){return r.json()}).then(functio
  document.querySelectorAll("#invTabs button").forEach(function(b){b.onclick=function(){
   document.querySelectorAll("#invTabs button").forEach(function(x){x.classList.remove("on")});b.classList.add("on");INV=b.dataset.k;render();
  }});
- document.getElementById("intro").innerHTML='기준일 <b>'+j.asof+'</b> · 최근 <b>'+j.window+'거래일 누적 순매수</b>('+j.win_start+'~'+j.asof+'). 투자자 선택 또는 🔀 다이버전스, 종목 검색·클릭으로 5주체 비교.';
+ document.getElementById("intro").innerHTML='기준일 <b>'+fmtd(j.asof)+'</b> · 최근 <b>'+j.window+'거래일 누적 순매수</b>('+fmtd(j.win_start)+'~'+fmtd(j.asof)+'). 투자자 선택 또는 🔀 다이버전스, 종목 검색·클릭으로 5주체 비교.';
  render();
 }).catch(function(e){document.getElementById("lTbl").innerHTML='<div class="err">data.json 로드 실패 — http 로 열어주세요. '+e+'</div>'});
 </script>
