@@ -1,0 +1,126 @@
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>[PoC] VKOSPI × ADR</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--line:#e6e6ef;--muted:#888;--accent:#6366f1;--tx:#222}
+[data-theme=dark]{--bg:#15161c;--card:#1e2027;--line:#2d2f3a;--muted:#9aa;--accent:#818cf8;--tx:#e8e8ef}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx)}
+header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+header h1{font-size:18px;margin:0}.gen{color:var(--muted);font-size:12px}
+.toggle{margin-left:auto;font:inherit;font-size:13px;padding:5px 11px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:8px;cursor:pointer}
+.wrap{max-width:1000px;margin:0 auto;padding:18px}
+.note{background:#fef3c7;color:#92400e;border-radius:8px;padding:8px 12px;font-size:13px;margin-bottom:14px}
+[data-theme=dark] .note{background:#3a3320;color:#fde68a}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.sec-title{font-size:15px;font-weight:700;margin:0 0 4px}.sub{color:var(--muted);font-size:12px;font-weight:400}
+.periods{display:flex;gap:6px;margin:10px 0 8px}
+.periods button{font:inherit;font-size:12px;padding:4px 10px;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;cursor:pointer}
+.periods button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cv-wrap{position:relative;width:100%}#cv{width:100%;display:block;cursor:grab}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.legend button{font:inherit;font-size:12px;padding:4px 10px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:6px;opacity:.45}
+.legend button.on{opacity:1}
+.legend i{display:inline-block;width:12px;height:3px;border-radius:2px}
+.tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.6;display:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:5}
+.help{margin-top:12px;font-size:12px;color:var(--muted)}.err{color:#dc2626;font-size:13px}
+</style></head><body>
+<header><h1>🧪 [PoC] VKOSPI × ADR</h1><span class="gen" id="gen"></span>
+<button class="toggle" id="themeBtn">🌙</button></header>
+<div class="wrap">
+ <div class="note">실험 페이지(hub2). 확인 후 허브 본체 차트에 이식 예정. · <a href="../hub/">← 허브로</a></div>
+ <div class="err" id="err" style="display:none"></div>
+ <div class="card">
+  <div class="sec-title">🇰🇷 VKOSPI × 시장 폭(ADR) <span class="sub">VKOSPI(좌축) + 코스피/코스닥 ADR 20일(우축%) · 범례 클릭 토글 · 휠 줌/드래그 이동/더블클릭 초기화</span></div>
+  <div class="periods" id="periods">
+   <button data-p="125">6개월</button><button data-p="250" class="on">1년</button>
+   <button data-p="500">2년</button><button data-p="1250">5년</button><button data-p="0">전체</button>
+  </div>
+  <div class="cv-wrap"><canvas id="cv" height="340"></canvas></div>
+  <div class="legend" id="legend"></div>
+  <div class="help">ADR(등락비율)=상승종목수/하락종목수 20일 이동평균. 통상 <b>75↓ 침체·바닥권</b>, <b>120↑ 과열</b>, 100=균형. VKOSPI 공포 정점 + ADR 바닥이 겹치면 반등 관찰 자리.</div>
+ </div>
+</div>
+<script>
+var SERIES=[
+ {key:"vk",   label:"VKOSPI",        color:"#f59e0b", axis:"L", on:true,  dash:false},
+ {key:"ma9",  label:"VKOSPI 9일선",  color:"#3b82f6", axis:"L", on:false, dash:true},
+ {key:"ksadr",label:"코스피 ADR",     color:"#ef4444", axis:"R", on:true,  dash:false},
+ {key:"kqadr",label:"코스닥 ADR",     color:"#10b981", axis:"R", on:true,  dash:false}
+];
+var D=null,lo=null,hi=null;
+function clamp(){var n=D.dates.length;if(lo==null||hi==null){lo=Math.max(0,n-250);hi=n-1;}
+ lo=Math.max(0,Math.min(lo,n-2));hi=Math.min(n-1,Math.max(hi,lo+14));}
+function setRange(p){var n=D.dates.length;if(p<=0){lo=0;hi=n-1;}else{hi=n-1;lo=Math.max(0,n-p);}draw();}
+function minmax(arrs){var mn=Infinity,mx=-Infinity;arrs.forEach(function(a){a.forEach(function(v){if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}});});
+ if(!isFinite(mn)){mn=0;mx=1;}if(mn===mx){mx=mn+1;}return [mn,mx];}
+function draw(){
+ if(!D)return;clamp();
+ var cv=document.getElementById("cv"),wrap=cv.parentNode,W=wrap.clientWidth,H=340,dpr=window.devicePixelRatio||1;
+ cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
+ var ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+ var cnt=hi-lo+1,dates=D.dates.slice(lo,hi+1);
+ var slice={};SERIES.forEach(function(s){slice[s.key]=D[s.key].slice(lo,hi+1);});
+ var Lon=SERIES.filter(function(s){return s.on&&s.axis==="L";}),Ron=SERIES.filter(function(s){return s.on&&s.axis==="R";});
+ var padL=Lon.length?38:8,padR=Ron.length?44:8,padT=12,padB=22,pw=W-padL-padR,ph=H-padT-padB;
+ var Lr=minmax(Lon.map(function(s){return slice[s.key];})),Rr=minmax(Ron.map(function(s){return slice[s.key];}));
+ var Lmin=Math.max(0,Lr[0]*0.9),Lmax=Lr[1]*1.06,Rmin=Math.max(0,Rr[0]*0.9),Rmax=Rr[1]*1.06;
+ var x=function(i){return padL+pw*(cnt<=1?0:i/(cnt-1));};
+ var yL=function(v){return padT+ph*(1-(v-Lmin)/(Lmax-Lmin||1));};
+ var yR=function(v){return padT+ph*(1-(v-Rmin)/(Rmax-Rmin||1));};
+ var css=getComputedStyle(document.documentElement),grid=css.getPropertyValue("--line")||"#eee",muted=css.getPropertyValue("--muted")||"#888";
+ ctx.font="10px system-ui";ctx.strokeStyle=grid;ctx.lineWidth=1;
+ // 가로 그리드 + 좌축 눈금
+ for(var g=0;g<=4;g++){var yy=padT+ph*g/4;ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR,yy);ctx.stroke();ctx.globalAlpha=1;}
+ ctx.fillStyle=muted;
+ if(Lon.length){ctx.textAlign="right";for(var g=0;g<=4;g++){var v=Lmin+(Lmax-Lmin)*(1-g/4);ctx.fillText(v.toFixed(0),padL-4,padT+ph*g/4+3);}}
+ if(Ron.length){ctx.textAlign="left";for(var g=0;g<=4;g++){var v=Rmin+(Rmax-Rmin)*(1-g/4);ctx.fillText(v.toFixed(0),W-padR+4,padT+ph*g/4+3);}}
+ // VKOSPI 30 기준선(좌축 켜졌을 때)
+ if(Lon.some(function(s){return s.key==="vk";})&&30>Lmin&&30<Lmax){ctx.strokeStyle="#ef4444";ctx.setLineDash([4,3]);ctx.globalAlpha=.4;ctx.beginPath();ctx.moveTo(padL,yL(30));ctx.lineTo(W-padR,yL(30));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}
+ // ADR 기준 밴드(우축 켜졌을 때): 100 균형, 75 침체, 120 과열
+ if(Ron.length){[[100,"#94a3b8",.5],[75,"#10b981",.35],[120,"#ef4444",.35]].forEach(function(b){
+   if(b[0]>Rmin&&b[0]<Rmax){ctx.strokeStyle=b[1];ctx.setLineDash([3,3]);ctx.globalAlpha=b[2];ctx.beginPath();ctx.moveTo(padL,yR(b[0]));ctx.lineTo(W-padR,yR(b[0]));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}});}
+ // x축 날짜
+ ctx.fillStyle=muted;ctx.textAlign="center";
+ for(var g=0;g<=4;g++){var i=Math.round((cnt-1)*g/4);ctx.fillText((dates[i]||"").slice(2),x(i),H-6);}
+ // 시리즈 라인
+ SERIES.forEach(function(s){if(!s.on)return;var a=slice[s.key],yf=s.axis==="L"?yL:yR;
+   ctx.strokeStyle=s.color;ctx.lineWidth=s.dash?1.4:1.8;ctx.setLineDash(s.dash?[5,3]:[]);
+   ctx.beginPath();var st=false;for(var i=0;i<cnt;i++){if(a[i]==null){st=false;continue;}var xx=x(i),yy=yf(a[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true;}ctx.stroke();ctx.setLineDash([]);});
+ cv._geom={cnt:cnt,x:x,padL:padL,pw:pw,dates:dates,slice:slice};
+}
+function renderLegend(){var L=document.getElementById("legend");L.innerHTML="";
+ SERIES.forEach(function(s,idx){var b=document.createElement("button");b.className=s.on?"on":"";
+  b.innerHTML='<i style="background:'+s.color+'"></i>'+s.label+(s.axis==="R"?" %":"");
+  b.onclick=function(){SERIES[idx].on=!SERIES[idx].on;b.className=SERIES[idx].on?"on":"";draw();};L.appendChild(b);});}
+(function(){var cv=document.getElementById("cv"),wrap=cv.parentNode;
+ var tip=document.createElement("div");tip.className="tip";wrap.appendChild(tip);
+ var drag=null,tDrag=null,tPinch=null,allN=function(){return D?D.dates.length:0;};
+ cv.addEventListener("mousedown",function(e){if(!D)return;drag={x:e.clientX,lo:lo,hi:hi};cv.style.cursor="grabbing";tip.style.display="none";});
+ window.addEventListener("mouseup",function(){if(drag){drag=null;cv.style.cursor="grab";}});
+ cv.addEventListener("mousemove",function(e){var g=cv._geom;if(!g)return;var r=cv.getBoundingClientRect();
+   if(drag){var span=drag.hi-drag.lo,d=Math.round(-(e.clientX-drag.x)/g.pw*span);var l=Math.max(0,Math.min(drag.lo+d,allN()-1-span));lo=l;hi=l+span;draw();return;}
+   var i=Math.round((e.clientX-r.left-g.padL)/g.pw*(g.cnt-1));i=Math.max(0,Math.min(g.cnt-1,i));
+   var html=g.dates[i];SERIES.forEach(function(s){if(!s.on)return;var v=g.slice[s.key][i];html+="<br><span style='color:"+s.color+"'>●</span> "+s.label+" <b>"+(v==null?"–":v)+"</b>"+(s.axis==="R"?"%":"");});
+   tip.style.display="block";tip.innerHTML=html;var tx=g.x(i)+8;if(tx>r.width-150)tx=g.x(i)-150;tip.style.left=tx+"px";tip.style.top="6px";});
+ cv.addEventListener("mouseleave",function(){tip.style.display="none";});
+ cv.addEventListener("wheel",function(e){e.preventDefault();var g=cv._geom;if(!g)return;var r=cv.getBoundingClientRect();
+   var frac=Math.max(0,Math.min(1,(e.clientX-r.left-g.padL)/g.pw)),all=allN();
+   var anchor=lo+frac*(hi-lo),span=(hi-lo)*(e.deltaY>0?1.18:0.84);span=Math.max(14,Math.min(all-1,span));
+   var l=Math.round(anchor-frac*span);l=Math.max(0,Math.min(l,all-1-Math.round(span)));lo=l;hi=Math.min(all-1,l+Math.round(span));draw();},{passive:false});
+ cv.addEventListener("dblclick",function(){if(D)setRange(0);});
+ cv.addEventListener("touchstart",function(e){if(!D)return;if(e.touches.length===1){tDrag={x:e.touches[0].clientX,lo:lo,hi:hi};tPinch=null;}
+   else if(e.touches.length===2){tPinch={d:Math.abs(e.touches[0].clientX-e.touches[1].clientX)||1,lo:lo,hi:hi};tDrag=null;}},{passive:true});
+ cv.addEventListener("touchmove",function(e){var g=cv._geom;if(!g)return;var all=allN();
+   if(tDrag&&e.touches.length===1){var span=tDrag.hi-tDrag.lo,d=Math.round(-(e.touches[0].clientX-tDrag.x)/g.pw*span);var l=Math.max(0,Math.min(tDrag.lo+d,all-1-span));lo=l;hi=l+span;draw();e.preventDefault();}
+   else if(tPinch&&e.touches.length===2){var nd=Math.abs(e.touches[0].clientX-e.touches[1].clientX)||1;var span=(tPinch.hi-tPinch.lo)*(tPinch.d/nd);span=Math.max(14,Math.min(all-1,span));
+     var mid=(tPinch.lo+tPinch.hi)/2;var l=Math.max(0,Math.min(Math.round(mid-span/2),all-1-Math.round(span)));lo=l;hi=Math.min(all-1,l+Math.round(span));draw();e.preventDefault();}},{passive:false});
+ cv.addEventListener("touchend",function(){tDrag=null;tPinch=null;});
+ window.addEventListener("resize",function(){if(D)draw();});})();
+document.getElementById("periods").querySelectorAll("button").forEach(function(b){b.onclick=function(){
+ document.getElementById("periods").querySelectorAll("button").forEach(function(x){x.classList.remove("on");});b.classList.add("on");setRange(+b.dataset.p);};});
+var tb=document.getElementById("themeBtn");tb.onclick=function(){var d=document.documentElement.getAttribute("data-theme")==="dark";
+ document.documentElement.setAttribute("data-theme",d?"light":"dark");tb.textContent=d?"🌙":"☀️";if(D)draw();};
+fetch("data.json?_="+Date.now()).then(function(r){return r.json();}).then(function(j){
+ D=j;document.getElementById("gen").textContent="갱신 "+j.generated;renderLegend();draw();
+}).catch(function(e){document.getElementById("err").style.display="block";document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e;});
+</script></body></html>
