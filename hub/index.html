@@ -132,6 +132,10 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   <div class="sec-title">🚨 버블 경계 신호 <span class="sub">KB 2026 하반기 전략 · 알람용(검증 알파 아님)</span></div>
   <div class="card" id="bubbleCard"><div class="empty">불러오는 중…</div></div>
 
+  <!-- AI 버블 온도 (ARK Innovation) -->
+  <div class="sec-title">🫧 AI 버블 온도 (ARK) <span class="sub">ARKK 가격 위치 · ARK 보유/전일 변동 · 정보성(검증 알파 아님)</span></div>
+  <div class="card" id="arkCard"><div class="empty">불러오는 중…</div></div>
+
   <!-- 미장 + 페인지수 -->
   <div class="sec-title">🇺🇸 미장 · 트럼프 페인 인덱스 <span class="sub" id="usAsof"></span></div>
   <div class="card" id="painCard"><div class="empty">불러오는 중…</div></div>
@@ -251,6 +255,42 @@ function renderBubble(b){
   'KB증권 2026 하반기 전략: 미 10년물 5.0~5.3% + Core sticky CPI(ex shelter) 3%중반 + 오픈AI IPO 실패·지연 = 버블 붕괴 시그널. '+
   '셋 다 미충족이면 강세장 지속 전망. <b>⚠ 검증된 알파가 아니라 정성 임계값 알람</b> — '+
   '천장 예측 지표는 동행지표일 수 있음(우리 ADR breadth 검증 전례).</div></details>';
+}
+
+/* AI 버블 온도 (ARK) — 중립 표시, 색상 판정·방향성 해석 없음 */
+function fmtSh(n){const a=Math.abs(n),s=n<0?"-":"+";
+ return a>=1e6?s+(a/1e6).toFixed(2)+"M":(a>=1e3?s+(a/1e3).toFixed(0)+"K":s+a)}
+function renderArk(a){
+ const card=document.getElementById("arkCard");
+ if(!a){card.innerHTML='<div class="empty">ARK 데이터 없음</div>';return}
+ let html="";const c=a.context;
+ if(c){
+  html+='<div class="pain-head"><span class="pain-sigma">$'+fmt(c.price,2)+'</span>'+
+   '<span class="pain-sub">2021 ATH $'+fmt(c.ath,2)+' 대비 <b>'+c.pct_of_ath+'%</b> · '+
+   '2022 저점 $'+fmt(c.low,2)+' 이후 범위 위치 <b>'+c.pct_of_range+'%</b>'+(c.asof?' · '+esc(c.asof):"")+'</span></div>';
+  html+='<div class="bar-track" style="margin-top:8px"><div class="bar-fill" style="width:'+c.pct_of_range+'%"></div></div>'+
+   '<div class="pain-sub" style="display:flex;justify-content:space-between"><span>저점 $'+fmt(c.low,2)+'</span><span>ATH $'+fmt(c.ath,2)+'</span></div>';
+ }
+ if(a.holdings&&a.holdings.length){
+  html+='<div class="item"><div class="item-row"><span class="item-name">ARK Innovation 상위 보유</span>'+
+   '<span class="item-sig">'+esc(a.holdings_date||"")+'</span></div><div class="chips">'+
+   a.holdings.map(h=>'<span class="chip"><b>'+esc(h.ticker)+'</b> <span class="meta">'+h.weight_pct.toFixed(1)+'%</span></span>').join("")+
+   '</div></div>';
+ }
+ if(a.diff){
+  const seg=arr=>(arr&&arr.length?arr.map(d=>esc(d.ticker)+" "+fmtSh(d.delta_shares)+"주").join(" · "):"–");
+  html+='<div class="item"><div class="item-row"><span class="item-name">포지션 변동 <span class="flag near">방향성 미검증</span></span>'+
+   '<span class="item-sig">vs '+esc(a.prev_date||"")+'</span></div>'+
+   '<div class="pain-sub">증가: '+seg(a.diff.increased)+'</div>'+
+   '<div class="pain-sub">감소: '+seg(a.diff.decreased)+'</div></div>';
+ }else{
+  html+='<div class="pain-sub" style="margin-top:10px">포지션 변동: 전일 스냅샷 누적 후 표시(다음 갱신부터)</div>';
+ }
+ html+='<details class="help"><summary>📖 설명</summary><div>'+
+  'ARKK(ARK Innovation ETF) 가격의 역사 범위 내 위치 + ARK 당일 보유/전일 대비 변동(주수). '+
+  '<b>⚠ '+esc(a.framing||"")+'</b> — 가격 구간 임계값과 "ARK 매도=관심" 역투자 가설은 우리 백테로 '+
+  '검증된 바 없어 색상 판정·방향성 해석을 두지 않습니다(중립 표시).</div></details>';
+ card.innerHTML=html;
 }
 
 /* 미국 위험·심리 게이지 (FRED + CNN) */
@@ -413,7 +453,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderBubble(j.bubble);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
+ renderBubble(j.bubble);renderArk(j.ark);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
