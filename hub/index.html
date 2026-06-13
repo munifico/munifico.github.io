@@ -286,10 +286,29 @@ function renderArk(a){
  }else{
   html+='<div class="pain-sub" style="margin-top:10px">포지션 변동: 전일 스냅샷 누적 후 표시(다음 갱신부터)</div>';
  }
+ const ps=a.persistence;
+ if(ps){
+  if(ps.pending){
+   html+='<div class="item"><div class="item-row"><span class="item-name">🔻 지속 매도 추적</span></div>'+
+    '<div class="pain-sub">이력 누적 중(스냅샷 '+ps.n_snapshots+'개) — 3개 이상 쌓이면 연속 감소·누적 감소율 표시</div></div>';
+  }else if(ps.persistent_sells&&ps.persistent_sells.length){
+   html+='<div class="item"><div class="item-row"><span class="item-name">🔻 지속 매도 <span class="flag near">정보성</span></span>'+
+    '<span class="item-sig">최근 '+ps.intervals+'회 · '+esc(ps.from)+'~'+esc(ps.as_of)+'</span></div>'+
+    ps.persistent_sells.map(s=>'<div class="pain-sub">'+esc(s.ticker)+
+      (s.exited?' <span class="flag near">청산</span>':'')+' — 연속 <b>'+s.streak+'</b>회 · 누적 <b>'+s.pct+'%</b> ('+
+      fmtSh(s.net_shares)+'주, '+s.sell_days+'/'+s.intervals+'일)</div>').join("")+'</div>';
+  }else{
+   html+='<div class="item"><div class="item-row"><span class="item-name">🔻 지속 매도</span>'+
+    '<span class="item-sig">최근 '+ps.intervals+'회</span></div>'+
+    '<div class="pain-sub">지속 감소 종목 없음</div></div>';
+  }
+ }
  html+='<details class="help"><summary>📖 설명</summary><div>'+
-  'ARKK(ARK Innovation ETF) 가격의 역사 범위 내 위치 + ARK 당일 보유/전일 대비 변동(주수). '+
-  '<b>⚠ '+esc(a.framing||"")+'</b> — 가격 구간 임계값과 "ARK 매도=관심" 역투자 가설은 우리 백테로 '+
-  '검증된 바 없어 색상 판정·방향성 해석을 두지 않습니다(중립 표시).</div></details>';
+  'ARKK(ARK Innovation ETF) 가격의 역사 범위 내 위치 + ARK 당일 보유/전일 대비 변동(주수) + '+
+  '<b>지속 매도</b>(누적 스냅샷에서 최근부터 연속 감소한 횟수·윈도 누적 감소율, 보유 주식수 기준). '+
+  '공식 ARK 소스는 당일 보유만 제공 → 매일 06:35 빌드로 누적(과거 시드 없음). '+
+  '<b>⚠ '+esc(a.framing||"")+'</b> — 가격 구간 임계값·"ARK 매도=관심" 역투자 가설은 백테 미검증이라 '+
+  '색상 판정·방향성 해석을 두지 않습니다(중립). 주식수 기준이라 펀드 유출입에 의한 비례 변동이 섞일 수 있습니다.</div></details>';
  card.innerHTML=html;
 }
 
