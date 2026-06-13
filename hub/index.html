@@ -280,9 +280,21 @@ function renderDerisk(d){
  }).join("");
  const ovc=d.overall==="위험"?"lvl-bad":(d.overall==="주의"?"lvl-warn":"lvl-ok");
  const lead=d.us_lead?'<div class="pain-sub" style="color:var(--bad);font-weight:600">⚠ 미국이 먼저 MA200 이탈 — 한국 조기경보(미국장이 한국 선행)</div>':"";
+ // 종합 요약: 비정상(🔴🟡) 시장 나열
+ const nong=d.items.filter(it=>it.state!=="green").map(it=>dot(it.state)+fl(it.flag)+esc(it.name));
+ const summary=nong.length?nong.join(" · "):"전 시장 정상 🟢";
+ // 🔔 최근 변동(직전 대비)
+ let chg="";const cc=d.changes;
+ if(cc){const nm=a=>a.map(x=>fl(x.flag)+esc(x.name)).join(", ");let b=[];
+  if(cc.new_red&&cc.new_red.length)b.push('🔴 신규 '+nm(cc.new_red));
+  if(cc.recovered&&cc.recovered.length)b.push('✅ 회복 '+nm(cc.recovered));
+  if(cc.new_yellow&&cc.new_yellow.length)b.push('🟡 주의전환 '+nm(cc.new_yellow));
+  if(b.length)chg='<div class="pain-sub" style="font-weight:700;color:var(--accent)">🔔 최근 변동(직전 대비): '+b.join(' · ')+'</div>';
+ }
  card.innerHTML='<div class="pain-head"><span class="pain-level '+ovc+'">'+esc(d.overall)+'</span>'+
-  '<span class="pain-sub" style="margin-left:8px">"지금 위험 줄일 국면인가?" · 트리거=MA200 종가이탈(검증)</span></div>'+
-  rows+lead+
+  '<span class="pain-sub" style="margin-left:8px">'+esc(summary)+'</span></div>'+
+  '<div class="pain-sub">"지금 위험 줄일 국면인가?" · 트리거=MA200 종가이탈(검증)</div>'+
+  chg+rows+lead+
   '<div class="note">🔴 MA200 종가이탈(2일+) = 비중 축소 트리거 · 🟡 MA50 이탈 = 주의 · 🟢 정상</div>'+
   '<details class="help"><summary>✅ 사전 약속 체크리스트 / 📖 설명</summary><div>'+
   '· 🔴 뜨면 <b>느낌 아닌 규칙</b>으로 해당 시장 비중 축소(부분·고베타/테마 먼저) — 본인 비중%는 미리 정해두기<br>'+
