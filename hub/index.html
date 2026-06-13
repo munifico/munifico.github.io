@@ -320,10 +320,23 @@ function fmtSh(n){const a=Math.abs(n),s=n<0?"-":"+";
  return a>=1e6?s+(a/1e6).toFixed(2)+"M":(a>=1e3?s+(a/1e3).toFixed(0)+"K":s+a)}
 function fmtUsd(n){const a=Math.abs(n);
  return a>=1e9?(n/1e9).toFixed(1)+"B":(a>=1e6?(n/1e6).toFixed(1)+"M":(a>=1e3?(n/1e3).toFixed(0)+"K":""+Math.round(n)))}
-function renderArk(a){
+function renderArk(a,attention){
  const card=document.getElementById("arkCard");
  if(!a){card.innerHTML='<div class="empty">ARK 데이터 없음</div>';return}
- let html="";const c=a.context;
+ let html="";
+ if(attention){
+  let bits=[];
+  if(attention.trends){const t=attention.trends;
+   bits.push('구글트렌드 "Cathie Wood" <b>'+t.current+'</b>/100 (역대피크 대비 '+t.pct_of_peak+'% · 최근3개월 최고 '+t.recent_high+')');}
+  if(attention.ark){
+   bits.push('ARK 매매 <b>'+attention.ark.n_trades+'</b>건/$'+fmtUsd(attention.ark.vol_usd)+' (최근 '+attention.ark.days+'일)');}
+  if(bits.length){
+   html+='<div class="item"><div class="item-row"><span class="item-name">🔭 ARK·캐시우드 주목 강도 <span class="flag near">유포리아 맥락</span></span></div>'+
+    '<div class="pain-sub">'+bits.join('<br>')+'</div>'+
+    '<div class="pain-sub">높을수록 군중 주목/유포리아↑ — 2021-02 트렌드 100=ARK 정점 일치, 2026 재급등. ⚠ 검증 타이머 아님(가격 카나리아는 기각·N=1).</div></div>';
+  }
+ }
+ const c=a.context;
  if(c){
   html+='<div class="pain-head"><span class="pain-sigma">$'+fmt(c.price,2)+'</span>'+
    '<span class="pain-sub">2021 ATH $'+fmt(c.ath,2)+' 대비 <b>'+c.pct_of_ath+'%</b> · '+
@@ -533,7 +546,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderDerisk(j.derisk,j.credit);renderBubble(j.bubble);renderArk(j.ark);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
+ renderDerisk(j.derisk,j.credit);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
