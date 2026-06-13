@@ -297,8 +297,9 @@ function renderArk(a){
    html+='<div class="item"><div class="item-row"><span class="item-name">🔻 지속 매도 <span class="flag near">정보성</span></span>'+
     '<span class="item-sig">최근 '+ps.n_trade_days+'거래일 · '+esc(ps.from)+'~'+esc(ps.as_of)+'</span></div>'+
     ps.sells.map(s=>'<div class="pain-sub">'+esc(s.ticker)+
-      (s.full_exits>0?' <span class="flag near">전량매도</span>':'')+' — 매도 <b>'+s.sell_days+'</b>일 · 누적 <b>$'+
-      fmtUsd(s.total_mv)+'</b>'+(s.last?' · 최근 '+esc(s.last):'')+'</div>').join("")+'</div>';
+      (s.held===false?' <span class="flag near">청산</span>':'')+' — 매도 <b>'+s.sell_days+'</b>일 · 누적 <b>$'+
+      fmtUsd(s.total_mv)+'</b>'+(s.cur_weight!=null?' · 잔량 '+s.cur_weight.toFixed(2)+'%':'')+
+      (s.last?' · 최근 '+esc(s.last):'')+'</div>').join("")+'</div>';
   }else{
    html+='<div class="item"><div class="item-row"><span class="item-name">🔻 지속 매도</span>'+
     '<span class="item-sig">최근 '+ps.n_trade_days+'거래일</span></div>'+
@@ -307,7 +308,8 @@ function renderArk(a){
  }
  html+='<details class="help"><summary>📖 설명</summary><div>'+
   'ARKK(ARK Innovation ETF) 가격의 역사 범위 내 위치 + ARK 당일 보유/전일 변동(공식 CSV) + '+
-  '<b>지속 매도</b>(최근 N거래일 매도일수·누적 매도금액, 출처 cathiesark ARK 추정매매=펀드 유출입 정리됨, 로컬 캐시 누적). '+
+  '<b>지속 매도</b>(최근 N거래일 매도일수·누적 매도금액, 출처 cathiesark ARK 추정매매=펀드 유출입 정리됨, 로컬 캐시 누적; '+
+  '잔량=현재 보유 비중(공식 CSV), 미보유=청산. cathiesark % of Position 컬럼은 최근 일자 100% 포화라 미사용). '+
   '<b>⚠ '+esc(a.framing||"")+'</b> — 가격 구간 임계값·"ARK 매도=관심" 역투자 가설은 백테 미검증이라 '+
   '색상 판정·방향성 해석을 두지 않습니다(중립 표시).</div></details>';
  card.innerHTML=html;
