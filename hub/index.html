@@ -261,8 +261,8 @@ function renderBubble(b){
   '천장 예측 지표는 동행지표일 수 있음(우리 ADR breadth 검증 전례).</div></details>';
 }
 
-/* 🛡️ 디리스크 콕핏 — 한·미 MA200 추세 신호등 (검증된 대피 트리거) */
-function renderDerisk(d){
+/* 🛡️ 디리스크 콕핏 — 한·미 MA200 추세 신호등 (검증된 대피 트리거) + 신용잔고(레버리지) */
+function renderDerisk(d,credit){
  const card=document.getElementById("derCard");
  if(!d||!d.items||!d.items.length){card.innerHTML='<div class="empty">데이터 없음</div>';return}
  const dot=s=>s==="red"?"🔴":(s==="yellow"?"🟡":"🟢");
@@ -291,11 +291,22 @@ function renderDerisk(d){
   if(cc.new_yellow&&cc.new_yellow.length)b.push('🟡 주의전환 '+nm(cc.new_yellow));
   if(b.length)chg='<div class="pain-sub" style="font-weight:700;color:var(--accent)">🔔 최근 변동(직전 대비): '+b.join(' · ')+'</div>';
  }
+ // 🇰🇷 신용잔고(레버리지) 맥락 라인
+ let cr="";
+ if(credit&&credit.value_jo!=null){
+  const pos=credit.pct_of_range;
+  const tag=pos>=80?" <b>고점권</b>":(pos<=20?" 저점권":"");
+  const c20=credit.chg20_pct!=null?(" · 20일 "+(credit.chg20_pct>=0?"+":"")+credit.chg20_pct+"%"):"";
+  cr='<div class="item"><div class="item-row"><span class="item-name">🇰🇷 신용잔고(레버리지)</span>'+
+   '<span class="item-sig">'+credit.value_jo+'조</span></div>'+
+   '<div class="pain-sub">1년 범위 '+pos+'%'+tag+c20+' · 범위 '+credit.lo_jo+'~'+credit.hi_jo+'조 · '+
+   '높을수록 폭락 시 강제청산 연료↑(꼬리 두께)'+(credit.asof?' · '+esc(credit.asof):"")+'</div></div>';
+ }
  card.innerHTML='<div class="pain-head"><span class="pain-level '+ovc+'">'+esc(d.overall)+'</span>'+
   '<span class="pain-sub" style="margin-left:8px">'+esc(summary)+'</span></div>'+
   '<div class="pain-sub">"지금 위험 줄일 국면인가?" · 트리거=MA200 종가이탈(검증)</div>'+
-  chg+rows+lead+
-  '<div class="note">🔴 MA200 종가이탈(2일+) = 비중 축소 트리거 · 🟡 MA50 이탈 = 주의 · 🟢 정상</div>'+
+  chg+rows+cr+lead+
+  '<div class="note">🔴 MA200 종가이탈(2일+) = 비중 축소 트리거 · 🟡 MA50 이탈 = 주의 · 🟢 정상 · 신용잔고 高=강제청산 연료</div>'+
   '<details class="help"><summary>✅ 사전 약속 체크리스트 / 📖 설명</summary><div>'+
   '· 🔴 뜨면 <b>느낌 아닌 규칙</b>으로 해당 시장 비중 축소(부분·고베타/테마 먼저) — 본인 비중%는 미리 정해두기<br>'+
   '· <b>미국이 먼저 🔴 → 한국 조기경보</b>(미국장이 한국 선행, β0.5·꼬리 1.4~2x)<br>'+
@@ -522,7 +533,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderDerisk(j.derisk);renderBubble(j.bubble);renderArk(j.ark);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
+ renderDerisk(j.derisk,j.credit);renderBubble(j.bubble);renderArk(j.ark);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
