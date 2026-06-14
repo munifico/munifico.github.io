@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>이익성장 스크리너</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--up:#dc2626;--dn:#2563eb;--accent:#7c3aed;--ok:#16a34a;--warn:#d97706;--bad:#dc2626}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2d3138;--up:#f87171;--dn:#60a5fa;--accent:#a78bfa;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+
+header{padding:14px 16px 4px;display:flex;align-items:center;gap:12px}
+h1{font-size:19px;margin:0}
+.toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.wrap{padding:8px 16px 48px;max-width:880px;margin:0 auto}
+.sec-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:22px 2px 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.funnel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;align-items:center}
+.fchip{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px}
+.fchip b{font-size:17px}.arrow{color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600;font-size:12px;position:sticky;top:0;background:var(--card)}
+td.l,th.l{text-align:left}
+.tbl-scroll{max-height:600px;overflow:auto}
+.pos{color:var(--up)}.neg{color:var(--dn)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 5px;margin-left:5px}
+.cap{color:var(--warn)}
+.note{color:var(--muted);font-size:12.5px;line-height:1.6}
+.note b{color:var(--fg)}
+.warnbox{background:color-mix(in srgb,var(--warn) 12%,transparent);border:1px solid var(--warn);border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.6;margin-top:10px}
+a.code{color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item active" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<header>
+  <h1>💹 이익성장 스크리너</h1>
+  <button class="toggle" onclick="toggleTheme()">🌓</button>
+</header>
+<div class="wrap">
+  <div class="sec-title">유동성 리더 ∩ 52주 신고가 근접 ∩ 연간 이익성장</div>
+  <div class="card" id="screenCard"><div class="note">불러오는 중…</div></div>
+
+  <div class="sec-title">검증 근거 (§128) · 주의</div>
+  <div class="card">
+    <div class="note">
+      <b>fdr_all 4년 decile-lift 검증</b> — 유동성 상위30% 안에서 <b>52주 신고가 근접</b> × <b>연간 EPS 성장</b>(KRX MDCSTAT03501, point-in-time):<br>
+      • 신고가 단독 fwd 20일 +1.42% → <b>+이익성장 +3.11%</b> = 이익 <b>+1.69%p</b> 추가 lift<br>
+      • 이익성장 팩터 유동성 D9−D0 <b>+1.93</b>(IS +1.95 / OOS +1.90, 전 연도 양) = 프로젝트 첫 전연도양·IS≈OOS 팩터<br>
+      • 두 축이 <b>독립 도메인</b>(가격 모멘텀 × 펀더멘털)이라 결합 lift 실재
+    </div>
+    <div class="warnbox">
+      ⚠ <b>정보/스크리닝 — 매수신호 아님.</b> 진입·청산은 사용자 판단.<br>
+      ⚠ <b>생존편향 미보정</b>: 현재 상장 종목만(상폐 제외) → 기대 magnitude <b>+0.3~0.8%p 과장</b> 가능, 실제는 보수적으로.<br>
+      ⚠ <b>이익성장 극단(+수백%)은 전년 이익이 미미한 저베이스</b>(턴어라운드 포함). 표시는 +<span class="cap">300</span>%로 클립, <b>순위·멤버십은 §128 raw 팩터</b>. EPS·PER 열로 베이스 확인.<br>
+      ⚠ <b>유동성 리더 한정</b>·연간 EPS(분기 가속 B안은 검증 결과 기각).<br>
+      ⚠ 가격 as-of와 펀더 as-of 시점 차 존재(상단 표기).
+    </div>
+  </div>
+</div>
+<script>
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function toggleTheme(){const d=document.documentElement.getAttribute("data-theme")==="dark";
+ document.documentElement.setAttribute("data-theme",d?"light":"dark");localStorage.setItem("yoy_theme",d?"light":"dark")}
+if(localStorage.getItem("yoy_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");
+function num(n){return n==null?"–":Number(n).toLocaleString()}
+function grow(p,cap){if(p==null)return "–";if(p>cap)return '<span class="cap">+'+cap+'%+</span>';return "+"+p+"%"}
+
+function render(d){
+  const card=document.getElementById("screenCard");
+  if(!d||!d.screen){card.innerHTML='<div class="note">데이터 없음</div>';return}
+  const f=d.funnel,cap=d.win_cap||300;
+  let h='<div class="funnel">'+
+    '<div class="fchip">유동성 리더 <b>'+f.liquid+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">신고가 근접 <b>'+f.near_high+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">∩ 이익성장 <b>'+f.screen+'</b></div></div>';
+  h+='<div class="note" style="margin:2px 0 12px">가격 as-of <b>'+esc(d.asof_price)+
+     '</b> · 펀더 as-of <b>'+esc(d.asof_fund)+'</b>(전년 '+esc(d.fund_prev)+
+     ') · 컷 신고가 고점대비 '+d.thresholds.dist_q70+'%↑ · 이익성장 '+d.thresholds.growth_q70+'%↑ · 정렬 신고가 근접順</div>';
+  if(!d.screen.length){h+='<div class="note">오늘 스크린 통과 종목 없음.</div>';card.innerHTML=h;return}
+  h+='<div class="tbl-scroll"><table><thead><tr>'+
+     '<th class="l">종목</th><th>종가</th><th>EPS</th><th>PER</th><th>고점대비</th><th>이익성장 YoY</th></tr></thead><tbody>';
+  for(const r of d.screen){
+    const tags=(r.market?'<span class="tag">'+esc(r.market)+'</span>':'')+
+               (r.sector?'<span class="tag">'+esc(r.sector)+'</span>':'');
+    h+='<tr><td class="l"><a class="code" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+
+       '/price" target="_blank">'+esc(r.name)+'</a>'+tags+'</td>'+
+       '<td>'+num(r.close)+'</td><td>'+num(r.eps)+'</td><td>'+(r.per==null?"–":r.per)+'</td>'+
+       '<td class="neg">'+r.dist_pct+'%</td>'+
+       '<td class="pos">'+grow(r.growth_pct,cap)+'</td></tr>';
+  }
+  h+='</tbody></table></div>';
+  card.innerHTML=h;
+}
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(render).catch(e=>{
+  document.getElementById("screenCard").innerHTML='<div class="note">로드 실패: '+esc(e)+'</div>'});
+</script>
+</body>
+</html>
