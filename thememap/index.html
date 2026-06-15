@@ -63,6 +63,15 @@ h3{font-size:14px;margin:2px 0 8px}
 .sig .fit{font-size:11px;color:var(--mut)}
 .sig .sd{color:var(--mut);font-size:11.5px;margin-top:2px}
 .note{color:var(--mut);font-size:11px;margin-top:8px}
+.rrgsec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin:10px 0}
+.rrghd{font-size:13px;font-weight:700;margin-bottom:8px}.rrghd .sub{font-weight:400;color:var(--mut);font-size:11.5px}
+.rrggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:820px){.rrggrid{grid-template-columns:repeat(2,1fr)}}
+.rrgq{border:1px solid var(--line);border-radius:9px;padding:7px 8px;background:var(--bg)}
+.rrgqt{font-size:12px;font-weight:700;margin-bottom:5px}.rrgqt .cnt{color:var(--mut);font-weight:400;font-size:11px}
+.rrgchips{display:flex;flex-wrap:wrap;gap:5px}
+.rrgc{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:2px 7px;background:var(--card);cursor:default}
+.rrgempty{color:var(--mut);font-size:12px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;padding:16px;overflow:auto}
 .modal.on{display:block}
 .mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
@@ -89,6 +98,7 @@ h3{font-size:14px;margin:2px 0 8px}
   <button class="btn" id="themeBtn">🌙</button>
 </div>
 <div class="mkt" id="mkt"></div>
+<div class="rrgsec" id="rrg" style="display:none"></div>
 <div class="controls">
   <div class="ibox">
     <input id="q" type="text" placeholder="🔍 종목명·코드 검색" autocomplete="off">
@@ -116,6 +126,10 @@ h3{font-size:14px;margin:2px 0 8px}
 <p>· <b>정배열 60일돌파</b> — 정배열 + 60일 신고가 돌파(BULL M2, §102)</p>
 <h2>차트</h2>
 <p>종가 + MA(20/60/120) + <b>엔벨로프15</b>(보라 점선 ±15%) + <b>MTS 자동추세선</b>(빨강 저항/파랑 지지). 휠/핀치 확대 · 드래그 이동 · 더블클릭 리셋.</p>
+<h2>🧭 테마 지형 (RRG)</h2>
+<p>각 테마를 코스피(KODEX200) 대비 <b>상대강도(RS)</b>로 4분면에 놓습니다. 가로축=RS레벨(현재 RS ÷ 6개월 평균, 1보다 크면 평균보다 강함), 세로축=20일 RS모멘텀(상대강도가 오르는 중인지).</p>
+<p class="t">🟢 <b>주도</b>(강·상승) → 🟡 <b>쇠퇴</b>(강·하락) → ⚪ <b>후발</b>(약·하락) → 🔵 <b>개선</b>(약·상승) 순으로 도는 게 교과서적 흐름입니다.</p>
+<p>⚠️ <b>예측이 아니라 '현재 어디에 있나'를 묘사</b>합니다. 우리가 직접 검증(§134)한 결과 <b>테마 간 선후 순서로 미래를 맞히는 건 노이즈·시간불안정</b>이라 매수신호가 아닙니다. VKOSPI·AI버블 카드처럼 맥락 참고용입니다.</p>
 <h2>소속장</h2>
 <p>코스피/코스닥은 <b>실제 상장 시장(FDR)</b> 기준으로 자동 부여합니다.</p>
 <p class="t">※ 손절(-8%)·목표(60일 고가)는 참고 레벨이며, 최종 판단은 본인 몫입니다.</p>
@@ -139,8 +153,25 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{
  const m=k=>MK[k]?('<b class="'+((MK[k].chg||0)>=0?'up':'dn')+'">'+((MK[k].chg||0)>=0?'+':'')+MK[k].chg+'%</b> '+rg(MK[k].regime)):'–';
  $("#mkt").innerHTML='<div class="mcard">KOSPI '+m('kospi')+'</div><div class="mcard">코스닥 '+m('kosdaq')+'</div>'+
    '<div class="mcard">등급기준 KOSPI '+rg(GRADE)+'</div><div class="mcard">🟢 진입신호 <b>'+onN+'</b>종목</div>';
+ renderRRG(d.rrg);
  renderThemes();
 });
+function renderRRG(rrg){
+ const host=$("#rrg");if(!rrg||!rrg.length){host.style.display="none";return;}
+ const Q=[["주도","🟢","주도 — RS 강하고 더 강해짐"],["개선","🔵","개선 — 아직 약하나 RS 회복 중"],
+          ["쇠퇴","🟡","쇠퇴 — 강했으나 RS 식는 중"],["후발","⚪","후발 — 약하고 더 약해짐"]];
+ let h='<div class="rrghd">🧭 테마 지형 <span class="sub">RS(상대강도) 4분면 · <b>현재 위치 묘사</b> · 예측·매수신호 아님 (§134)</span></div><div class="rrggrid">';
+ Q.forEach(([k,ic,desc])=>{
+   const items=rrg.filter(c=>c.quad===k);
+   h+='<div class="rrgq"><div class="rrgqt" title="'+esc(desc)+'">'+ic+' '+k+' <span class="cnt">'+items.length+'</span></div><div class="rrgchips">';
+   if(!items.length)h+='<span class="rrgempty">—</span>';
+   items.forEach(c=>{const u=c.mom>=0?'up':'dn';
+     h+='<span class="rrgc" title="RS레벨 '+c.lvl+' (1=6개월평균) · 20일 RS모멘텀 '+(c.mom>=0?'+':'')+c.mom+'% · '+c.n+'종목">'+
+        esc(c.name)+' <span class="'+u+'">'+(c.mom>=0?'+':'')+c.mom+'</span></span>';});
+   h+='</div></div>';
+ });
+ h+='</div>';host.innerHTML=h;host.style.display="block";
+}
 function members(t){return t.codes.map(c=>ST[c]).filter(Boolean);}
 function renderThemes(){
  const onlyOn=$("#fon").checked;
