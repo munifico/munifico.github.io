@@ -233,7 +233,9 @@ const SIG={
  "PRE_BREAKOUT_52W":"52주 전고점 직전+동반매수","TARGET_UP":"목표가 상향",
  "BULL_MOMENTUM":"BULL 모멘텀(중기 D+20)","ENV_STOCH_GC":"엔벨로프 하단터치+스토캐스틱GC",
  "PENSION_STRONG":"연기금 대량매수(관찰)","TRUST_STRONG":"투신 대량매수(관찰)",
- "MTT_BREAKOUT":"미너비니 추세 돌파(M2)","MTT_PULLBACK_BEAR":"강세주 얕은눌림 반등(V1)"};
+ "MTT_BREAKOUT":"미너비니 추세 돌파(M2)","MTT_PULLBACK_BEAR":"강세주 얕은눌림 반등(V1)",
+ "ENVELOPE_LOWER_TOUCH":"엔벨로프 하단터치(과대낙폭)",
+ "WEEKLY_MACD_GC":"주봉 MACD GC(대형·관찰)"};
 // 등급·regime → 한글 (badge class 는 영문값 유지, 텍스트만 치환)
 const LAB={"HIGH":"높음","MED":"중간","LOW":"낮음","WARN":"주의","OBSERVING":"관찰중",
  "BULL":"강세장","RANGE":"횡보장","BEAR":"약세장"};
@@ -242,7 +244,9 @@ const SRC={"screen":"조건검색 ⏱오전","close_bet":"종가베팅 ⏱장마
  "ant":"개미털기 ⏱장중","prog":"프로그램 ⏱장중","pre_breakout_52w":"52주돌파직전(동반매수) ⏱종가",
  "target_up":"목표가 상향","screen_close":"조건검색(종가) ⏱장마감",
  "bull_momentum":"BULL 모멘텀 ⏱장후","env_stoch_gc":"엔벨로프+스토캐스틱GC ⏱장후",
- "pension_strength":"연기금/투신 대량매수(관찰) ⏱장후","mtt":"미너비니(MTT) ⏱장후"};
+ "pension_strength":"연기금/투신 대량매수(관찰) ⏱장후","mtt":"미너비니(MTT) ⏱장후",
+ "midday_pick":"🎯 점심 압축(BEAR/RANGE 추천·BULL 관찰) ⏱장중",
+ "weekly_macd_gc":"🔵 주봉 MACD GC(대형·관찰) ⏱금요일장후"};
 function sigKo(v){return esc(SIG[v]||v)}
 function srcKo(v){return esc(SRC[v]||v||"")}
 function themeCell(ts){ts=ts||[];if(!ts.length)return '<td data-label="테마"></td>';
