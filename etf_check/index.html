@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ETF 구성 변동 추적</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--up:#dc2626;--dn:#2563eb;--accent:#7c3aed;--ok:#16a34a;--warn:#d97706;--new:#0891b2}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2d3138;--up:#f87171;--dn:#60a5fa;--accent:#a78bfa;--ok:#4ade80;--warn:#fbbf24;--new:#22d3ee}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+
+header{padding:14px 16px 4px;display:flex;align-items:center;gap:12px}
+h1{font-size:19px;margin:0}
+.toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.wrap{padding:8px 16px 48px;max-width:920px;margin:0 auto}
+.sec-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:22px 2px 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px}
+.chip b{font-size:17px}
+.chip.new b{color:var(--new)}.chip.up b{color:var(--up)}.chip.down b{color:var(--dn)}
+.sub{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:680px){.sub{grid-template-columns:1fr}}
+.subcard{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+.subcard h3{margin:0 0 8px;font-size:13px}
+.row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:13.5px;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:none}
+.row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tk{color:var(--muted);font-size:11.5px;margin-left:4px}
+.pos{color:var(--up)}.neg{color:var(--dn)}.muted{color:var(--muted)}
+.tagdot{font-size:11px;margin-left:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600;font-size:12px;position:sticky;top:0;background:var(--card);cursor:pointer}
+td.l,th.l{text-align:left}
+.tbl-scroll{max-height:560px;overflow:auto}
+.badge{font-size:10.5px;border:1px solid var(--line);border-radius:6px;padding:1px 5px;margin-left:5px;color:var(--muted)}
+.badge.new{color:var(--new);border-color:var(--new)}
+.hist-day{border-left:3px solid var(--line);padding:4px 0 10px 12px;margin-left:4px}
+.hist-day .hd{font-weight:700;font-size:13.5px;margin-bottom:4px}
+.hist-day .hl{font-size:12.5px;color:var(--muted);margin:2px 0}
+.hist-day .hl b{color:var(--fg)}
+.note{color:var(--muted);font-size:12.5px;line-height:1.6}
+.note b{color:var(--fg)}
+.warnbox{background:color-mix(in srgb,var(--warn) 12%,transparent);border:1px solid var(--warn);border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.6;margin-top:10px}
+a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<header>
+  <h1>📦 ETF 구성 변동 추적</h1>
+  <button class="toggle" onclick="toggleTheme()">🌓</button>
+</header>
+<div class="wrap">
+  <div id="meta" class="note" style="margin:2px 2px 6px">불러오는 중…</div>
+
+  <div class="sec-title">최근 변동 요약</div>
+  <div class="card" id="summaryCard"><div class="note">불러오는 중…</div></div>
+
+  <div class="sec-title">전체 보유 종목 (최신)</div>
+  <div class="card" id="holdingsCard"><div class="note">불러오는 중…</div></div>
+
+  <div class="sec-title">일자별 변화 히스토리</div>
+  <div class="card" id="historyCard"><div class="note">불러오는 중…</div></div>
+
+  <div class="sec-title">데이터·주의</div>
+  <div class="card">
+    <div class="note">
+      <b>1차 소스</b> = timeetf.co.kr 구성종목 엑셀(비중%·수량·평가액, 매일 장후) · <b>과거 백필</b> = KRX ETF PDF(CU당 = 좌당 구성 수량, 가격 영향이 적은 운용역 리밸런싱 척도).<br>
+      두 소스는 종목명 체계가 달라(KRX 절단명·ADR 표기 vs timeetf 정식명) <b>교차 비교는 생략</b>하고, <b>같은 소스끼리만</b> 정확히 비교합니다(소스 전환된 최신일은 변동 미표시 — 내일부터 timeetf↔timeetf 비중 추적).<br>
+      <b>능동 판별</b>: 비중(%)은 가격 때문에 저절로 변합니다. 비중 변동 옆 점 = 🟢수량↑(담음)/🔴수량↓(덜담음)/⚪수량동일(가격영향).
+    </div>
+    <div class="warnbox">
+      ⚠ <b>정보성 추적 — 매매 신호 아님.</b> §131 검증에서 ETF 편입/비중 변화 = 독립 알파 아님으로 기각(size 동어반복 + 모멘텀 + 단일기간). ARK 트래커와 동일한 '정보 카드'.<br>
+      ⚠ 수량(주식수)은 펀드 설정/환매(자금 유출입)도 일부 섞입니다. <b>신규/제외</b>(가장 명확) + CU수량(백필) + 비중% 를 함께 보세요.
+    </div>
+  </div>
+</div>
+<script>
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function toggleTheme(){const d=document.documentElement.getAttribute("data-theme")==="dark";
+ document.documentElement.setAttribute("data-theme",d?"light":"dark");localStorage.setItem("etfc_theme",d?"light":"dark")}
+if(localStorage.getItem("etfc_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");
+function fdate(d){return d&&d.length===8?d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6):d}
+function num(n){return n==null?"–":Number(n).toLocaleString()}
+function tkr(r){return r.ticker?'<span class="tk">'+esc(r.ticker)+'</span>':''}
+function wt(w){return w==null?"–":w+"%"}
+function dot(ds){if(ds==null)return '';if(ds>0)return '<span class="tagdot" title="수량↑">🟢</span>';if(ds<0)return '<span class="tagdot" title="수량↓">🔴</span>';return '<span class="tagdot" title="수량동일=가격영향">⚪</span>'}
+
+let HOLD=[],SORT={k:"weight",asc:false};
+
+function render(d){
+  if(!d||!d.holdings){document.getElementById("summaryCard").innerHTML='<div class="note">데이터 없음</div>';return}
+  document.getElementById("meta").innerHTML='<b><a class="lnk" href="'+esc(d.etf_url)+'" target="_blank">'+esc(d.etf_name)+'</a></b> ('+esc(d.etf_code)+') · 최신 '+fdate(d.latest_date)+
+    ' · 보유 '+d.n_holdings+'종목 · 스냅샷 '+d.n_snapshots+'일('+fdate(d.first_date)+'~) · 생성 '+esc(d.generated);
+
+  // 요약
+  const dd=d.latest_diff;
+  const sc=document.getElementById("summaryCard");
+  if(d.latest_status==="first"){
+    sc.innerHTML='<div class="note">첫 스냅샷 수집 — 비교할 전일 데이터가 없습니다. 내일 장후부터 변동이 누적됩니다.</div>';
+  }else if(d.latest_status==="boundary"||!dd){
+    const b=d.latest_boundary||{};
+    sc.innerHTML='<div class="note">과거 이력은 <b>KRX CU수량</b>으로 백필되어 아래 히스토리에 있습니다. 최신일('+fdate(d.latest_date)+
+      ')은 <b>timeetf 비중%</b> 소스로 전환된 시점이라(이름 체계가 달라 교차 비교 생략) <b>오늘은 비중 변동을 표시하지 않습니다</b>. '+
+      '<b>내일 장후부터</b> timeetf↔timeetf 비중 증감이 매일 추적됩니다.</div>';
+  }else{
+    const unit=dd.metric==="weight"?"비중":(dd.metric==="cu_shares"?"CU수량":"집합");
+    const sfx=dd.metric==="weight"?"%p":"";
+    let h='<div class="chips" style="margin-bottom:10px">'+
+      '<div class="chip new">신규 <b>'+dd.new.length+'</b></div>'+
+      '<div class="chip">제외 <b>'+dd.removed.length+'</b></div>'+
+      '<div class="chip up">'+(dd.metric==="cu_shares"?"증량":"비중확대")+' <b>'+dd.up.length+'</b></div>'+
+      '<div class="chip down">'+(dd.metric==="cu_shares"?"감량":"비중축소")+' <b>'+dd.down.length+'</b></div>'+
+      '<span class="muted" style="font-size:12px">'+fdate(dd.prev_date)+' → '+fdate(dd.date)+' · '+unit+' 기준</span></div>';
+    h+='<div class="sub">';
+    h+=subcard("🆕 신규편입",dd.new,r=>'<span class="nm">'+esc(r.name)+tkr(r)+'</span><span class="pos">'+wt(r.weight)+'</span>');
+    h+=subcard("🗑️ 제외",dd.removed,r=>'<span class="nm">'+esc(r.name)+tkr(r)+'</span><span class="muted">'+(r.weight==null?"":wt(r.weight))+'</span>');
+    if(dd.metric==="weight"){
+      h+=subcard("🟢 비중확대",dd.up,r=>'<span class="nm">'+esc(r.name)+tkr(r)+dot(r.d_shares)+'</span><span class="pos">+'+r.delta+'%p</span>');
+      h+=subcard("🔴 비중축소",dd.down,r=>'<span class="nm">'+esc(r.name)+tkr(r)+dot(r.d_shares)+'</span><span class="neg">'+r.delta+'%p</span>');
+    }else if(dd.metric==="cu_shares"){
+      h+=subcard("🟢 능동 증량(CU)",dd.up,r=>'<span class="nm">'+esc(r.name)+tkr(r)+'</span><span class="pos">+'+num(r.delta)+'</span>');
+      h+=subcard("🔴 능동 감량(CU)",dd.down,r=>'<span class="nm">'+esc(r.name)+tkr(r)+'</span><span class="neg">'+num(r.delta)+'</span>');
+    }else{
+      h+='<div class="subcard"><div class="note">소스 전환일 — 집합 변화만 표시</div></div>';
+    }
+    h+='</div>';
+    sc.innerHTML=h;
+  }
+
+  // 보유 테이블
+  HOLD=d.holdings.slice();
+  renderHoldings();
+
+  // 히스토리
+  renderHistory(d.history);
+}
+
+function subcard(title,arr,rowfn){
+  let h='<div class="subcard"><h3>'+title+' <span class="muted">('+arr.length+')</span></h3>';
+  if(!arr.length){h+='<div class="note">없음</div></div>';return h;}
+  for(const r of arr.slice(0,12)) h+='<div class="row">'+rowfn(r)+'</div>';
+  if(arr.length>12) h+='<div class="note" style="margin-top:4px">+'+(arr.length-12)+' 더…</div>';
+  return h+'</div>';
+}
+
+function renderHoldings(){
+  const c=document.getElementById("holdingsCard");
+  const arr=HOLD.slice().sort((a,b)=>{
+    let x=a[SORT.k],y=b[SORT.k];x=x==null?-1e18:x;y=y==null?-1e18:y;
+    return SORT.asc?x-y:y-x;});
+  const ar=k=>SORT.k===k?(SORT.asc?" ▲":" ▼"):"";
+  let h='<div class="tbl-scroll"><table><thead><tr>'+
+    '<th class="l" onclick="sortHold(\'name\')">종목</th>'+
+    '<th onclick="sortHold(\'weight\')">비중%'+ar("weight")+'</th>'+
+    '<th onclick="sortHold(\'d_weight\')">Δ비중%p'+ar("d_weight")+'</th>'+
+    '<th onclick="sortHold(\'shares\')">수량'+ar("shares")+'</th>'+
+    '<th onclick="sortHold(\'d_shares\')">Δ수량'+ar("d_shares")+'</th>'+
+    '<th onclick="sortHold(\'value\')">평가액(원)'+ar("value")+'</th></tr></thead><tbody>';
+  for(const r of arr){
+    const bn=r.status==="new"?'<span class="badge new">NEW</span>':'';
+    const dw=r.d_weight==null?'':'<span class="'+(r.d_weight>0?"pos":"neg")+'">'+(r.d_weight>0?"+":"")+r.d_weight+'</span>';
+    const dsh=r.d_shares==null?'':'<span class="'+(r.d_shares>0?"pos":"neg")+'">'+(r.d_shares>0?"+":"")+num(r.d_shares)+'</span>';
+    h+='<tr><td class="l"><span class="nm">'+esc(r.name)+'</span>'+tkr(r)+bn+'</td>'+
+       '<td>'+wt(r.weight)+'</td><td>'+dw+'</td>'+
+       '<td>'+num(r.shares!=null?r.shares:r.cu_shares)+'</td><td>'+dsh+'</td>'+
+       '<td>'+num(r.value)+'</td></tr>';
+  }
+  c.innerHTML=h+'</tbody></table></div>';
+}
+function sortHold(k){if(SORT.k===k)SORT.asc=!SORT.asc;else{SORT.k=k;SORT.asc=false;}renderHoldings();}
+
+function renderHistory(hist){
+  const c=document.getElementById("historyCard");
+  if(!hist||!hist.length){c.innerHTML='<div class="note">변동 이력 없음</div>';return}
+  let h='';
+  for(const dp of hist){
+    const unit=dp.metric==="weight"?"비중":(dp.metric==="cu_shares"?"CU수량":"집합변화");
+    h+='<div class="hist-day"><div class="hd">'+fdate(dp.date)+
+       ' <span class="muted" style="font-weight:400;font-size:11.5px">vs '+fdate(dp.prev_date)+' · '+unit+' · '+dp.n_holdings+'종목</span></div>';
+    if(dp.new.length) h+='<div class="hl">🆕 <b>신규</b> '+dp.new.map(r=>esc(r.name)+(r.ticker?"("+esc(r.ticker)+")":"")).join(", ")+'</div>';
+    if(dp.removed.length) h+='<div class="hl">🗑️ <b>제외</b> '+dp.removed.map(r=>esc(r.name)+(r.ticker?"("+esc(r.ticker)+")":"")).join(", ")+'</div>';
+    if(dp.metric==="weight"){
+      if(dp.up.length) h+='<div class="hl">🟢 <b>비중↑</b> '+dp.up.slice(0,6).map(r=>esc(r.ticker||r.name)+" +"+r.delta+"%p").join(", ")+(dp.up.length>6?" 외 "+(dp.up.length-6):"")+'</div>';
+      if(dp.down.length) h+='<div class="hl">🔴 <b>비중↓</b> '+dp.down.slice(0,6).map(r=>esc(r.ticker||r.name)+" "+r.delta+"%p").join(", ")+(dp.down.length>6?" 외 "+(dp.down.length-6):"")+'</div>';
+    }else if(dp.metric==="cu_shares"){
+      if(dp.up.length) h+='<div class="hl">🟢 <b>능동증량</b> '+dp.up.slice(0,6).map(r=>esc(r.ticker||r.name)+" +"+num(r.delta)).join(", ")+(dp.up.length>6?" 외 "+(dp.up.length-6):"")+'</div>';
+      if(dp.down.length) h+='<div class="hl">🔴 <b>능동감량</b> '+dp.down.slice(0,6).map(r=>esc(r.ticker||r.name)+" "+num(r.delta)).join(", ")+(dp.down.length>6?" 외 "+(dp.down.length-6):"")+'</div>';
+    }
+    if(!dp.new.length&&!dp.removed.length&&!dp.up.length&&!dp.down.length) h+='<div class="hl muted">변동 없음</div>';
+    h+='</div>';
+  }
+  c.innerHTML=h;
+}
+
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(render).catch(e=>{
+  document.getElementById("summaryCard").innerHTML='<div class="note">로드 실패: '+esc(e)+'</div>'});
+</script>
+</body>
+</html>
