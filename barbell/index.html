@@ -77,6 +77,7 @@ a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
 
   <h4>지표 설명</h4>
   <p><b>52주 위치</b> = (현재가 − 52주 최저) ÷ (52주 최고 − 최저). 0%=바닥, 100%=고점. 사이클 내 <b>절대 위치</b>.</p>
+  <p><b>vs MA20</b> = 20일 이동평균(≈1개월) 대비. <b>단기 위치</b> — 사이클 판별용이 아니라, 표에서 후보를 추린 뒤 <b>단기 진입 타이밍</b>을 보조로 볼 때(사이클은 50/200, 20은 단기 참고).</p>
   <p><b>vs MA200</b> = 200일 이동평균(≈1 거래년) 대비 거리. <b>장기 추세·대피선</b> — 가격이 MA200 위=지난 1년 평균 매수자 이익(강세 국면)/아래=전환. 멀수록(예 +199%) 과열, 음수(예 −29%)는 바닥권. <span class="mut">우리 검증: MA200 이탈 대피가 닷컴·2008·IMF에서 MDD 25~45%p 방어.</span></p>
   <p><b>vs MA50</b> = 50일 이동평균(≈한 분기) 대비. <b>중기 추세·변곡</b> — MA50이 MA200보다 빨리 돌아서 사이클 변곡을 몇 달 먼저 경고(MA50이 MA200 아래로 = 데드크로스).</p>
   <p class="mut">왜 쌍으로? 단일 MA는 거짓신호가 많지만, 50/200은 <b>방향(200) × 속도·변곡(50)</b>을 동시에 보고, MA와의 거리가 곧 <b>과열/과매도 = 사이클 위치</b>입니다.</p>
@@ -84,6 +85,12 @@ a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
   <h4>FwdPE (선행 PER · Forward P/E)</h4>
   <p>= 주가 ÷ <b>향후 12개월 예상 주당순이익(EPS)</b>. 과거 실적이 아니라 <b>증권사 컨센서스(추정) 미래 이익</b> 기준 밸류에이션. 낮으면 이익 대비 싸다, 높으면 비싸다/고성장 기대.</p>
   <p class="mut">⚠ <b>시클리컬 함정</b>: 경기민감주는 이익 정점에서 PER이 가장 낮게(싸 보이게) 찍히고 직후 꺾이는 경우가 많음 — 저PER이 곧 매수 아님. ⚠ 추정치라 빗나갈 수 있고(컨센 하향 시 실제 PER 급등), 본 표엔 <b>일부 종목만 표기</b>(데이터 보유분), '–'=값 없음.</p>
+
+  <h4>PER 읽는 법 — 성장주 vs 시클리컬 (두 유형)</h4>
+  <p><b>같은 PER도 유형에 따라 정반대로 읽습니다.</b> PER만으론 사이클 위치(저점/고점)를 못 가립니다 — 유형을 먼저 판별하세요.</p>
+  <p>· <b>성장주</b>(예 Snowflake 86x · ARM 143x): 고PER = "성장으로 갚을 빚". 이익(E)이 자라며 PER이 낮아지면 정당화 → <b>성장 지속이 관건</b>. 성장 실망 시 주가 급락으로 디레이팅.</p>
+  <p>· <b>시클리컬</b>(예 Micron 9.6x): 저PER + 주가 고점 = 이익(E) 정점의 착시 → <b>사이클 꺾임이 위험</b>. 저PER이 매수가 아니라 경고일 수 있음.</p>
+  <p class="mut">∴ FwdPE → 유형(성장/시클리컬) 판별 → 그 다음 해석. 사이클 위치(저점/고점)는 PER이 아니라 52주 위치·MA200으로 봅니다.</p>
 
   <h4>버킷(색) 의미</h4>
   <p><span class="pill" style="color:var(--low)">🟢 안붐빔</span>52주 위치 ≤35% = 저점권 = <b>신규 틸트 후보</b>(단, 싼 이유=falsifier가 일시적이어야 기회, §136).</p>
@@ -133,14 +140,18 @@ function render(){
     h+='<div class="sec"><span class="dot '+g+'"></span>'+BKNAME[g]+' <span class="note">('+gr.length+')</span></div>';
     h+='<table><thead><tr><th class="l" onclick="sortBy(\'name\')">종목'+arrow('name')+'</th>'+
        '<th onclick="sortBy(\'pos52\')">52주%'+arrow('pos52')+'</th>'+
-       '<th onclick="sortBy(\'vs200\')">vsMA200'+arrow('vs200')+'</th>'+
+       '<th onclick="sortBy(\'vs20\')">vsMA20'+arrow('vs20')+'</th>'+
        '<th onclick="sortBy(\'vs50\')">vsMA50'+arrow('vs50')+'</th>'+
+       '<th onclick="sortBy(\'vs200\')">vsMA200'+arrow('vs200')+'</th>'+
        '<th onclick="sortBy(\'fpe\')">FwdPE'+arrow('fpe')+'</th><th class="l">테마</th></tr></thead><tbody>';
     for(const r of gr){
-      const c200=r.vs200>0?'pos':'neg',c50=r.vs50>0?'pos':'neg';
+      const c20=r.vs20>0?'pos':'neg',c50=r.vs50>0?'pos':'neg',c200=r.vs200>0?'pos':'neg';
       h+='<tr><td class="l">'+r.flag+' <span class="nm">'+esc(r.name)+'</span>'+(r.bars<252?' <span class="tag">⚠단기</span>':'')+'</td>'+
-         '<td>'+r.pos52.toFixed(0)+'%</td><td class="'+c200+'">'+(r.vs200>0?'+':'')+r.vs200.toFixed(0)+'%</td>'+
-         '<td class="'+c50+'">'+(r.vs50>0?'+':'')+r.vs50.toFixed(0)+'%</td><td>'+fmtPE(r.fpe)+'</td>'+
+         '<td>'+r.pos52.toFixed(0)+'%</td>'+
+         '<td class="'+c20+'">'+(r.vs20>0?'+':'')+r.vs20.toFixed(0)+'%</td>'+
+         '<td class="'+c50+'">'+(r.vs50>0?'+':'')+r.vs50.toFixed(0)+'%</td>'+
+         '<td class="'+c200+'">'+(r.vs200>0?'+':'')+r.vs200.toFixed(0)+'%</td>'+
+         '<td>'+fmtPE(r.fpe)+'</td>'+
          '<td class="l tag">'+esc(r.themes.join("/"))+'</td></tr>';
     }
     h+='</tbody></table>';
