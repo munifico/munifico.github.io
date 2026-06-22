@@ -42,21 +42,21 @@ td.l,th.l{text-align:left}
 .pos{color:var(--high)}.neg{color:var(--low)}
 .warnbox{background:color-mix(in srgb,var(--mid) 12%,transparent);border:1px solid var(--mid);border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.6;margin-top:16px}
 a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
-.help{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 14px;margin-top:14px;font-size:13px;line-height:1.7}
-.help summary{cursor:pointer;font-weight:700;padding:13px 2px;font-size:14px;list-style:none}
-.help summary::-webkit-details-marker{display:none}
-.help summary::before{content:"▸ ";color:var(--accent)}
-.help[open] summary::before{content:"▾ "}
-.help h4{margin:14px 0 4px;font-size:13.5px;color:var(--accent)}
-.help p{margin:5px 0;color:var(--fg)}
-.help .mut{color:var(--muted);font-size:12.5px}
-.help b{color:var(--fg)}
-.help .pill{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-right:4px;font-size:12px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;padding:16px;overflow:auto}
+.modal.on{display:block}
+.mbox{max-width:680px;margin:24px auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-size:13px;line-height:1.7}
+.mbox .mtitle{font-size:16px;font-weight:700;margin:0 0 6px}
+.mbox h4{margin:14px 0 4px;font-size:13.5px;color:var(--accent)}
+.mbox p{margin:5px 0;color:var(--fg)}
+.mbox .mut{color:var(--muted);font-size:12.5px}
+.mbox b{color:var(--fg)}
+.mbox .pill{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-right:4px;font-size:12px}
+.mclose{float:right;cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
 </style>
 </head>
 <body>
 <nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../etf_check/">📦 ETF구성</a><a class="hubnav-item active" href="../barbell/">⚖️ 바벨</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
-<header><h1>⚖️ 사이클 위치 바벨</h1><button class="toggle" onclick="toggleTheme()">🌓</button></header>
+<header><h1>⚖️ 사이클 위치 바벨</h1><button class="toggle" onclick="document.getElementById('helpModal').classList.add('on')">❓ 도움말</button><button class="toggle" onclick="toggleTheme()">🌓</button></header>
 <div class="wrap">
   <div id="meta" class="note">불러오는 중…</div>
   <div class="chips" id="chips"></div>
@@ -68,8 +68,9 @@ a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
   </div>
   <div id="groups"></div>
 
-  <details class="help">
-  <summary>📖 도움말 · 용어 설명 (52주 위치 · MA50/200 · FwdPE)</summary>
+  <div class="modal" id="helpModal"><div class="mbox">
+  <span class="mclose" onclick="document.getElementById('helpModal').classList.remove('on')">×</span>
+  <div class="mtitle">📖 도움말 · 용어 설명 (52주 위치 · MA50/200 · FwdPE)</div>
 
   <h4>왜 사이클을 52주 위치·MA50·MA200으로 보나</h4>
   <p>이동평균선은 <b>"시간 렌즈"</b>입니다 — N일 평균 = 그 기간 시장의 평균 매입단가·추세 기억. 사이클(수개월~수년)은 <b>장기 렌즈(50·200)</b>로 봐야 합니다. MA20(≈1개월)은 줌이 너무 당겨져 어떤 국면에서도 가격이 위아래로 들락거려 <b>사이클 위상을 못 가립니다</b> → 20은 사이클이 아니라 <b>진입 타이밍</b>용(테마진입 페이지의 엔벨로프·MA20, 이격도 분석이 담당).</p>
@@ -91,7 +92,7 @@ a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
 
   <h4>⚠ 한계 (정직하게)</h4>
   <p class="mut">50/200은 관습적 숫자이고 이동평균은 <b>후행</b>합니다 — 메모리처럼 변동 큰 시클리컬은 사이클이 MA200 확인보다 빨리 꺾일 수 있음. 본 카드는 <b>정보·맥락</b>이지 매매 타이밍 신호가 아닙니다.</p>
-  </details>
+  </div></div>
 
   <div class="warnbox">⚠ <b>참고용 맥락이며 매매 신호가 아닙니다.</b> 52주 위치는 '사이클 어디쯤'의 맥락입니다. 🟢저점권이라고 매수가 아니라 <b>싼 이유(falsifier)가 일시적인지</b> 확인해야 기회입니다(§136). 🔴붐빔은 모멘텀이 살아있을 수 있으나 신규 추격은 위험(시클리컬 동반급락). fwd P/E는 일부 종목만 표기.</div>
 </div>
@@ -100,6 +101,7 @@ function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"
 function toggleTheme(){const d=document.documentElement.getAttribute("data-theme")==="dark";
  document.documentElement.setAttribute("data-theme",d?"light":"dark");localStorage.setItem("bb_theme",d?"light":"dark")}
 if(localStorage.getItem("bb_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");
+window.addEventListener("click",function(e){if(e.target.classList&&e.target.classList.contains("modal"))e.target.classList.remove("on");});
 let DATA=null,SORT={k:"pos52",asc:true};
 const BKNAME={low:"🟢 안붐빔 (저점권 = 신규 틸트 후보)",mid:"🟡 중립",high:"🔴 붐빔 (고점권 = 모멘텀 보유·추격 자제)"};
 
