@@ -128,7 +128,7 @@ td a.codelink:hover{text-decoration:underline}
   <label><input type="checkbox" id="fDone"> 평가완료만</label>
   <label><input type="checkbox" id="fPending"> ⏳ 대기만</label>
   <label><input type="checkbox" id="fGroup"> 🔁 종목 묶기(최신)</label>
-  <label><input type="checkbox" id="fCombo"> ⭐ TU+수급 조합만</label>
+  <label><input type="checkbox" id="fCombo"> ⭐ 진입후보(수급BUY→TU)만</label>
   <span class="gen" id="cnt"></span>
 </div>
 <div class="wrap">
@@ -274,7 +274,7 @@ function render(){
  tb.innerHTML=pg.map(r=>{
   return '<tr>'+
    '<td data-label="일자">'+fmtDate(r.date)+'</td>'+
-   '<td data-label="종목">'+esc(r.name)+(r.combo?' <span title="TARGET_UP+수급다이버전스 동반 — forward PFnet 1.8~2.6">⭐</span>':'')+((r.npeer||0)>0?' <span style="font-size:10px;color:#999" title="동반 신호 '+r.npeer+'종">+'+r.npeer+'</span>':'')+'</td>'+
+   '<td data-label="종목">'+esc(r.name)+(r.combo?' <span title="진입후보: 수급BUY 0~5일 선행 + TARGET_UP (단방향) — forward D+5 PFnet 2.61">⭐</span>':'')+((r.npeer||0)>0?' <span style="font-size:10px;color:#999" title="동반 신호 '+r.npeer+'종">+'+r.npeer+'</span>':'')+'</td>'+
    '<td data-label="코드"><a class="codelink" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+'/price" target="_blank" rel="noopener">'+esc(r.code)+'</a></td>'+
    '<td data-label="시장">'+esc(r.market||"")+'</td>'+
    '<td data-label="출처"><span class="src-tag">'+srcKo(r.src)+'</span></td>'+
