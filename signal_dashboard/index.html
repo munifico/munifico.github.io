@@ -117,6 +117,10 @@ td a.codelink:hover{text-decoration:underline}
   <summary>🏷 테마별 신호 <span class="hint">— 네이버 테마 (평가완료 N≥3, 평균 D+5 정렬). 다중 테마는 중복 집계. 행 클릭 → 해당 테마 목록</span></summary>
   <table class="aggtbl"><thead><tr id="aggThHead"></tr></thead><tbody id="aggThBody"></tbody></table>
 </details>
+<details class="agg" id="aggBrokerBox">
+  <summary>🏦 증권사별 목표가상향 <span class="hint">— 발행 N≥5 (평균 D+5 정렬). ⚠ 멜트업·절대수익이라 증권사간 상대비교용 · 인기종목 추종 가능 · 깊은 PF/동일가중은 broker_target_up_audit. 행 클릭 → 해당 증권사 목록</span></summary>
+  <table class="aggtbl"><thead><tr id="aggBrHead"></tr></thead><tbody id="aggBrBody"></tbody></table>
+</details>
 <div class="controls">
   <input id="q" placeholder="🔎 종목명·코드 검색" size="18">
   <select id="fSrc"><option value="">전체 출처</option></select>
@@ -264,6 +268,7 @@ const COLS=[
 let DATA=[],view=[],sortK="date",sortDir=-1,page=0,HAS_EXT=false;const PER=100;
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function fmtDate(d){return d&&d.length===8?d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6):esc(d)}
+function brkShort(b){const a=b.split(", ");return a[0].replace("투자증권","").replace("증권","")+(a.length>1?" 외"+(a.length-1):"")}
 function numCell(v,lab){const L=lab?' data-label="'+lab+'"':'';if(v==null)return '<td class="num pending"'+L+'>–</td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'"'+L+'>'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
 // 중기(D+20) 보조 셀: 값 없으면 빈 td (모바일에서 숨김, hit 무관 신호 한정)
 function extCell(v){if(v==null)return '<td class="num" data-label="D+20%"></td>';const c=v>0?"up":(v<0?"dn":"");return '<td class="num '+c+'" data-label="D+20%">'+(v>0?"+":"")+v.toFixed(1)+'</td>'}
@@ -274,7 +279,7 @@ function render(){
  tb.innerHTML=pg.map(r=>{
   return '<tr>'+
    '<td data-label="일자">'+fmtDate(r.date)+'</td>'+
-   '<td data-label="종목">'+esc(r.name)+(r.combo?' <span title="진입후보: 수급BUY 0~5일 선행 + TARGET_UP (단방향) — forward D+5 PFnet 2.61">⭐</span>':'')+((r.npeer||0)>0?' <span style="font-size:10px;color:#999" title="동반 신호 '+r.npeer+'종">+'+r.npeer+'</span>':'')+'</td>'+
+   '<td data-label="종목">'+esc(r.name)+(r.combo?' <span title="진입후보: 수급BUY 0~5일 선행 + TARGET_UP (단방향) — forward D+5 PFnet 2.61">⭐</span>':'')+((r.npeer||0)>0?' <span style="font-size:10px;color:#999" title="동반 신호 '+r.npeer+'종">+'+r.npeer+'</span>':'')+(r.broker?' <span style="font-size:10px;color:#2563eb" title="목표가상향: '+esc(r.broker)+'">🏦'+esc(brkShort(r.broker))+'</span>':'')+'</td>'+
    '<td data-label="코드"><a class="codelink" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+'/price" target="_blank" rel="noopener">'+esc(r.code)+'</a></td>'+
    '<td data-label="시장">'+esc(r.market||"")+'</td>'+
    '<td data-label="출처"><span class="src-tag">'+srcKo(r.src)+'</span></td>'+
@@ -308,7 +313,7 @@ function apply(){
  const fg=document.getElementById("fGroup").checked;
  const fc=document.getElementById("fCombo").checked;
  view=DATA.filter(r=>{
-  if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.code).includes(q)))return false;
+  if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.code).includes(q)||(r.broker||"").toLowerCase().includes(q)))return false;
   if(fc&&!r.combo)return false;
   if(ft&&r.type!==ft)return false;
   if(fr&&r.regime!==fr)return false;
@@ -419,10 +424,28 @@ function aggTheme(){
   tr.onclick=()=>{document.getElementById("fTheme").value=A[i].theme;document.getElementById("fGroup").checked=false;apply();
    const c=document.querySelector(".controls");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})}}});
 }
+// 🏦 증권사(broker)별 TARGET_UP 집계 — 발행N + 평균D+5 + hit (멜트업 절대치·상대비교용)
+function aggBroker(){
+ const m={};
+ DATA.forEach(r=>{if(r.type!=="TARGET_UP"||r.status!=="done"||!r.broker)return;
+  r.broker.split(", ").forEach(b=>{if(!b)return;const g=m[b]||(m[b]={broker:b,n:0,s5:0,hit:0});g.n++;g.s5+=r.d5||0;if(r.hit)g.hit++})});
+ let A=Object.values(m).filter(g=>g.n>=5);
+ A.forEach(g=>{g.avg5=g.s5/g.n;g.hr=g.hit/g.n*100});
+ A.sort((a,b)=>b.avg5-a.avg5);
+ document.getElementById("aggBrHead").innerHTML='<th class="l">증권사</th><th>발행N</th><th>평균D+5%</th><th>hit%</th>';
+ const maxn=Math.max.apply(null,A.map(g=>g.n).concat(1));
+ document.getElementById("aggBrBody").innerHTML=(A.length?A.map(g=>{const c=g.avg5>0?"up":(g.avg5<0?"dn":"");
+  return '<tr><td class="l">'+esc(g.broker)+'</td><td>'+g.n+' <span class="bar" style="width:'+(g.n/maxn*40).toFixed(0)+'px"></span></td>'+
+   '<td class="'+c+'">'+(g.avg5>0?"+":"")+g.avg5.toFixed(1)+'</td><td>'+g.hr.toFixed(0)+'%</td></tr>'}).join("")
+  :'<tr><td colspan="4" class="muted">발행 N≥5 증권사 없음(평가완료 기준)</td></tr>');
+ document.querySelectorAll("#aggBrBody tr").forEach((tr,i)=>{if(A[i]){tr.style.cursor="pointer";tr.title="클릭 → 이 증권사 목표가상향 목록";
+  tr.onclick=()=>{document.getElementById("q").value=A[i].broker;document.getElementById("fType").value="TARGET_UP";apply();
+   const c=document.querySelector(".controls");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})}}});
+}
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  DATA=j.rows;HAS_EXT=DATA.some(r=>r.dext_days!=null);
  document.getElementById("gen").textContent="갱신 "+j.generated+" · D+"+j.fwd_days+" 평가 · hit ≥"+j.surge_pct+"%";
- cards(j.stats);aggregate();aggTheme();buildHead();fillFilters();apply();
+ cards(j.stats);aggregate();aggTheme();aggBroker();buildHead();fillFilters();apply();
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요 (python -m http.server). "+e});
 </script>
