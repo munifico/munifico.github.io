@@ -128,6 +128,7 @@ td a.codelink:hover{text-decoration:underline}
   <label><input type="checkbox" id="fDone"> 평가완료만</label>
   <label><input type="checkbox" id="fPending"> ⏳ 대기만</label>
   <label><input type="checkbox" id="fGroup"> 🔁 종목 묶기(최신)</label>
+  <label><input type="checkbox" id="fCombo"> ⭐ TU+수급 조합만</label>
   <span class="gen" id="cnt"></span>
 </div>
 <div class="wrap">
@@ -273,7 +274,7 @@ function render(){
  tb.innerHTML=pg.map(r=>{
   return '<tr>'+
    '<td data-label="일자">'+fmtDate(r.date)+'</td>'+
-   '<td data-label="종목">'+esc(r.name)+'</td>'+
+   '<td data-label="종목">'+esc(r.name)+(r.combo?' <span title="TARGET_UP+수급다이버전스 동반 — forward PFnet 1.8~2.6">⭐</span>':'')+((r.npeer||0)>0?' <span style="font-size:10px;color:#999" title="동반 신호 '+r.npeer+'종">+'+r.npeer+'</span>':'')+'</td>'+
    '<td data-label="코드"><a class="codelink" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+'/price" target="_blank" rel="noopener">'+esc(r.code)+'</a></td>'+
    '<td data-label="시장">'+esc(r.market||"")+'</td>'+
    '<td data-label="출처"><span class="src-tag">'+srcKo(r.src)+'</span></td>'+
@@ -305,8 +306,10 @@ function apply(){
  const fh=document.getElementById("fHit").checked,fd=document.getElementById("fDone").checked;
  const fp=document.getElementById("fPending").checked;
  const fg=document.getElementById("fGroup").checked;
+ const fc=document.getElementById("fCombo").checked;
  view=DATA.filter(r=>{
   if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.code).includes(q)))return false;
+  if(fc&&!r.combo)return false;
   if(ft&&r.type!==ft)return false;
   if(fr&&r.regime!==fr)return false;
   if(fs&&r.src!==fs)return false;
@@ -389,7 +392,7 @@ document.getElementById("helpClose").onclick=()=>_hm.classList.remove("open");
 _hm.onclick=e=>{if(e.target===_hm)_hm.classList.remove("open")};
 document.addEventListener("keydown",e=>{if(e.key==="Escape")_hm.classList.remove("open")});
 if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
-["q","fSrc","fMarket","fType","fTheme","fRegime","fHit","fDone","fPending","fGroup"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+["q","fSrc","fMarket","fType","fTheme","fRegime","fHit","fDone","fPending","fGroup","fCombo"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
 // 조합표 행 클릭 → 해당 신호×장세 로 메인 표 필터(드릴다운)
 function drill(t,r){
  document.getElementById("fType").value=t;
