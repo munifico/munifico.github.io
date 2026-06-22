@@ -42,6 +42,16 @@ td.l,th.l{text-align:left}
 .pos{color:var(--high)}.neg{color:var(--low)}
 .warnbox{background:color-mix(in srgb,var(--mid) 12%,transparent);border:1px solid var(--mid);border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.6;margin-top:16px}
 a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
+.help{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 14px;margin-top:14px;font-size:13px;line-height:1.7}
+.help summary{cursor:pointer;font-weight:700;padding:13px 2px;font-size:14px;list-style:none}
+.help summary::-webkit-details-marker{display:none}
+.help summary::before{content:"▸ ";color:var(--accent)}
+.help[open] summary::before{content:"▾ "}
+.help h4{margin:14px 0 4px;font-size:13.5px;color:var(--accent)}
+.help p{margin:5px 0;color:var(--fg)}
+.help .mut{color:var(--muted);font-size:12.5px}
+.help b{color:var(--fg)}
+.help .pill{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-right:4px;font-size:12px}
 </style>
 </head>
 <body>
@@ -57,6 +67,32 @@ a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
     <select id="fBk" onchange="render()"><option value="">전체</option><option value="low">🟢안붐빔</option><option value="mid">🟡중립</option><option value="high">🔴붐빔</option></select>
   </div>
   <div id="groups"></div>
+
+  <details class="help">
+  <summary>📖 도움말 · 용어 설명 (52주 위치 · MA50/200 · FwdPE)</summary>
+
+  <h4>왜 사이클을 52주 위치·MA50·MA200으로 보나</h4>
+  <p>이동평균선은 <b>"시간 렌즈"</b>입니다 — N일 평균 = 그 기간 시장의 평균 매입단가·추세 기억. 사이클(수개월~수년)은 <b>장기 렌즈(50·200)</b>로 봐야 합니다. MA20(≈1개월)은 줌이 너무 당겨져 어떤 국면에서도 가격이 위아래로 들락거려 <b>사이클 위상을 못 가립니다</b> → 20은 사이클이 아니라 <b>진입 타이밍</b>용(테마진입 페이지의 엔벨로프·MA20, 이격도 분석이 담당).</p>
+
+  <h4>지표 설명</h4>
+  <p><b>52주 위치</b> = (현재가 − 52주 최저) ÷ (52주 최고 − 최저). 0%=바닥, 100%=고점. 사이클 내 <b>절대 위치</b>.</p>
+  <p><b>vs MA200</b> = 200일 이동평균(≈1 거래년) 대비 거리. <b>장기 추세·대피선</b> — 가격이 MA200 위=지난 1년 평균 매수자 이익(강세 국면)/아래=전환. 멀수록(예 +199%) 과열, 음수(예 −29%)는 바닥권. <span class="mut">우리 검증: MA200 이탈 대피가 닷컴·2008·IMF에서 MDD 25~45%p 방어.</span></p>
+  <p><b>vs MA50</b> = 50일 이동평균(≈한 분기) 대비. <b>중기 추세·변곡</b> — MA50이 MA200보다 빨리 돌아서 사이클 변곡을 몇 달 먼저 경고(MA50이 MA200 아래로 = 데드크로스).</p>
+  <p class="mut">왜 쌍으로? 단일 MA는 거짓신호가 많지만, 50/200은 <b>방향(200) × 속도·변곡(50)</b>을 동시에 보고, MA와의 거리가 곧 <b>과열/과매도 = 사이클 위치</b>입니다.</p>
+
+  <h4>FwdPE (선행 PER · Forward P/E)</h4>
+  <p>= 주가 ÷ <b>향후 12개월 예상 주당순이익(EPS)</b>. 과거 실적이 아니라 <b>증권사 컨센서스(추정) 미래 이익</b> 기준 밸류에이션. 낮으면 이익 대비 싸다, 높으면 비싸다/고성장 기대.</p>
+  <p class="mut">⚠ <b>시클리컬 함정</b>: 경기민감주는 이익 정점에서 PER이 가장 낮게(싸 보이게) 찍히고 직후 꺾이는 경우가 많음 — 저PER이 곧 매수 아님. ⚠ 추정치라 빗나갈 수 있고(컨센 하향 시 실제 PER 급등), 본 표엔 <b>일부 종목만 표기</b>(데이터 보유분), '–'=값 없음.</p>
+
+  <h4>버킷(색) 의미</h4>
+  <p><span class="pill" style="color:var(--low)">🟢 안붐빔</span>52주 위치 ≤35% = 저점권 = <b>신규 틸트 후보</b>(단, 싼 이유=falsifier가 일시적이어야 기회, §136).</p>
+  <p><span class="pill" style="color:var(--mid)">🟡 중립</span>35~80%.</p>
+  <p><span class="pill" style="color:var(--high)">🔴 붐빔</span>52주 위치 ≥80% = 고점권 = <b>모멘텀 보유·신규 추격 자제</b>(시클리컬 동반급락 위험).</p>
+
+  <h4>⚠ 한계 (정직하게)</h4>
+  <p class="mut">50/200은 관습적 숫자이고 이동평균은 <b>후행</b>합니다 — 메모리처럼 변동 큰 시클리컬은 사이클이 MA200 확인보다 빨리 꺾일 수 있음. 본 카드는 <b>정보·맥락</b>이지 매매 타이밍 신호가 아닙니다.</p>
+  </details>
+
   <div class="warnbox">⚠ <b>참고용 맥락이며 매매 신호가 아닙니다.</b> 52주 위치는 '사이클 어디쯤'의 맥락입니다. 🟢저점권이라고 매수가 아니라 <b>싼 이유(falsifier)가 일시적인지</b> 확인해야 기회입니다(§136). 🔴붐빔은 모멘텀이 살아있을 수 있으나 신규 추격은 위험(시클리컬 동반급락). fwd P/E는 일부 종목만 표기.</div>
 </div>
 <script>
