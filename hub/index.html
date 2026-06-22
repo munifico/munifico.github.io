@@ -140,6 +140,10 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   <div class="sec-title">🫧 AI 버블 온도 (ARK) <span class="sub">투기 코호트 froth 맥락 · 선행 경고 아님(검증) · 정보성</span></div>
   <div class="card" id="arkCard"><div class="empty">불러오는 중…</div></div>
 
+  <!-- 📅 다가오는 실적 (우리 유니버스) -->
+  <div class="sec-title">📅 다가오는 실적 <span class="sub">우리 추적 종목 · 예상 발표일(yfinance 컨센) · 정보성</span></div>
+  <div class="card" id="earningsCard"><div class="empty">불러오는 중…</div></div>
+
   <!-- 미장 + 페인지수 -->
   <div class="sec-title">🇺🇸 미장 · 트럼프 페인 인덱스 <span class="sub" id="usAsof"></span></div>
   <div class="card" id="painCard"><div class="empty">불러오는 중…</div></div>
@@ -386,6 +390,28 @@ function renderArk(a,attention){
  card.innerHTML=html;
 }
 
+/* 📅 다가오는 실적 (우리 유니버스 예정일, 정보성) */
+function renderEarnings(e){
+ const card=document.getElementById("earningsCard");
+ if(!e||!e.items||!e.items.length){card.innerHTML='<div class="empty">예정 실적 없음</div>';return}
+ const flag={"코스피":"🇰🇷","코스닥":"🇰🇷","KR":"🇰🇷","US":"🇺🇸","TW":"🇹🇼","DE":"🇩🇪"};
+ const rows=e.items.map(function(it){
+  const dd=it.dday===0?"오늘":("D-"+it.dday);
+  const dim=it.within?"":' style="opacity:.5"';
+  return '<div class="item"'+dim+'><div class="item-row">'+
+   '<span class="item-name">'+(flag[it.market]||"")+' '+esc(it.name)+
+     (it.theme?' <span class="flag near">'+esc(it.theme)+'</span>':"")+'</span>'+
+   '<span class="item-sig">'+esc(it.date)+' · '+dd+'</span></div></div>';
+ }).join("");
+ const note=(e.within_count<e.items.length)
+   ?('향후 '+e.days+'일 내 '+e.within_count+'건 · 이후 예정 보충(흐림)')
+   :('향후 '+e.days+'일 · '+e.items.length+'건');
+ card.innerHTML='<div class="pain-sub" style="margin-bottom:6px">'+note+(e.asof?' · 기준 '+esc(e.asof):'')+'</div>'+rows+
+  '<details class="help"><summary>📖 설명</summary><div>'+
+  '우리가 추적하는 종목(thememap+jensen)의 실적 발표 예정일. 예상 발표일=yfinance(컨센서스)라 실제 공시와 ±며칠 차이날 수 있고, 한국 소형주 일부는 미제공(누락). '+
+  '<b>⚠ '+esc(e.framing||"")+'</b></div></details>';
+}
+
 /* 미국 위험·심리 게이지 (FRED + CNN) */
 function renderRisk(b){
  const card=document.getElementById("riskCard");
@@ -546,7 +572,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderDerisk(j.derisk,j.credit);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
+ renderDerisk(j.derisk,j.credit);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderEarnings(j.earnings);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
