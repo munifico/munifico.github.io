@@ -77,6 +77,7 @@ a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
 
   <h4>지표 설명</h4>
   <p><b>52주 위치</b> = (현재가 − 52주 최저) ÷ (52주 최고 − 최저). 0%=바닥, 100%=고점. 사이클 내 <b>절대 위치</b>.</p>
+  <p><b>5일%</b> = 최근 5거래일 주가 등락률(<b>단기 추세</b> 참고, 수급무브와 동일). 사이클 판별이 아니라 "지금 어느 쪽으로 움직이는 중인가".</p>
   <p><b>vs MA20</b> = 20일 이동평균(≈1개월) 대비. <b>단기 위치</b> — 사이클 판별용이 아니라, 표에서 후보를 추린 뒤 <b>단기 진입 타이밍</b>을 보조로 볼 때(사이클은 50/200, 20은 단기 참고).</p>
   <p><b>vs MA200</b> = 200일 이동평균(≈1 거래년) 대비 거리. <b>장기 추세·대피선</b> — 가격이 MA200 위=지난 1년 평균 매수자 이익(강세 국면)/아래=전환. 멀수록(예 +199%) 과열, 음수(예 −29%)는 바닥권. <span class="mut">우리 검증: MA200 이탈 대피가 닷컴·2008·IMF에서 MDD 25~45%p 방어.</span></p>
   <p><b>vs MA50</b> = 50일 이동평균(≈한 분기) 대비. <b>중기 추세·변곡</b> — MA50이 MA200보다 빨리 돌아서 사이클 변곡을 몇 달 먼저 경고(MA50이 MA200 아래로 = 데드크로스).</p>
@@ -140,14 +141,17 @@ function render(){
     h+='<div class="sec"><span class="dot '+g+'"></span>'+BKNAME[g]+' <span class="note">('+gr.length+')</span></div>';
     h+='<table><thead><tr><th class="l" onclick="sortBy(\'name\')">종목'+arrow('name')+'</th>'+
        '<th onclick="sortBy(\'pos52\')">52주%'+arrow('pos52')+'</th>'+
+       '<th onclick="sortBy(\'ret5\')">5일%'+arrow('ret5')+'</th>'+
        '<th onclick="sortBy(\'vs20\')">vsMA20'+arrow('vs20')+'</th>'+
        '<th onclick="sortBy(\'vs50\')">vsMA50'+arrow('vs50')+'</th>'+
        '<th onclick="sortBy(\'vs200\')">vsMA200'+arrow('vs200')+'</th>'+
        '<th onclick="sortBy(\'fpe\')">FwdPE'+arrow('fpe')+'</th><th class="l">테마</th></tr></thead><tbody>';
     for(const r of gr){
       const c20=r.vs20>0?'pos':'neg',c50=r.vs50>0?'pos':'neg',c200=r.vs200>0?'pos':'neg';
+      const r5=r.ret5==null?'<span class="tag">–</span>':'<span class="'+(r.ret5>0?'pos':(r.ret5<0?'neg':''))+'">'+(r.ret5>0?'+':'')+r.ret5.toFixed(1)+'%</span>';
       h+='<tr><td class="l">'+r.flag+' <span class="nm">'+esc(r.name)+'</span>'+(r.bars<252?' <span class="tag">⚠단기</span>':'')+'</td>'+
          '<td>'+r.pos52.toFixed(0)+'%</td>'+
+         '<td>'+r5+'</td>'+
          '<td class="'+c20+'">'+(r.vs20>0?'+':'')+r.vs20.toFixed(0)+'%</td>'+
          '<td class="'+c50+'">'+(r.vs50>0?'+':'')+r.vs50.toFixed(0)+'%</td>'+
          '<td class="'+c200+'">'+(r.vs200>0?'+':'')+r.vs200.toFixed(0)+'%</td>'+
