@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>사이클 위치 바벨</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--low:#16a34a;--mid:#d97706;--high:#dc2626;--accent:#7c3aed}
+[data-theme=dark]{--bg:#0f1115;--card:#1a1d23;--fg:#e5e7eb;--muted:#9ca3af;--line:#2d3138;--low:#4ade80;--mid:#fbbf24;--high:#f87171;--accent:#a78bfa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic",sans-serif}
+
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+
+header{padding:14px 16px 4px;display:flex;align-items:center;gap:12px}
+h1{font-size:19px;margin:0}
+.toggle{margin-left:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.wrap{padding:8px 16px 48px;max-width:980px;margin:0 auto}
+.note{color:var(--muted);font-size:12.5px;line-height:1.6}.note b{color:var(--fg)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:7px 11px;font-size:13px}
+.chip b{font-size:16px}.chip.low b{color:var(--low)}.chip.mid b{color:var(--mid)}.chip.high b{color:var(--high)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.filters select,.filters input{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px}
+.sec{font-size:14px;font-weight:700;margin:18px 2px 8px;display:flex;align-items:center;gap:6px}
+.sec .dot{width:10px;height:10px;border-radius:50%}
+.dot.low{background:var(--low)}.dot.mid{background:var(--mid)}.dot.high{background:var(--high)}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border-radius:12px;overflow:hidden}
+th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600;font-size:12px;cursor:pointer}
+td.l,th.l{text-align:left}
+.nm{font-weight:600}.tag{color:var(--muted);font-size:11px}
+.pos{color:var(--high)}.neg{color:var(--low)}
+.warnbox{background:color-mix(in srgb,var(--mid) 12%,transparent);border:1px solid var(--mid);border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.6;margin-top:16px}
+a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../etf_check/">📦 ETF구성</a><a class="hubnav-item active" href="../barbell/">⚖️ 바벨</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<header><h1>⚖️ 사이클 위치 바벨</h1><button class="toggle" onclick="toggleTheme()">🌓</button></header>
+<div class="wrap">
+  <div id="meta" class="note">불러오는 중…</div>
+  <div class="chips" id="chips"></div>
+  <div class="filters">
+    <select id="fMkt" onchange="render()"><option value="">전체 시장</option></select>
+    <select id="fTheme" onchange="render()"><option value="">전체 테마</option></select>
+    <input id="fName" placeholder="종목 검색" oninput="render()">
+    <select id="fBk" onchange="render()"><option value="">전체</option><option value="low">🟢안붐빔</option><option value="mid">🟡중립</option><option value="high">🔴붐빔</option></select>
+  </div>
+  <div id="groups"></div>
+  <div class="warnbox">⚠ <b>참고용 맥락이며 매매 신호가 아닙니다.</b> 52주 위치는 '사이클 어디쯤'의 맥락입니다. 🟢저점권이라고 매수가 아니라 <b>싼 이유(falsifier)가 일시적인지</b> 확인해야 기회입니다(§136). 🔴붐빔은 모멘텀이 살아있을 수 있으나 신규 추격은 위험(시클리컬 동반급락). fwd P/E는 일부 종목만 표기.</div>
+</div>
+<script>
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function toggleTheme(){const d=document.documentElement.getAttribute("data-theme")==="dark";
+ document.documentElement.setAttribute("data-theme",d?"light":"dark");localStorage.setItem("bb_theme",d?"light":"dark")}
+if(localStorage.getItem("bb_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");
+let DATA=null,SORT={k:"pos52",asc:true};
+const BKNAME={low:"🟢 안붐빔 (저점권 = 신규 틸트 후보)",mid:"🟡 중립",high:"🔴 붐빔 (고점권 = 모멘텀 보유·추격 자제)"};
+
+function init(d){
+  DATA=d;
+  document.getElementById("meta").innerHTML='기준일 '+esc(d.date)+' · 총 '+d.n+'종목 · 갱신 '+esc(d.generated)+
+    ' · thememap+jensen 병합 · 52주위치 ≤'+d.low_max+'% 🟢 / ≥'+d.high_min+'% 🔴';
+  document.getElementById("chips").innerHTML=
+    '<div class="chip low">🟢안붐빔 <b>'+d.counts.low+'</b></div>'+
+    '<div class="chip mid">🟡중립 <b>'+d.counts.mid+'</b></div>'+
+    '<div class="chip high">🔴붐빔 <b>'+d.counts.high+'</b></div>';
+  const fm=document.getElementById("fMkt");d.markets.forEach(m=>fm.innerHTML+='<option>'+esc(m)+'</option>');
+  const ft=document.getElementById("fTheme");d.themes.forEach(t=>ft.innerHTML+='<option>'+esc(t)+'</option>');
+  render();
+}
+function fmtPE(v){return v==null?'–':v+'x'}
+function arrow(k){return SORT.k===k?(SORT.asc?' ▲':' ▼'):''}
+function sortBy(k){if(SORT.k===k)SORT.asc=!SORT.asc;else{SORT.k=k;SORT.asc=(k==='pos52');}render();}
+function render(){
+  if(!DATA)return;
+  const mk=document.getElementById("fMkt").value,th=document.getElementById("fTheme").value,
+    nm=document.getElementById("fName").value.trim().toLowerCase(),bk=document.getElementById("fBk").value;
+  let rows=DATA.rows.filter(r=>(!mk||r.flag===mk)&&(!th||r.themes.includes(th))&&
+    (!nm||r.name.toLowerCase().includes(nm)||r.code.includes(nm))&&(!bk||r.bk===bk));
+  rows=rows.slice().sort((a,b)=>{let x=a[SORT.k],y=b[SORT.k];if(typeof x==='string')return SORT.asc?(''+x).localeCompare(y):(''+y).localeCompare(x);x=x==null?-1e18:x;y=y==null?-1e18:y;return SORT.asc?x-y:y-x;});
+  let h='';
+  for(const g of ["low","mid","high"]){
+    const gr=rows.filter(r=>r.bk===g);if(!gr.length)continue;
+    h+='<div class="sec"><span class="dot '+g+'"></span>'+BKNAME[g]+' <span class="note">('+gr.length+')</span></div>';
+    h+='<table><thead><tr><th class="l" onclick="sortBy(\'name\')">종목'+arrow('name')+'</th>'+
+       '<th onclick="sortBy(\'pos52\')">52주%'+arrow('pos52')+'</th>'+
+       '<th onclick="sortBy(\'vs200\')">vsMA200'+arrow('vs200')+'</th>'+
+       '<th onclick="sortBy(\'vs50\')">vsMA50'+arrow('vs50')+'</th>'+
+       '<th onclick="sortBy(\'fpe\')">FwdPE'+arrow('fpe')+'</th><th class="l">테마</th></tr></thead><tbody>';
+    for(const r of gr){
+      const c200=r.vs200>0?'pos':'neg',c50=r.vs50>0?'pos':'neg';
+      h+='<tr><td class="l">'+r.flag+' <span class="nm">'+esc(r.name)+'</span>'+(r.bars<252?' <span class="tag">⚠단기</span>':'')+'</td>'+
+         '<td>'+r.pos52.toFixed(0)+'%</td><td class="'+c200+'">'+(r.vs200>0?'+':'')+r.vs200.toFixed(0)+'%</td>'+
+         '<td class="'+c50+'">'+(r.vs50>0?'+':'')+r.vs50.toFixed(0)+'%</td><td>'+fmtPE(r.fpe)+'</td>'+
+         '<td class="l tag">'+esc(r.themes.join("/"))+'</td></tr>';
+    }
+    h+='</tbody></table>';
+  }
+  document.getElementById("groups").innerHTML=h||'<div class="note">조건에 맞는 종목 없음</div>';
+}
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(init).catch(e=>{
+  document.getElementById("meta").innerHTML='로드 실패: '+esc(e)});
+</script>
+</body>
+</html>
