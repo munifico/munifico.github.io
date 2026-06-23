@@ -115,6 +115,9 @@ h3{font-size:14px;margin:2px 0 8px}
 <p class="t">🛑 <b>손절</b> — 하단 −3% 이탈 = §91도 실패한 떨어지는 칼날. ⚠ 1·2차 동시매수(물타기)는 백테로 검증되지 않았습니다(각 레벨 독립 통계일 뿐).</p>
 <h2>추세 상태</h2>
 <p><b>상승추세</b> = 정배열(20&gt;60&gt;120) · <b>하락추세</b> = 역배열 · 그 외 혼조. 120일선 위/아래와 최근 60일 기울기도 함께 표시. 장세(regime)는 KOSPI 20일선 기준.</p>
+<h2>🧭 멀티팩터 한눈에</h2>
+<p>흩어져 있던 4개 축을 한 카드로 모았습니다. <b>수급·이익성장·신고가는 fdr_all 백테로 검증된 팩터</b>이고, <b>PBR·PER는 참고용 밸류 표시일 뿐 신호가 아닙니다</b> — 저PBR은 단독·결합(PER/EPS/ROE) 모두 robust 알파가 아님을 백테로 확인했습니다(평상시 밸류트랩, BULL 한정 deep-value만 regime 종속).</p>
+<p class="t">📈 신고가 근접도 · 💪 이익성장(EPS YoY) · 🐋 수급(외/기 10일 점수 0~4) · 💲 PER·PBR(참고).</p>
 <h2>펀더 (DART 전자공시)</h2>
 <p>최근 4년 <b>매출/영업이익/당기순이익</b> 막대 + <b>EPS</b> 추이 + 배당수익률 + 적정주가(직전 EPS×PER 12배) + PEG(1 미만 저평가). 30일 캐시.</p>
 <p class="t">※ 매수 추천이 아니라 관찰 보조이며, 최종 판단은 본인 몫입니다.</p>
@@ -201,6 +204,24 @@ function renderSide(s){
  h+='<div class="kv"><span class="k">120일선</span><span>'+(t.above120?'위 ↑':'아래 ↓')+'</span></div>';
  if(t.slope60_pct!=null)h+='<div class="kv"><span class="k">최근 60일 기울기</span><span class="'+(t.slope60_pct>=0?'up':'dn')+'">'+(t.slope60_pct>=0?'+':'')+t.slope60_pct+'%</span></div>';
  h+='<div class="kv"><span class="k">장세(KOSPI)</span><span>'+rg(REGIME)+'</span></div>';
+
+ // 🧭 멀티팩터 한눈에 (수급·이익성장·신고가=검증 / PBR·PER=참고)
+ const M=s.mf||{};
+ h+='<h3 style="margin-top:14px">🧭 멀티팩터 한눈에</h3>';
+ const d52=M.dist52;
+ const momTxt=d52==null?'–':(d52>=-0.5?'🔥 신고가 부근/경신':(d52+'% (신고가까지)'));
+ h+='<div class="kv"><span class="k">📈 모멘텀 · 52주 신고가</span><span>'+esc(momTxt)+'</span></div>';
+ const ey=M.eps_yoy;
+ h+='<div class="kv"><span class="k">💪 퀄리티 · 이익성장(EPS YoY)</span><span>'+(ey==null?'–':'<b class="'+(ey>=0?'up':'dn')+'">'+(ey>=0?'+':'')+ey+'%</b>')+'</span></div>';
+ const sc=M.sup_score;
+ let supTxt='–';
+ if(sc!=null){const lab=sc>=3?'동반매수 강':(sc>=2?'유입':(sc>=1?'약유입':'관망'));
+   const ic=sc>=2?'🐋':(sc>=1?'🟢':'⚪');
+   supTxt=ic+' '+sc+'/4 '+lab+(M.both_days?' · 동반'+M.both_days+'일':'');}
+ h+='<div class="kv"><span class="k">🐋 수급 · 외/기 10일</span><span>'+esc(supTxt)+'</span></div>';
+ const perTxt=(M.per==null?'–':'PER '+M.per)+(M.pbr==null?'':' · PBR '+M.pbr);
+ h+='<div class="kv"><span class="k">💲 밸류 <span style="font-size:10px;color:var(--mut)">(참고)</span></span><span>'+esc(perTxt)+'</span></div>';
+ h+='<p class="note" style="margin-top:3px">수급·이익성장·신고가 = 검증 팩터 · PBR·PER = 참고(신호 아님)</p>';
 
  // 엔벨로프 가격대 가이드
  const L=s.levels;
