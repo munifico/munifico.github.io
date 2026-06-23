@@ -419,7 +419,7 @@ function renderRisk(b){
  const cls=s=>s==="bad"?"lvl-bad":(s==="warn"?"lvl-warn":"lvl-ok");
  const ic=s=>s==="bad"?"🚨":(s==="warn"?"⚠️":"✅");
  const rows=b.items.map(it=>'<div class="item"><div class="item-row">'+
-  '<span class="item-name">'+ic(it.status)+' '+esc(it.name)+(it.psych?' <span class="flag near">'+(it.key==="dxy"?"맥락":"심리")+'</span>':"")+'</span>'+
+  '<span class="item-name">'+ic(it.status)+' '+esc(it.name)+(it.psych?' <span class="flag near">'+((it.key==="dxy"||it.key==="breadth"||it.key==="sector")?"맥락":"심리")+'</span>':"")+'</span>'+
   '<span class="item-sig '+cls(it.status)+'">'+esc(it.value)+esc(it.unit)+'</span></div>'+
   '<div class="pain-sub">'+esc(it.note)+'</div></div>').join("");
  const ovc=b.overall==="위험"?"lvl-bad":(b.overall==="주의"?"lvl-warn":"lvl-ok");
