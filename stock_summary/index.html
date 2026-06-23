@@ -101,6 +101,7 @@ h3{font-size:14px;margin:2px 0 8px}
   <select id="supf">
     <option value="">수급 전체</option>
     <option value="in">🐋 수급 유입(≥1·동반≥1일)</option>
+    <option value="strong">🐋🐋 수급 강(점수≥2)</option>
   </select>
   <div class="dd" id="dd"></div>
 </div>
@@ -126,7 +127,7 @@ h3{font-size:14px;margin:2px 0 8px}
 <h2>🧭 멀티팩터 한눈에</h2>
 <p>흩어져 있던 4개 축을 한 카드로 모았습니다. <b>수급·이익성장·신고가는 fdr_all 백테로 검증된 팩터</b>이고, <b>PBR·PER는 참고용 밸류 표시일 뿐 신호가 아닙니다</b> — 저PBR은 단독·결합(PER/EPS/ROE) 모두 robust 알파가 아님을 백테로 확인했습니다(평상시 밸류트랩, BULL 한정 deep-value만 regime 종속).</p>
 <p class="t">📈 신고가 근접도 · 💪 이익성장(EPS YoY) · 🐋 수급(외/기 10일 점수 0~4) · 💲 PER·PBR(참고).</p>
-<p class="t">🔎 검색창의 <b>💪 이익성장 ↑(≥0)</b> · <b>🐋 수급 유입(점수≥1 또는 동반매수≥1일)</b> 드롭다운으로 해당 종목만 추릴 수 있습니다(다른 필터와 AND 결합).</p>
+<p class="t">🔎 검색창의 <b>💪 이익성장 ↑(≥0)</b> · <b>🐋 수급 유입(점수≥1 또는 동반매수≥1일)</b> / <b>🐋🐋 수급 강(점수≥2)</b> 드롭다운으로 해당 종목만 추릴 수 있습니다(다른 필터와 AND 결합).</p>
 <h2>펀더 (DART 전자공시)</h2>
 <p>최근 4년 <b>매출/영업이익/당기순이익</b> 막대 + <b>EPS</b> 추이 + 배당수익률 + 적정주가(직전 EPS×PER 12배) + PEG(1 미만 저평가). 30일 캐시.</p>
 <p class="t">※ 매수 추천이 아니라 관찰 보조이며, 최종 판단은 본인 몫입니다.</p>
@@ -158,10 +159,12 @@ function initSearch(){
  const q=$("#q"),dd=$("#dd"),zf=$("#zonef"),mf=$("#marketf"),qualf=$("#qualf"),supf=$("#supf");
  const qualPass=s=>s.mf&&s.mf.eps_yoy!=null&&s.mf.eps_yoy>=0;
  const supPass=s=>s.mf&&((s.mf.sup_score!=null&&s.mf.sup_score>=1)||(s.mf.both_days!=null&&s.mf.both_days>=1));
+ const supStrong=s=>s.mf&&s.mf.sup_score!=null&&s.mf.sup_score>=2;
+ const supSel=(s,sp)=>sp==="strong"?supStrong(s):supPass(s);
  const filt=()=>{const v=q.value.trim().toLowerCase(),z=zf.value,mk=mf.value,ql=qualf.value,sp=supf.value;
    return ST.filter(s=>(!v||s.name.toLowerCase().includes(v)||String(s.code).toLowerCase().includes(v))
      &&(!z||zoneOf(s)===z)&&(!mk||s.market===mk)
-     &&(!ql||qualPass(s))&&(!sp||supPass(s)));};
+     &&(!ql||qualPass(s))&&(!sp||supSel(s,sp)));};
  const tag=s=>{const z=zoneOf(s);if(z==="lower")return ' <span class="zl">🔻'+(s.levels.pos_vs_lower>=0?'+'+s.levels.pos_vs_lower:'터치')+'</span>';
    if(z==="above")return ' <span class="za">🔺+'+s.levels.pos_vs_upper+'%</span>';return '';};
  const draw=items=>{dd.innerHTML=items.slice(0,80).map(s=>
@@ -182,9 +185,10 @@ function initSearch(){
  const setMk=(v,t)=>{const o=mf.querySelector('option[value="'+v+'"]');if(o)o.textContent=t;};
  setMk("코스피","코스피 ("+(mc["코스피"]||0)+")");
  setMk("코스닥","코스닥 ("+(mc["코스닥"]||0)+")");
- const qc=ST.filter(qualPass).length,spc=ST.filter(supPass).length;
+ const qc=ST.filter(qualPass).length,spc=ST.filter(supPass).length,spsc=ST.filter(supStrong).length;
  const qo=qualf.querySelector('option[value="pos"]');if(qo)qo.textContent="💪 이익성장 ↑(≥0) ("+qc+")";
  const so=supf.querySelector('option[value="in"]');if(so)so.textContent="🐋 수급 유입(≥1·동반≥1일) ("+spc+")";
+ const so2=supf.querySelector('option[value="strong"]');if(so2)so2.textContent="🐋🐋 수급 강(점수≥2) ("+spsc+")";
  q.addEventListener("focus",open);
  q.addEventListener("input",open);
  zf.addEventListener("change",open);
