@@ -39,7 +39,7 @@ th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white
 th{color:var(--muted);font-weight:600;font-size:12px;cursor:pointer}
 td.l,th.l{text-align:left}
 .nm{font-weight:600}.tag{color:var(--muted);font-size:11px}
-.pos{color:var(--high)}.neg{color:var(--low)}
+.pos{color:var(--high)}.neg{color:var(--low)}.warn{color:var(--mid)}
 .warnbox{background:color-mix(in srgb,var(--mid) 12%,transparent);border:1px solid var(--mid);border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.6;margin-top:16px}
 a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;padding:16px;overflow:auto}
@@ -93,6 +93,11 @@ a.lnk{color:var(--accent);text-decoration:none;font-weight:600}
   <p>· <b>시클리컬</b>(예 Micron 9.6x): 저PER + 주가 고점 = 이익(E) 정점의 착시 → <b>사이클 꺾임이 위험</b>. 저PER이 매수가 아니라 경고일 수 있음.</p>
   <p class="mut">∴ FwdPE → 유형(성장/시클리컬) 판별 → 그 다음 해석. 사이클 위치(저점/고점)는 PER이 아니라 52주 위치·MA200으로 봅니다.</p>
 
+  <h4>영업이익 추세 (이익 사이클 · 🇰🇷만)</h4>
+  <p>최근 3~4년 <b>연간 영업이익</b> 방향: <b>🔺증익·가속</b> / <b>🔻증익·둔화</b> / ↗증익 / ↘감익 / ⤴흑자전환 / 🔴적자. DART 전자공시 기준이라 <b>국내(🇰🇷) 종목만</b> 표기(비KR은 '–'). 숫자는 직전 연간 영업이익(조/억).</p>
+  <p class="mut">⭐ <b>가격(52주 위치)이 고점이어도 영업이익이 가속 중이면 사이클 정점이 아닙니다.</b> 반대로 <b>증익이 둔화(🔻)로 꺾이는 순간이 시클리컬 정점의 선행 신호</b> — 가격 고점보다 '이익 증가율 둔화'를 보세요(FwdPE 시클리컬 함정과 같은 원리: 이익 정점=저PER 착시).</p>
+  <p><b>분기YoY</b> = 최근 분기보고서 영업이익의 <b>전년동기比</b>(누적·연결). 연간(연 1회 갱신·후행)보다 <b>먼저</b> 가속/둔화를 잡습니다. ⭐ <b>연간 '둔화🔻'인데 분기YoY가 크게 +이면 = 분기 단위로 재가속 중</b>(연간 기저효과로 둔화처럼 보일 뿐) — 예: 메모리 반도체는 연간상 둔화로 찍혀도 직전 분기 영업이익이 전년동기 수배. 두 숫자가 엇갈리면 <b>분기가 더 최신</b>입니다.</p>
+
   <h4>버킷(색) 의미</h4>
   <p><span class="pill" style="color:var(--low)">🟢 안붐빔</span>52주 위치 ≤35% = 저점권 = <b>신규 틸트 후보</b>(단, 싼 이유=falsifier가 일시적이어야 기회, §136).</p>
   <p><span class="pill" style="color:var(--mid)">🟡 중립</span>35~80%.</p>
@@ -126,6 +131,20 @@ function init(d){
   render();
 }
 function fmtPE(v){return v==null?'–':v+'x'}
+function fmtOpVal(v){if(v==null)return '';const a=Math.abs(v);
+  return a>=1e12?(v/1e12).toFixed(1)+'조':(a>=1e8?Math.round(v/1e8)+'억':String(v));}
+function opCell(op){if(!op)return '<span class="tag">–</span>';
+  const cls={accel:'pos',up:'pos',turn:'pos',slow:'warn',down:'neg',loss:'neg',flat:''}[op.dir]||'';
+  const tip=op.label+(op.yoy!=null?' · YoY '+(op.yoy>0?'+':'')+op.yoy+'%':'')+' (연간)';
+  return '<span class="'+cls+'" title="'+esc(tip)+'">'+op.icon+' '+esc(fmtOpVal(op.last))+'</span>';}
+function opqCell(q){if(!q)return '<span class="tag">–</span>';
+  let cls,txt;
+  if(q.cum!=null&&q.cum<0){cls='neg';txt='적자';}
+  else if(q.yoy==null){cls='pos';txt='흑전';}
+  else{cls=q.yoy>=0?'pos':'neg';txt=(q.yoy>0?'+':'')+q.yoy+'%';}
+  const qn=q.q?q.q.split(' ')[1]:'';
+  const tip=(q.q||'')+' 영업이익 전년동기비(누적)'+(q.yoy==null?' · 흑자전환':'');
+  return '<span class="'+cls+'" title="'+esc(tip)+'"><span class="tag">'+esc(qn)+'</span> '+esc(txt)+'</span>';}
 function arrow(k){return SORT.k===k?(SORT.asc?' ▲':' ▼'):''}
 function sortBy(k){if(SORT.k===k)SORT.asc=!SORT.asc;else{SORT.k=k;SORT.asc=(k==='pos52');}render();}
 function render(){
@@ -145,7 +164,10 @@ function render(){
        '<th onclick="sortBy(\'vs20\')">vsMA20'+arrow('vs20')+'</th>'+
        '<th onclick="sortBy(\'vs50\')">vsMA50'+arrow('vs50')+'</th>'+
        '<th onclick="sortBy(\'vs200\')">vsMA200'+arrow('vs200')+'</th>'+
-       '<th onclick="sortBy(\'fpe\')">FwdPE'+arrow('fpe')+'</th><th class="l">테마</th></tr></thead><tbody>';
+       '<th onclick="sortBy(\'fpe\')">FwdPE'+arrow('fpe')+'</th>'+
+       '<th onclick="sortBy(\'op_yoy\')">영업이익(연)'+arrow('op_yoy')+'</th>'+
+       '<th onclick="sortBy(\'opq_yoy\')">분기YoY'+arrow('opq_yoy')+'</th>'+
+       '<th class="l">테마</th></tr></thead><tbody>';
     for(const r of gr){
       const c20=r.vs20>0?'pos':'neg',c50=r.vs50>0?'pos':'neg',c200=r.vs200>0?'pos':'neg';
       const r5=r.ret5==null?'<span class="tag">–</span>':'<span class="'+(r.ret5>0?'pos':(r.ret5<0?'neg':''))+'">'+(r.ret5>0?'+':'')+r.ret5.toFixed(1)+'%</span>';
@@ -156,6 +178,8 @@ function render(){
          '<td class="'+c50+'">'+(r.vs50>0?'+':'')+r.vs50.toFixed(0)+'%</td>'+
          '<td class="'+c200+'">'+(r.vs200>0?'+':'')+r.vs200.toFixed(0)+'%</td>'+
          '<td>'+fmtPE(r.fpe)+'</td>'+
+         '<td>'+opCell(r.op)+'</td>'+
+         '<td>'+opqCell(r.opq)+'</td>'+
          '<td class="l tag">'+esc(r.themes.join("/"))+'</td></tr>';
     }
     h+='</tbody></table>';
