@@ -133,6 +133,7 @@ h3{font-size:14px;margin:2px 0 8px}
 <p>흩어져 있던 4개 축을 한 카드로 모았습니다. <b>수급·이익성장·신고가는 fdr_all 백테로 검증된 팩터</b>이고, <b>PBR·PER는 참고용 밸류 표시일 뿐 신호가 아닙니다</b> — 저PBR은 단독·결합(PER/EPS/ROE) 모두 robust 알파가 아님을 백테로 확인했습니다(평상시 밸류트랩, BULL 한정 deep-value만 regime 종속).</p>
 <p class="t">📈 신고가 근접도 · 💪 이익성장(EPS YoY) · 🏭 영업이익 추세 · 🐋 수급(외/기 10일 점수 0~4) · 💲 PER·PBR(참고) · 👤 임원매매(참고).</p>
 <p class="t">🏭 <b>영업이익 추세(연간+분기·이익 사이클)</b> — DART 4년 <b>연간</b> 방향(🔺증익·가속 / 🔻증익·둔화 / ↗증익 / ↘감익 / ⤴흑자전환 / 🔴적자) + <b>최근 분기 전년동기比</b>(누적·연결). <b>가격이 고점이어도 영업이익이 가속이면 사이클 정점이 아니고, 증익이 둔화(🔻)로 꺾이는 게 시클리컬 정점의 선행 신호</b>입니다(가격보다 이익 증가율 둔화를 보세요). ⭐ <b>연간이 둔화🔻인데 분기가 크게 +이면 분기 단위로 재가속 중</b>(연간은 후행) — 두 숫자가 엇갈리면 분기가 더 최신입니다.</p>
+<p class="t">📈 <b>컨센 추정(fnguide·forward)</b> — 위 영업이익이 모두 <b>지나간 실적(후행)</b>인 반면, 이건 증권사 <b>컨센서스 추정</b>(앞으로의 영업이익). 분기 단독(최근 실적 → 다음 분기 추정E) + <b>연간 컨센이 어느 해에 정점인지</b> = ⭐<b>시클리컬 이익 정점 '시점' 추정</b>(그 해 이후 감소 예상 = 주가 천장 신호). '정점 미도달'=추정 구간 내내 증가 = 아직 정점 안 보임. ⚠ 추정이라 빗나갈 수 있고(멜트업 컨센은 공격적) 애널 커버 종목만 표기.</p>
 <p class="t">👤 <b>임원매매(참고)</b> — 등기임원(이사·대표)의 최근 180일 매수/매도. <b>매수는 시장(동시대 평균) 통제 시 엣지가 사라지고</b>(소액·스톡옵션 행사 노이즈), <b>등기임원 매도만 약한 시장하회 경향</b>이 남습니다(fdr_all 2년: 매도 후 D+90 시장하회 확률 68% · 평균 −4.5%p). 신호가 아니라 보유·관심 종목의 경계 정보입니다.</p>
 <p class="t">🔎 검색창의 <b>💪 이익성장 ↑(≥0)</b> · <b>🐋 수급 유입(점수≥1 또는 동반매수≥1일)</b> / <b>🐋🐋 수급 강(점수≥2)</b> · <b>👤 등기임원 매수</b> / <b>⚠️ 등기임원 매도</b> 드롭다운으로 해당 종목만 추릴 수 있습니다(다른 필터와 AND 결합).</p>
 <h2>펀더 (DART 전자공시)</h2>
@@ -257,6 +258,21 @@ function renderSide(s){
    opTxt+=' <span style="color:var(--mut);font-size:11px">· 분기 '+esc(opq.q||'')+'</span> <b class="'+qc+'">'+esc(qv)+'</b>';
  }
  h+='<div class="kv"><span class="k">🏭 영업이익 추세 <span style="font-size:10px;color:var(--mut)">(연간+분기·이익 사이클)</span></span><span>'+opTxt+'</span></div>';
+ const cs=M.cons;
+ if(cs){
+   const jo=v=>(v/1e4).toFixed(Math.abs(v)>=1e5?0:1);  // 억원→조
+   let parts=[];
+   if(cs.last_q&&cs.next_q){
+     const dir=cs.next_q.op>=cs.last_q.op?'up':'dn';
+     parts.push('분기 '+esc(cs.last_q.period.slice(2))+' '+jo(cs.last_q.op)+'조(실) → <b class="'+dir+'">'+esc(cs.next_q.period.slice(2))+'E '+jo(cs.next_q.op)+'조</b>');
+   }
+   if(cs.peak_year){
+     const pk=cs.peak_is_last?(cs.peak_year+'E+ 증가지속(정점 미도달)'):('정점 '+cs.peak_year+'E '+jo(cs.peak_op)+'조');
+     parts.push('연간 컨센 '+esc(pk));
+   }
+   if(parts.length)
+     h+='<div class="kv"><span class="k">📈 컨센 추정 <span style="font-size:10px;color:var(--mut)">(fnguide·forward)</span></span><span style="text-align:right;font-size:12px">'+parts.join('<br>')+'</span></div>';
+ }
  const sc=M.sup_score;
  let supTxt='–';
  if(sc!=null){const lab=sc>=3?'동반매수 강':(sc>=2?'유입':(sc>=1?'약유입':'관망'));
