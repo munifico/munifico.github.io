@@ -131,7 +131,8 @@ h3{font-size:14px;margin:2px 0 8px}
 <p><b>상승추세</b> = 정배열(20&gt;60&gt;120) · <b>하락추세</b> = 역배열 · 그 외 혼조. 120일선 위/아래와 최근 60일 기울기도 함께 표시. 장세(regime)는 KOSPI 20일선 기준.</p>
 <h2>🧭 멀티팩터 한눈에</h2>
 <p>흩어져 있던 4개 축을 한 카드로 모았습니다. <b>수급·이익성장·신고가는 fdr_all 백테로 검증된 팩터</b>이고, <b>PBR·PER는 참고용 밸류 표시일 뿐 신호가 아닙니다</b> — 저PBR은 단독·결합(PER/EPS/ROE) 모두 robust 알파가 아님을 백테로 확인했습니다(평상시 밸류트랩, BULL 한정 deep-value만 regime 종속).</p>
-<p class="t">📈 신고가 근접도 · 💪 이익성장(EPS YoY) · 🐋 수급(외/기 10일 점수 0~4) · 💲 PER·PBR(참고) · 👤 임원매매(참고).</p>
+<p class="t">📈 신고가 근접도 · 💪 이익성장(EPS YoY) · 🏭 영업이익 추세 · 🐋 수급(외/기 10일 점수 0~4) · 💲 PER·PBR(참고) · 👤 임원매매(참고).</p>
+<p class="t">🏭 <b>영업이익 추세(연간+분기·이익 사이클)</b> — DART 4년 <b>연간</b> 방향(🔺증익·가속 / 🔻증익·둔화 / ↗증익 / ↘감익 / ⤴흑자전환 / 🔴적자) + <b>최근 분기 전년동기比</b>(누적·연결). <b>가격이 고점이어도 영업이익이 가속이면 사이클 정점이 아니고, 증익이 둔화(🔻)로 꺾이는 게 시클리컬 정점의 선행 신호</b>입니다(가격보다 이익 증가율 둔화를 보세요). ⭐ <b>연간이 둔화🔻인데 분기가 크게 +이면 분기 단위로 재가속 중</b>(연간은 후행) — 두 숫자가 엇갈리면 분기가 더 최신입니다.</p>
 <p class="t">👤 <b>임원매매(참고)</b> — 등기임원(이사·대표)의 최근 180일 매수/매도. <b>매수는 시장(동시대 평균) 통제 시 엣지가 사라지고</b>(소액·스톡옵션 행사 노이즈), <b>등기임원 매도만 약한 시장하회 경향</b>이 남습니다(fdr_all 2년: 매도 후 D+90 시장하회 확률 68% · 평균 −4.5%p). 신호가 아니라 보유·관심 종목의 경계 정보입니다.</p>
 <p class="t">🔎 검색창의 <b>💪 이익성장 ↑(≥0)</b> · <b>🐋 수급 유입(점수≥1 또는 동반매수≥1일)</b> / <b>🐋🐋 수급 강(점수≥2)</b> · <b>👤 등기임원 매수</b> / <b>⚠️ 등기임원 매도</b> 드롭다운으로 해당 종목만 추릴 수 있습니다(다른 필터와 AND 결합).</p>
 <h2>펀더 (DART 전자공시)</h2>
@@ -247,6 +248,15 @@ function renderSide(s){
  h+='<div class="kv"><span class="k">📈 모멘텀 · 52주 신고가</span><span>'+esc(momTxt)+'</span></div>';
  const ey=M.eps_yoy;
  h+='<div class="kv"><span class="k">💪 퀄리티 · 이익성장(EPS YoY)</span><span>'+(ey==null?'–':'<b class="'+(ey>=0?'up':'dn')+'">'+(ey>=0?'+':'')+ey+'%</b>')+'</span></div>';
+ const op=M.op,opq=M.opq;
+ let opTxt='–';
+ if(op){opTxt=op.icon+' '+esc(op.label)+(op.yoy!=null?' <b class="'+(op.yoy>=0?'up':'dn')+'">YoY '+(op.yoy>=0?'+':'')+op.yoy+'%</b>':'');}
+ if(opq){
+   const qv=(opq.cum!=null&&opq.cum<0)?'적자':(opq.yoy==null?'흑전':(opq.yoy>=0?'+':'')+opq.yoy+'%');
+   const qc=(opq.cum!=null&&opq.cum<0)?'dn':(opq.yoy==null?'up':(opq.yoy>=0?'up':'dn'));
+   opTxt+=' <span style="color:var(--mut);font-size:11px">· 분기 '+esc(opq.q||'')+'</span> <b class="'+qc+'">'+esc(qv)+'</b>';
+ }
+ h+='<div class="kv"><span class="k">🏭 영업이익 추세 <span style="font-size:10px;color:var(--mut)">(연간+분기·이익 사이클)</span></span><span>'+opTxt+'</span></div>';
  const sc=M.sup_score;
  let supTxt='–';
  if(sc!=null){const lab=sc>=3?'동반매수 강':(sc>=2?'유입':(sc>=1?'약유입':'관망'));
