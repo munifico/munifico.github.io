@@ -95,6 +95,7 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sti
 <select id="fStat"><option value="">상태 전체</option><option value="done">평가완료</option><option value="pending">대기</option></select>
 <input id="fTxt" placeholder="티커/종목 검색">
 </div>
+<div class="sub" style="margin:-6px 0 10px">ℹ️ <b>장세</b> = 각 신호가 <b>발생한 날짜</b>의 S&amp;P 20일선 단기 모멘텀(BULL/BEAR/RANGE). 매우 예민해 −3%에도 "하락장"이 될 수 있음 — <b>실제 약세장 아님</b>(상단 🧭회복·디리스크와 시간축 다름).</div>
 <table><thead><tr>
 <th data-k="date">날짜</th><th data-k="name">종목</th><th data-k="ticker">티커</th><th data-k="sector">섹터</th>
 <th data-k="signal">신호</th><th data-k="grade">등급</th><th data-k="regime">장세</th>
@@ -118,6 +119,8 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sti
 <p><b>⚠떨어지는칼날</b> — 과매도지만 약체 섹터(소비재·순수AI·AI데이터·양자)라 더 빠질 위험. 주의.</p>
 <h2>장세 (regime) — SPY(미국 대표지수) 20일 평균선 기준</h2>
 <p><b>BULL 상승장</b> / <b>BEAR 하락장</b> / <b>RANGE 횡보장</b>. 신호별로 잘 맞는 장세가 달라 등급이 갈립니다.</p>
+<p class="t">⚠️ 이 장세는 <b>20일선 단기 모멘텀 게이트</b>(원래 신호 게이팅용·매우 예민)라 지수가 고점 대비 −3%만 빠져도 "하락장(BEAR)"으로 찍힐 수 있습니다. <b>실제 약세장과 다릅니다.</b> 또 표의 장세는 "현재 시장 단일값"이 아니라 <b>각 신호가 발생한 날짜의 태그</b>입니다.</p>
+<p class="t">🧭 같은 시장을 보는 세 카드는 <b>시간축이 다릅니다</b>(셋 다 맞을 수 있음): 종목 장세=<b>단기</b> 20일선 · 🧭미국 회복 감지=<b>큰 사건</b>(사상최고가 −20%↓ 깊은낙폭+200일선) · (허브 디리스크 콕핏=<b>중기</b> MA50/200). 단기 조정 + 중장기 평시가 동시에 성립하면 세 카드가 서로 달라 보입니다.</p>
 <h2>성과 컬럼</h2>
 <p class="t">D+5 = 신호 후 5거래일 종가 수익률 · hit🔥 = 5일 내 최고가가 +10% 도달 · 대기 = 아직 5일 미경과</p>
 <h2>🚨 위험·심리 게이지 (우측 상단)</h2>
@@ -187,7 +190,7 @@ function renderRecovery(m){const el=$("#recov");
  const worst=m.recovery.some(r=>r.status==="bad")?"bad":(m.recovery.some(r=>r.status==="warn")?"warn":"ok");
  el.className="recov "+worst;el.style.display="block";
  const items=m.recovery.map(r=>`<div class="ritem"><span>${r.tag} <b>${esc(r.label)}</b> — ${esc(r.state)}</span><span class="mut">고점대비 ${r.dd_now}% · MA200 ${r.ma200_dist>=0?'+':''}${r.ma200_dist}% <span class="rn">${esc(r.note)}</span></span></div>`).join("");
- el.innerHTML=`<div class="rt">🧭 미국 회복 감지 (S&amp;P·나스닥)</div>${items}`;}
+ el.innerHTML=`<div class="rt">🧭 미국 회복 감지 (S&amp;P·나스닥) <span class="rn">— 깊은낙폭/회복 관점 · 디리스크(중기 MA50/200)·종목장세(단기 20일선)와 시간축 다름</span></div>${items}`;}
 function renderMdd(m){const tb=$("#mddTb");
  if(!m||!m.groups||!m.groups.length){$("#mddBox").style.display="none";return;}
  const ddc=v=>v<=-25?"dd2":(v<=-15?"dd1":"dd0");
