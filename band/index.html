@@ -15,9 +15,22 @@ th{color:var(--muted);font-weight:600} td.v{font-variant-numeric:tabular-nums}
 .band{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
 .chart{height:300px;margin-top:8px}
 .note{color:var(--muted);font-size:11px;margin-top:10px;line-height:1.5}
-#themeBtn{position:fixed;top:12px;right:14px;z-index:9;background:var(--card);color:var(--fg);
+#themeBtn{position:fixed;top:52px;right:14px;z-index:160;background:var(--card);color:var(--fg);
   border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}
-</style></head><body>
+</style><style>
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+</style>
+</head><body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../etf_check/">📦 ETF구성</a><a class="hubnav-item" href="../barbell/">⚖️ 바벨</a><a class="hubnav-item active" href="../band/">📉 밸류밴드</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
 <button id="themeBtn" onclick="theme()">🌙 다크</button>
 <h1>📉 지수 밸류에이션 밴드</h1>
 <div class="sub">코스피·코스닥 PER·PBR·배당수익률 · 역사 percentile + 평균회귀 밴드 · KRX MDCSTAT00702 · asof 2026-06-25<br>
