@@ -308,7 +308,7 @@ function renderDerisk(d,credit){
  }
  card.innerHTML='<div class="pain-head"><span class="pain-level '+ovc+'">'+esc(d.overall)+'</span>'+
   '<span class="pain-sub" style="margin-left:8px">'+esc(summary)+'</span></div>'+
-  '<div class="pain-sub">"지금 위험 줄일 국면인가?" · 트리거=MA200 종가이탈(검증)</div>'+
+  '<div class="pain-sub">"지금 위험 줄일 국면인가?" · <b>중기 추세(MA50/200)</b> · 트리거=MA200 종가이탈(검증)</div>'+
   chg+rows+cr+lead+
   '<div class="note">🔴 MA200 종가이탈(2일+) = 비중 축소 트리거 · 🟡 MA50 이탈 = 주의 · 🟢 정상 · 신용잔고 高=강제청산 연료</div>'+
   '<details class="help"><summary>✅ 사전 약속 체크리스트 / 📖 설명</summary><div>'+
@@ -419,7 +419,7 @@ function renderRisk(b,recov){
  const cls=s=>s==="bad"?"lvl-bad":(s==="warn"?"lvl-warn":"lvl-ok");
  let recLine="";
  if(recov&&recov.length){
-  recLine='<div class="pain-sub" style="margin-bottom:6px">🧭 美회복 '+recov.map(r=>'<span class="'+cls(r.status)+'">'+r.tag+' '+esc(r.label)+' '+esc(r.state)+'</span>').join(' · ')+'</div>';
+  recLine='<div class="pain-sub" style="margin-bottom:6px">🧭 美회복 <span style="opacity:.7">(깊은낙폭/회복 관점·≠단기장세)</span> '+recov.map(r=>'<span class="'+cls(r.status)+'">'+r.tag+' '+esc(r.label)+' '+esc(r.state)+'</span>').join(' · ')+'</div>';
  }
  const ic=s=>s==="bad"?"🚨":(s==="warn"?"⚠️":"✅");
  const rows=b.items.map(it=>'<div class="item"><div class="item-row">'+
