@@ -292,7 +292,15 @@ function renderSide(s){
    } else insTxt='최근 180일 없음';
  }
  h+='<div class="kv"><span class="k">👤 임원매매 <span style="font-size:10px;color:var(--mut)">(참고·등기 180일)</span></span><span>'+insTxt+'</span></div>';
- h+='<p class="note" style="margin-top:3px">수급·이익성장·신고가 = 검증 팩터 · PBR·PER·임원매매 = 참고(신호 아님)</p>';
+ const ac=M.ac1;
+ let acTxt='–';
+ if(ac!=null){
+   const lab=ac>=0.10?'🔗 추세 관성형':(ac<=-0.05?'〰️ 노이즈/되돌림형':'➖ 중립');
+   acTxt=lab+' <span style="color:var(--mut);font-size:11px">('+ac+')</span>';
+ }
+ h+='<div class="kv"><span class="k">🔗 단기 관성도 <span style="font-size:10px;color:var(--mut)">(참고·일수익률 자기상관)</span></span><span>'+acTxt+'</span></div>';
+ h+='<p class="note" style="margin-top:3px">수급·이익성장·신고가 = 검증 팩터 · PBR·PER·임원매매·관성도 = 참고(신호 아님)</p>';
+ h+='<p class="note" style="margin-top:1px;font-size:10px">🔗 관성형=추세 매끄러움(한국한정 fwd5·R&D §151) · 단 돌파 후 과열 관성형은 단기 되돌림 주의(신호 맥락 종속)</p>';
 
  // 엔벨로프 가격대 가이드
  const L=s.levels;
