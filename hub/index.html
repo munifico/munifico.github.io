@@ -413,10 +413,14 @@ function renderEarnings(e){
 }
 
 /* 미국 위험·심리 게이지 (FRED + CNN) */
-function renderRisk(b){
+function renderRisk(b,recov){
  const card=document.getElementById("riskCard");
  if(!b||!b.items||!b.items.length){card.innerHTML='<div class="empty">게이지 데이터 없음</div>';return}
  const cls=s=>s==="bad"?"lvl-bad":(s==="warn"?"lvl-warn":"lvl-ok");
+ let recLine="";
+ if(recov&&recov.length){
+  recLine='<div class="pain-sub" style="margin-bottom:6px">🧭 美회복 '+recov.map(r=>'<span class="'+cls(r.status)+'">'+r.tag+' '+esc(r.label)+' '+esc(r.state)+'</span>').join(' · ')+'</div>';
+ }
  const ic=s=>s==="bad"?"🚨":(s==="warn"?"⚠️":"✅");
  const rows=b.items.map(it=>'<div class="item"><div class="item-row">'+
   '<span class="item-name">'+ic(it.status)+' '+esc(it.name)+(it.psych?' <span class="flag near">'+((it.key==="dxy"||it.key==="breadth"||it.key==="sector")?"맥락":"심리")+'</span>':"")+'</span>'+
@@ -424,7 +428,7 @@ function renderRisk(b){
   '<div class="pain-sub">'+esc(it.note)+'</div></div>').join("");
  const ovc=b.overall==="위험"?"lvl-bad":(b.overall==="주의"?"lvl-warn":"lvl-ok");
  card.innerHTML='<div class="pain-head"><span class="pain-level '+ovc+'">'+esc(b.overall)+'</span>'+
-  '<span class="pain-sub" style="margin-left:8px">'+b.items.length+'개 게이지 종합</span></div>'+rows+
+  '<span class="pain-sub" style="margin-left:8px">'+b.items.length+'개 게이지 종합</span></div>'+recLine+rows+
   '<details class="help"><summary>📖 지표 설명</summary><div>'+esc(b.help)+'</div></details>';
 }
 
@@ -572,7 +576,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderDerisk(j.derisk,j.credit);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderEarnings(j.earnings);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
+ renderDerisk(j.derisk,j.credit);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderEarnings(j.earnings);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk,j.recovery);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
