@@ -19,6 +19,11 @@ h1{font-size:18px;margin:0}
 .controls{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 12px;align-items:center}
 .controls select,.controls input{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
 .controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.reco{display:flex;gap:8px;flex-wrap:wrap;padding:0 20px 10px;align-items:center}
+.reco-btn{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px}
+.reco-btn.on{border-color:var(--accent);color:var(--accent);font-weight:700;background:rgba(124,58,237,.10)}
+.reco-note{color:var(--muted);font-size:12px;flex-basis:100%}
+@media(max-width:640px){.reco{padding:0 14px 8px}}
 .wrap{padding:0 20px 40px}
 table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -127,6 +132,14 @@ tr.child td{font-size:12px}
   <summary>🏦 증권사별 목표가상향 <span class="hint">— 발행 N≥5 (평균 D+5 정렬). ⚠ 멜트업·절대수익이라 증권사간 상대비교용 · 인기종목 추종 가능 · 깊은 PF/동일가중은 broker_target_up_audit. 행 클릭 → 해당 증권사 목록</span></summary>
   <table class="aggtbl"><thead><tr id="aggBrHead"></tr></thead><tbody id="aggBrBody"></tbody></table>
 </details>
+<div class="reco" id="recoBar">
+  <span style="font-size:13px;color:var(--muted)">🎯 장세별 추천</span>
+  <button class="reco-btn" data-reg="BEAR">🔴 약세장</button>
+  <button class="reco-btn" data-reg="RANGE">🟡 횡보장</button>
+  <button class="reco-btn" data-reg="BULL">🟢 강세장</button>
+  <button class="reco-btn" data-reg="ALL">⭐ 전천후</button>
+  <span class="reco-note" id="recoNote"></span>
+</div>
 <div class="controls">
   <input id="q" placeholder="🔎 종목명·코드 검색" size="18">
   <select id="fSrc"><option value="">전체 출처</option></select>
@@ -201,6 +214,16 @@ tr.child td{font-size:12px}
    <li><b>횡보장 (RANGE)</b> : 그 외 — 위 둘 중 하나만 충족하는 혼합 상태</li>
   </ul>
   <p class="muted">신호가 발생한 <b>당일의 KOSPI 상태</b>로 라벨링합니다 (사후 예측 아님).</p>
+
+  <h3>🎯 장세별 추천 버튼</h3>
+  <p class="muted">필터 위의 장세 버튼을 누르면 <b>그 장세에서 백테스트로 검증·채택된 신호 타입만</b> 모아 보여줍니다 (버튼 재클릭 또는 신호/장세 필터 수동 조작 시 해제).</p>
+  <ul>
+   <li><b>🔴 약세장</b> : 엔벨로프 하단터치(손익비 2.75·최강) · 강세주 얕은눌림 V1 · 엔벨+스토캐스틱GC 등 — 과매도 되돌림 계열</li>
+   <li><b>🟡 횡보장</b> : 박스권 OBV+스토캐스틱 · 전고점 돌파</li>
+   <li><b>🟢 강세장</b> : 미너비니 M2(손익비 1.55·고점−10% 청산) · 개미털기 · 돌파 재테스트 — 돌파·모멘텀 계열</li>
+   <li><b>⭐ 전천후</b> : 목표가상향+수급BUY 진입후보(D+20 손익비 2.40) — 장세 무관</li>
+  </ul>
+  <p class="muted">⚠ 매수 추천 아님 — 과거 백테 우위 조합을 빠르게 검색하는 렌즈입니다. 최종 판단은 사용자.</p>
 
   <h3>평가 상태</h3>
   <ul>
@@ -278,6 +301,29 @@ const COLS=[
  {k:"dext",t:"D+20%",n:1},
  {k:"max",t:"최고%",n:1},{k:"hit",t:"🚀",n:0},{k:"status",t:"상태",n:0}];
 let DATA=[],view=[],sortK="date",sortDir=-1,page=0,HAS_EXT=false;const PER=100;let GROUPS={},EXPANDED={};
+// 🎯 장세별 추천 — 백테 검증·채택 알파의 신호 타입 세트 (R&D 결론 하드코딩·조정은 이 맵만)
+const RECO={
+ "BEAR":{types:["ENVELOPE_LOWER_TOUCH","MTT_PULLBACK_BEAR","ENV_STOCH_GC","ENVELOPE_BREAK_BEAR_REVERSION","BEAR_SURGE_FOLLOW"],
+  note:"약세장 검증 알파: 엔벨 하단터치(손익비 2.75·채택) · 강세주 얕은눌림 V1 · 엔벨+스토캐스틱GC · 엔벨 하단반등 · 급등추종 — 약세장은 과매도 되돌림이 본체"},
+ "RANGE":{types:["RANGE_OBV_STOCH","HORIZ_BREAKOUT"],
+  note:"횡보장: 박스권 OBV+스토캐스틱(채택) · 전고점 돌파(외인지분율 증가 동반 시 강알파)"},
+ "BULL":{types:["MTT_BREAKOUT","ANT_SHAKEOUT","BREAKOUT_RETEST","BULL_MOMENTUM","WEEKLY_MACD_GC"],
+  note:"강세장: 미너비니 M2(손익비 1.55·고점−10% 트레일링 청산) · 개미털기 · 돌파 재테스트 · BULL 모멘텀/주봉 MACD GC(관찰) — 강세장은 돌파·모멘텀이 본체"},
+ "ALL":{combo:true,types:["TU_SUPPLY_BUY"],
+  note:"전천후 진입후보: 목표가상향 ⭐(수급BUY 0~5일 선행) 조합 — D+20 손익비 2.40·장세 무관"}};
+const RECO_HINT="현재 장세의 버튼을 누르면 그 장세에서 백테 검증된 추천 신호만 필터됩니다 (재클릭 해제)";
+let RECOSEL="";
+function syncReco(){
+ document.querySelectorAll(".reco-btn").forEach(b=>b.classList.toggle("on",b.dataset.reg===RECOSEL));
+ document.getElementById("recoNote").textContent=RECOSEL?RECO[RECOSEL].note:RECO_HINT;
+}
+function setReco(reg){
+ RECOSEL=(RECOSEL===reg?"":reg);
+ document.getElementById("fType").value="";
+ document.getElementById("fRegime").value=(RECOSEL&&RECOSEL!=="ALL")?RECOSEL:"";
+ document.getElementById("fCombo").checked=false;
+ syncReco();apply();
+}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function fmtDate(d){return d&&d.length===8?d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6):esc(d)}
 function brkShort(b){const a=b.split(", ");return a[0].replace("투자증권","").replace("증권","")+(a.length>1?" 외"+(a.length-1):"")}
@@ -331,6 +377,9 @@ function apply(){
  const fc=document.getElementById("fCombo").checked;
  view=DATA.filter(r=>{
   if(q&&!(String(r.name).toLowerCase().includes(q)||String(r.code).includes(q)||(r.broker||"").toLowerCase().includes(q)))return false;
+  if(RECOSEL){const rc=RECO[RECOSEL];
+   if(rc.combo){if(!(r.combo||rc.types.includes(r.type)))return false}
+   else if(!rc.types.includes(r.type))return false;}
   if(fc&&!r.combo)return false;
   if(ft&&r.type!==ft)return false;
   if(fr&&r.regime!==fr)return false;
@@ -414,9 +463,14 @@ document.getElementById("helpClose").onclick=()=>_hm.classList.remove("open");
 _hm.onclick=e=>{if(e.target===_hm)_hm.classList.remove("open")};
 document.addEventListener("keydown",e=>{if(e.key==="Escape")_hm.classList.remove("open")});
 if(localStorage.getItem("sd_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.getElementById("themeBtn").textContent="☀️ 라이트"}
+// 수동 필터 조작 시 추천 모드 해제 (generic apply 리스너보다 먼저 등록 → 먼저 실행)
+["fType","fRegime","fCombo"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{if(RECOSEL){RECOSEL="";syncReco()}}));
 ["q","fSrc","fMarket","fType","fTheme","fRegime","fHit","fDone","fPending","fGroup","fCombo"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+document.querySelectorAll(".reco-btn").forEach(b=>b.onclick=()=>setReco(b.dataset.reg));
+syncReco();
 // 조합표 행 클릭 → 해당 신호×장세 로 메인 표 필터(드릴다운)
 function drill(t,r){
+ if(RECOSEL){RECOSEL="";syncReco()}
  document.getElementById("fType").value=t;
  document.getElementById("fRegime").value=(r==="-"?"":r);
  document.getElementById("fGroup").checked=false;
