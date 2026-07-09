@@ -24,6 +24,8 @@ h1{font-size:18px;margin:0}
 .reco-btn.on{border-color:var(--accent);color:var(--accent);font-weight:700;background:rgba(124,58,237,.10)}
 .reco-note{color:var(--muted);font-size:12px;flex-basis:100%}
 @media(max-width:640px){.reco{padding:0 14px 8px}}
+#regimeNow{font-size:13px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.now-chip{font-size:10px;background:var(--accent);color:#fff;border-radius:6px;padding:0 5px;vertical-align:middle;font-weight:700}
 .wrap{padding:0 20px 40px}
 table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -115,6 +117,7 @@ tr.child td{font-size:12px}
 <nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item active" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../etf_check/">📦 ETF구성</a><a class="hubnav-item" href="../barbell/">⚖️ 바벨</a><a class="hubnav-item" href="../band/">📉 밸류밴드</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
 <header>
   <h1>📈 신호 성과 대시보드</h1>
+  <span id="regimeNow"></span>
   <span class="gen" id="gen"></span>
   <button class="help-btn" id="helpBtn">❓ 도움말</button>
   <button class="toggle" id="themeBtn">🌙 다크</button>
@@ -516,6 +519,10 @@ function aggBroker(){
 fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  DATA=j.rows;HAS_EXT=DATA.some(r=>r.dext_days!=null);
  document.getElementById("gen").textContent="갱신 "+j.generated+" · D+"+j.fwd_days+" 평가 · hit ≥"+j.surge_pct+"%";
+ if(j.regime_now&&j.regime_now.regime){const rn=j.regime_now.regime;
+  document.getElementById("regimeNow").innerHTML='현재 장세 '+badge(rn);
+  const b=document.querySelector('.reco-btn[data-reg="'+rn+'"]');
+  if(b){b.innerHTML+=' <span class="now-chip">현재</span>';b.title="오늘("+j.regime_now.date+") KOSPI 장세와 일치하는 추천"}}
  cards(j.stats);aggregate();aggTheme();aggBroker();buildHead();fillFilters();apply();
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요 (python -m http.server). "+e});
