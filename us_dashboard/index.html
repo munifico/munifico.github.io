@@ -85,6 +85,9 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sti
 <div class="recov" id="recov" style="display:none"></div>
 <div class="usrisk" id="usRisk"></div>
 <div class="cards" id="cards"></div>
+<details class="combo mdd" id="mddBox"><summary>📉 미국 MDD 추적기 <span class="hint">— 지수·섹터·M7·우량개별 고점대비 낙폭. 🔴역대급(−40%↓)·🟠(−25↓)·🟡(−15↓). ATH=사상최고가 대비, 52w=52주고점 대비, MA200=200일선 이격</span></summary>
+<table class="ctbl"><thead><tr><th>종목</th><th>티커</th><th class="num">현재가</th><th class="num">ATH 대비</th><th class="num">52주 대비</th><th class="num">MA200</th></tr></thead><tbody id="mddTb"></tbody></table>
+</details>
 <details class="combo"><summary>📊 조합별 성과 <span class="hint">— 신호 × 장세 (평가완료 N≥3, 평균 D+5 정렬). 행 클릭 → 해당 조합으로 필터. 개별 추격 X, 조합 경향 보기용</span></summary>
 <table class="ctbl"><thead><tr><th>신호</th><th>장세</th><th>N</th><th>D+5 평균</th><th>승률</th><th>hit</th></tr></thead><tbody id="comboTb"></tbody></table>
 </details>
@@ -101,9 +104,6 @@ th{color:var(--mut);font-weight:600;cursor:pointer;user-select:none;position:sti
 <th data-k="signal">신호</th><th data-k="grade">등급</th><th data-k="regime">장세</th>
 <th data-k="d5_ret">D+5 %</th><th data-k="hit">hit</th><th data-k="status">상태</th>
 </tr></thead><tbody id="tb"></tbody></table>
-<details class="combo mdd" id="mddBox" style="margin-top:14px"><summary>📉 미국 MDD 추적기 <span class="hint">— 지수·섹터·M7·우량개별 고점대비 낙폭. 🔴역대급(−40%↓)·🟠(−25↓)·🟡(−15↓). ATH=사상최고가 대비, 52w=52주고점 대비, MA200=200일선 이격</span></summary>
-<table class="ctbl"><thead><tr><th>종목</th><th>티커</th><th class="num">현재가</th><th class="num">ATH 대비</th><th class="num">52주 대비</th><th class="num">MA200</th></tr></thead><tbody id="mddTb"></tbody></table>
-</details>
 </div>
 <div class="modal" id="m"><div class="mbox">
 <span class="mclose" onclick="document.getElementById('m').classList.remove('on')">×</span>
