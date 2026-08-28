@@ -247,6 +247,12 @@ function renderSide(s){
  const d52=M.dist52;
  const momTxt=d52==null?'–':(d52>=-0.5?'🔥 신고가 부근/경신':(d52+'% (신고가까지)'));
  h+='<div class="kv"><span class="k">📈 모멘텀 · 52주 신고가</span><span>'+esc(momTxt)+'</span></div>';
+ const B=M.bo; let boTxt='–';
+ if(B){
+   if(B.tier>120)boTxt='<span style="color:var(--mut)">224일+ 돌파 · 검증 구간 아님</span>';
+   else if(B.tier===120)boTxt=(B.fresh?'🔥 첫 돌파':'고점 상회 중')+' <b class="up">+'+B.over+'%</b>';
+ }
+ h+='<div class="kv"><span class="k">📚 120일 매물대 돌파 <span style="color:var(--mut);font-size:11px">(관찰)</span></span><span>'+boTxt+'</span></div>';
  const ey=M.eps_yoy;
  h+='<div class="kv"><span class="k">💪 퀄리티 · 이익성장(EPS YoY)</span><span>'+(ey==null?'–':'<b class="'+(ey>=0?'up':'dn')+'">'+(ey>=0?'+':'')+ey+'%</b>')+'</span></div>';
  const op=M.op,opq=M.opq;
@@ -299,7 +305,7 @@ function renderSide(s){
    acTxt=lab+' <span style="color:var(--mut);font-size:11px">('+ac+')</span>';
  }
  h+='<div class="kv"><span class="k">🔗 단기 관성도 <span style="font-size:10px;color:var(--mut)">(참고·일수익률 자기상관)</span></span><span>'+acTxt+'</span></div>';
- h+='<p class="note" style="margin-top:3px">수급·이익성장·신고가 = 검증 팩터 · PBR·PER·임원매매·관성도 = 참고(신호 아님)</p>';
+ h+='<p class="note" style="margin-top:3px">수급·이익성장·신고가 = 검증 팩터 · 120일 매물대 돌파 = 관찰 단계(PF 1.18, 채택 아님) · PBR·PER·임원매매·관성도 = 참고(신호 아님)</p>';
  h+='<p class="note" style="margin-top:1px;font-size:10px">🔗 관성형=추세 매끄러움(한국한정 fwd5·R&D §151) · 단 돌파 후 과열 관성형은 단기 되돌림 주의(신호 맥락 종속)</p>';
 
  // 엔벨로프 가격대 가이드
