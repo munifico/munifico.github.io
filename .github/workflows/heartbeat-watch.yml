@@ -1,0 +1,66 @@
+name: heartbeat-watch
+
+# 맥(운영 머신) 다운 감지 — 스케줄러가 30분마다 heartbeat 브랜치에 남기는 시각을
+# GitHub 쪽에서 감시한다. 집 전원/인터넷/맥이 전부 죽어도 이 검사는 살아 있다.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check heartbeat freshness
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse
+          from datetime import datetime, timezone, timedelta
+
+          KST = timezone(timedelta(hours=9))
+          now = datetime.now(KST)
+
+          STALE_MIN = 90          # 30분 주기 + Actions 지연 여유
+          QUIET_FROM, QUIET_TO = 23, 5   # 23:00~05:00 KST 는 알림 억제(취침)
+
+          url = ("https://raw.githubusercontent.com/munifico/munifico.github.io/"
+                 "heartbeat/heartbeat.json?cb=" + str(int(now.timestamp())))
+          try:
+              hb = json.loads(urllib.request.urlopen(url, timeout=30).read())
+              ts = datetime.fromisoformat(hb["ts"])
+              age = (now - ts).total_seconds() / 60
+              host = hb.get("host", "?")
+          except Exception as e:
+              hb, ts, age, host = None, None, 10**9, f"read-fail({type(e).__name__})"
+
+          print(f"now={now:%Y-%m-%d %H:%M} last={ts} age={age:.0f}min host={host}")
+
+          if age <= STALE_MIN:
+              print("OK — 생존")
+              raise SystemExit(0)
+
+          if QUIET_FROM <= now.hour or now.hour < QUIET_TO:
+              print(f"STALE {age:.0f}min 이지만 취침시간({QUIET_FROM}~{QUIET_TO}시) — 알림 억제")
+              raise SystemExit(0)
+
+          last = f"{ts:%m-%d %H:%M}" if ts else "읽기 실패"
+          msg = (f"\U0001F6A8 <b>운영 머신 무응답</b>\n\n"
+                 f"마지막 생존 신호: <b>{last}</b> ({age:.0f}분 전)\n"
+                 f"호스트: {host}\n\n"
+                 f"스케줄러가 멈췄거나 맥이 꺼졌/잠들었을 수 있습니다.\n"
+                 f"점검: <code>launchctl list | grep stock</code>")
+          tok, chat = os.environ.get("TELEGRAM_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
+          if tok and chat:
+              data = urllib.parse.urlencode({
+                  "chat_id": chat, "text": msg, "parse_mode": "HTML",
+              }).encode()
+              r = urllib.request.urlopen(
+                  f"https://api.telegram.org/bot{tok}/sendMessage", data=data, timeout=30)
+              print("telegram:", r.status)
+          else:
+              print("secrets 미설정 — 텔레그램 스킵")
+          raise SystemExit(1)   # 워크플로 실패로도 기록
+          PY
