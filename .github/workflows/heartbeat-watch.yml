@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
+    inputs:
+      force_alert:
+        description: "강제 알림(발송 검증용)"
+        type: boolean
+        default: false
 
 jobs:
   watch:
@@ -15,6 +20,7 @@ jobs:
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FORCE_ALERT: ${{ inputs.force_alert }}
         run: |
           python3 - <<'PY'
           import json, os, urllib.request, urllib.parse
@@ -38,11 +44,15 @@ jobs:
 
           print(f"now={now:%Y-%m-%d %H:%M} last={ts} age={age:.0f}min host={host}")
 
+          if os.environ.get("FORCE_ALERT") == "true":
+              print("FORCE_ALERT — 발송 경로 검증")
+              age = 999
+
           if age <= STALE_MIN:
               print("OK — 생존")
               raise SystemExit(0)
 
-          if QUIET_FROM <= now.hour or now.hour < QUIET_TO:
+          if (QUIET_FROM <= now.hour or now.hour < QUIET_TO) and os.environ.get("FORCE_ALERT") != "true":
               print(f"STALE {age:.0f}min 이지만 취침시간({QUIET_FROM}~{QUIET_TO}시) — 알림 억제")
               raise SystemExit(0)
 
