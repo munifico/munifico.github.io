@@ -1,10 +1,10 @@
-name: heartbeat-watch
+name: heartbeat-watch-b
 
 # 맥(운영 머신) 다운 감지 — 스케줄러가 30분마다 heartbeat 브랜치에 남기는 시각을
 # GitHub 쪽에서 감시한다. 집 전원/인터넷/맥이 전부 죽어도 이 검사는 살아 있다.
 on:
   schedule:
-    - cron: "7 * * * *"
+    - cron: "37 * * * *"
   workflow_dispatch:
     inputs:
       force_alert:
