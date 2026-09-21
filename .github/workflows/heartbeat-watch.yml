@@ -5,6 +5,10 @@ name: heartbeat-watch
 on:
   schedule:
     - cron: "7 * * * *"
+  # 외부 타이머(Claude 루틴)가 watchdog-tick 브랜치에 push 하면 즉시 실행된다.
+  # push 이벤트는 schedule 과 달리 지연되지 않는다 (2026-09-22: schedule 실측 5h45m 간격)
+  push:
+    branches: [watchdog-tick]
   workflow_dispatch:
     inputs:
       force_alert:
