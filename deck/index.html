@@ -6,9 +6,9 @@
 <title>🕹️ Signal Deck</title>
 <style>
 html,body{margin:0;min-height:100%;background:#111}
-.deckbar{position:fixed;top:8px;right:8px;z-index:9999;display:flex;gap:4px;padding:4px;border-radius:9999px;
+.deckbar{position:fixed;top:8px;right:8px;left:8px;width:max-content;max-width:calc(100% - 16px);margin-left:auto;overflow-x:auto;scrollbar-width:none;z-index:9999;display:flex;gap:4px;padding:4px;border-radius:9999px;
  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);font:600 12px/1 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
-.deckbar button{border:0;border-radius:9999px;padding:7px 11px;background:transparent;color:#ddd;font:inherit;cursor:pointer}
+.deckbar button{flex:0 0 auto;white-space:nowrap;border:0;border-radius:9999px;padding:7px 11px;background:transparent;color:#ddd;font:inherit;cursor:pointer}
 .deckbar button.on{background:#fff;color:#111}
 .deckbar button:disabled{color:#777;cursor:not-allowed}
 .deckbar button:focus-visible{outline:2px solid #fff;outline-offset:1px}
@@ -24,14 +24,17 @@ html,body{margin:0;min-height:100%;background:#111}
 <script>
 (function(){
 const THEMES=[
-  {k:"terminal",label:"💾 터미널",ready:true},
-  {k:"control",label:"🛰️ 관제실",ready:false},
-  {k:"quest",label:"🎮 퀘스트",ready:false},
+  {k:"light",label:"☀️ 일반",file:"basic",ready:true},
+  {k:"dark",label:"🌙 다크",file:"basic",ready:true},
+  {k:"terminal",label:"💾 터미널",file:"terminal",ready:true},
+  {k:"control",label:"🛰️ 관제실",file:"control",ready:true},
+  {k:"quest",label:"🎮 퀘스트",file:"quest",ready:true},
 ];
 const ok=k=>THEMES.some(t=>t.k===k&&t.ready);
 let saved=null;try{saved=localStorage.getItem("deck_theme");}catch(e){}
 const q=new URLSearchParams(location.search).get("theme");
-const theme=ok(q)?q:ok(saved)?saved:"terminal";
+const sysDark=matchMedia("(prefers-color-scheme: dark)").matches;
+const theme=ok(q)?q:ok(saved)?saved:(sysDark?"dark":"light");
 try{localStorage.setItem("deck_theme",theme);}catch(e){}
 
 const bar=document.getElementById("deckbar");
@@ -47,8 +50,9 @@ const app=document.getElementById("app");
 const fail=m=>{app.innerHTML="";const p=document.createElement("p");p.className="deckmsg";p.textContent=m;app.appendChild(p);};
 fetch("deck.json?t="+Date.now()).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(deck=>{
   const s=document.createElement("script");
-  s.src="theme_"+theme+".js?v="+encodeURIComponent(deck.generated||"");
-  s.onload=()=>{app.innerHTML="";window.DeckTheme.mount(app,deck);};
+  const file=THEMES.find(t=>t.k===theme).file;
+  s.src="theme_"+file+".js?v="+encodeURIComponent(deck.generated||"");
+  s.onload=()=>{app.innerHTML="";window.DeckTheme.mount(app,deck,theme);};
   s.onerror=()=>fail("테마를 불러오지 못했습니다: "+theme);
   document.body.appendChild(s);
 }).catch(e=>fail("deck.json 을 불러오지 못했습니다 ("+e.message+")"));
