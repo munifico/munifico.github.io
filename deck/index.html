@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🕹️ Signal Deck</title>
+<style>
+html,body{margin:0;min-height:100%;background:#111}
+.deckbar{position:fixed;top:8px;right:8px;z-index:9999;display:flex;gap:4px;padding:4px;border-radius:9999px;
+ background:rgba(0,0,0,.55);backdrop-filter:blur(4px);font:600 12px/1 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.deckbar button{border:0;border-radius:9999px;padding:7px 11px;background:transparent;color:#ddd;font:inherit;cursor:pointer}
+.deckbar button.on{background:#fff;color:#111}
+.deckbar button:disabled{color:#777;cursor:not-allowed}
+.deckbar button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+.deckmsg{color:#ddd;font:14px/1.6 -apple-system,sans-serif;padding:80px 16px;text-align:center}
+.homebtn{position:fixed;left:12px;bottom:12px;z-index:9999;background:#7c3aed;color:#fff;text-decoration:none;
+ font:600 13px/1 -apple-system,BlinkMacSystemFont,sans-serif;padding:11px 15px;border-radius:9999px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+</style>
+</head>
+<body>
+<nav class="deckbar" id="deckbar" aria-label="테마 선택"></nav>
+<div id="app"><p class="deckmsg">불러오는 중…</p></div>
+<a class="homebtn" href="../hub/">🏠 허브</a>
+<script>
+(function(){
+const THEMES=[
+  {k:"terminal",label:"💾 터미널",ready:true},
+  {k:"control",label:"🛰️ 관제실",ready:false},
+  {k:"quest",label:"🎮 퀘스트",ready:false},
+];
+const ok=k=>THEMES.some(t=>t.k===k&&t.ready);
+let saved=null;try{saved=localStorage.getItem("deck_theme");}catch(e){}
+const q=new URLSearchParams(location.search).get("theme");
+const theme=ok(q)?q:ok(saved)?saved:"terminal";
+try{localStorage.setItem("deck_theme",theme);}catch(e){}
+
+const bar=document.getElementById("deckbar");
+THEMES.forEach(t=>{
+  const b=document.createElement("button");b.type="button";
+  b.textContent=t.label+(t.ready?"":" (준비중)");b.disabled=!t.ready;
+  if(t.k===theme)b.className="on";
+  b.addEventListener("click",()=>{try{localStorage.setItem("deck_theme",t.k);}catch(e){}location.search="?theme="+t.k;});
+  bar.appendChild(b);
+});
+
+const app=document.getElementById("app");
+const fail=m=>{app.innerHTML="";const p=document.createElement("p");p.className="deckmsg";p.textContent=m;app.appendChild(p);};
+fetch("deck.json?t="+Date.now()).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(deck=>{
+  const s=document.createElement("script");
+  s.src="theme_"+theme+".js?v="+encodeURIComponent(deck.generated||"");
+  s.onload=()=>{app.innerHTML="";window.DeckTheme.mount(app,deck);};
+  s.onerror=()=>fail("테마를 불러오지 못했습니다: "+theme);
+  document.body.appendChild(s);
+}).catch(e=>fail("deck.json 을 불러오지 못했습니다 ("+e.message+")"));
+})();
+</script>
+</body>
+</html>
