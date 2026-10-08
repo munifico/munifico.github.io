@@ -45,7 +45,7 @@ a.code{color:var(--accent);text-decoration:none;font-weight:600}
 </style>
 </head>
 <body>
-<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item active" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../etf_check/">📦 ETF구성</a><a class="hubnav-item" href="../barbell/">⚖️ 바벨</a><a class="hubnav-item" href="../band/">📉 밸류밴드</a><a class="hubnav-item" href="../deck/">🕹️ 시그널덱</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item active" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../etf_check/">📦 ETF구성</a><a class="hubnav-item" href="../barbell/">⚖️ 바벨</a><a class="hubnav-item" href="../band/">📉 밸류밴드</a><a class="hubnav-item" href="../deck/">🕹️ 시그널덱</a><a class="hubnav-item" href="../market/">📰 시황</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav>
 <header>
   <h1>💹 이익성장 스크리너</h1>
   <button class="toggle" onclick="toggleTheme()">🌓</button>
@@ -53,6 +53,9 @@ a.code{color:var(--accent);text-decoration:none;font-weight:600}
 <div class="wrap">
   <div class="sec-title">유동성 리더 ∩ 52주 신고가 근접 ∩ 연간 이익성장</div>
   <div class="card" id="screenCard"><div class="note">불러오는 중…</div></div>
+
+  <div class="sec-title">🧭 9대 테마 깔때기 (관찰 목록)</div>
+  <div class="card" id="themeCard"><div class="note">불러오는 중…</div></div>
 
   <div class="sec-title">검증 근거 (§128) · 주의</div>
   <div class="card">
@@ -77,7 +80,7 @@ function toggleTheme(){const d=document.documentElement.getAttribute("data-theme
  document.documentElement.setAttribute("data-theme",d?"light":"dark");localStorage.setItem("yoy_theme",d?"light":"dark")}
 if(localStorage.getItem("yoy_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");
 function num(n){return n==null?"–":Number(n).toLocaleString()}
-function grow(p,cap){if(p==null)return "–";if(p>cap)return '<span class="cap">+'+cap+'%+</span>';return "+"+p+"%"}
+function grow(p,cap){if(p==null)return "–";if(p<0)return p+"%";if(p>cap)return '<span class="cap">+'+cap+'%+</span>';return "+"+p+"%"}
 
 function render(d){
   const card=document.getElementById("screenCard");
@@ -105,7 +108,57 @@ function render(d){
   h+='</tbody></table></div>';
   card.innerHTML=h;
 }
-fetch("data.json?_="+Date.now()).then(r=>r.json()).then(render).catch(e=>{
+
+function envCell(pb,weekly){
+  if(pb==null)return '<td>–</td>';
+  const z=weekly&&pb>=1.5?'🔴':pb>=1?'🟠':pb>=0.25?'🟡':pb>=0?'🟢':'💚';
+  return '<td>'+z+' '+pb.toFixed(2)+'</td>';
+}
+function themeTable(rows,cap){
+  let h='<div class="tbl-scroll"><table><thead><tr>'+
+     '<th class="l">종목</th><th class="l">테마</th><th>주봉 엔벨</th><th>일봉 엔벨</th><th>고점대비</th><th>200일선</th><th>PER</th><th>이익성장</th></tr></thead><tbody>';
+  for(const r of rows){
+    h+='<tr><td class="l"><a class="code" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+
+       '/price" target="_blank">'+esc(r.name)+'</a><span class="tag">'+esc(r.type)+'</span></td>'+
+       '<td class="l">'+esc(r.buckets.join(" · "))+'</td>'+
+       envCell(r.w_pb,true)+envCell(r.d_pb,false)+
+       '<td class="neg">'+r.dist_pct+'%</td>'+
+       '<td'+(r.ma200_pct>=60?' class="cap"':'')+'>'+(r.ma200_pct>=0?'+':'')+r.ma200_pct+'%</td>'+
+       '<td>'+(r.per==null?"–":r.per)+'</td>'+
+       '<td class="pos">'+grow(r.growth_pct,cap)+(r.decel?' <span class="tag">둔화</span>':'')+'</td></tr>';
+  }
+  return h+'</tbody></table></div>';
+}
+
+function renderTheme(d){
+  const card=document.getElementById("themeCard");
+  const t=d&&d.theme;
+  if(!t){card.innerHTML='<div class="note">데이터 없음</div>';return}
+  const f=t.funnel,cap=d.win_cap||300;
+  let h='<div class="funnel">'+
+    '<div class="fchip">9테마 ∩ 유동성 <b>'+f.theme_liquid+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">이익(실적주) <b>'+f.earn+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">강도 <b>'+f.strong+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">과열 제외 <b>'+f.final+'</b></div></div>';
+  h+='<div class="note" style="margin:2px 0 12px">감염병·신약·반도체·AI인프라·배터리/ESS·코인·우주·로봇·에너지 (네이버 테마 DB) · '+
+     '유동성 = 거래대금 20일평균 상위30%(≥'+t.liq_thr_eok+'억) · 이익 = EPS 흑자∩전년比 증가 (기대주는 생략) · '+
+     '강도 = 52주 고점 −25% 이내 ∩ 종가&gt;50일선&gt;200일선 ∩ 200일선 상승 · 과열 = 52주위치 80%↑ ∩ 200일선 +60%↑ ∩ 이익증가 둔화</div>';
+  if(!t.rows.length){h+='<div class="note">오늘 통과 종목 없음.</div>';card.innerHTML=h;return}
+  h+='<div class="note" style="margin:0 0 8px">엔벨 = MA15 ±15% 안 위치 (0 하단 · 0.5 이평 · 1 상단). '+
+     '<b>주봉 1.5↑(15주선 +30% 초과) = 🔴과열</b>: 4년 검증 8주 후 −1.2%·중앙값 −10%·IS/OOS 모두 음수 → 신규 매수 보류 권장. '+
+     '1~1.5 = 상단 돌파(추세 지속, 평균 수준). 정렬 = 주봉 엔벨 낮은 順.</div>';
+  h+=themeTable(t.rows,cap);
+  if(t.watch&&t.watch.length){
+    h+='<div class="sec-title" style="margin-top:18px">🔎 하단권 관찰 (주봉 엔벨 0.25 미만 · 강도 단계 이전 후보)</div>'+
+       '<div class="note" style="margin:0 0 8px">⚠ <b>KOSPI 40주선 위에서는 8주 후 −1.5%(PF 0.83)로 추가 하락 쪽</b>, '+
+       '40주선 아래(하락장)에서만 +5.9%(PF 2.0) 반등. 지금 장세 확인 후 판단.</div>'+themeTable(t.watch,cap);
+  }
+  h+='<div class="warnbox">⚠ <b>관찰 목록 — 매수신호 아님.</b> 강도·이익 기준(§128)은 <b>BULL 장세에서만 검증</b>(BEAR 2022 음수). '+
+     '테마 소속은 키워드 매칭이라 오분류 가능(예: 운송사가 LNG로 분류). 폭락 후 V자 반등주는 이 기준에 안 잡힘. '+
+     '200일선 +60% 이상은 주황 표시(과열 경계).</div>';
+  card.innerHTML=h;
+}
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{render(d);renderTheme(d)}).catch(e=>{
   document.getElementById("screenCard").innerHTML='<div class="note">로드 실패: '+esc(e)+'</div>'});
 </script>
 </body>
