@@ -1,0 +1,41 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>일일 시황</title><style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1a1d23;--muted:#6b7280;--line:#e5e7eb;--accent:#7c3aed;--up:#d63031;--down:#2563eb}
+:root[data-theme="dark"]{--bg:#0f1419;--card:#171c23;--fg:#e6edf3;--muted:#8b949e;--line:#2a313b;--accent:#a78bfa;--up:#ff6b6b;--down:#60a5fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1419;--card:#171c23;--fg:#e6edf3;--muted:#8b949e;--line:#2a313b;--accent:#a78bfa;--up:#ff6b6b;--down:#60a5fa}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:8px 0 4px}h2{font-size:16px;margin:0 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.muted{color:var(--muted);font-size:13px}.note{font-size:12px;color:var(--muted);border-left:3px solid var(--accent);padding:6px 10px;margin:10px 0}
+.lead{font-size:16px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right}td:first-child,th:first-child{text-align:left}
+.up{color:var(--up)}.down{color:var(--down)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tbtn{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:9999px;padding:6px 12px;font:inherit;font-size:12px;cursor:pointer}
+.hwrap{overflow-x:auto}.heat{width:100%;min-width:640px;height:auto;display:block;border-radius:8px}.heat .hs{fill:#cbd5e1;font-size:11px;font-weight:600}.heat .ht{fill:#fff;text-anchor:middle;font-weight:600}
+.list a{color:var(--fg);text-decoration:none}.list li{margin:6px 0}
+</style><style>
+.hubnav{position:sticky;top:0;z-index:150;display:flex;gap:6px;overflow-x:auto;
+ padding:8px 12px;background:var(--card,#fff);border-bottom:1px solid var(--line,#e5e7eb);
+ -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hubnav::-webkit-scrollbar{display:none}
+.hubnav-item{flex:0 0 auto;padding:7px 13px;border-radius:9999px;font-size:13px;font-weight:600;
+ color:var(--muted,#6b7280);text-decoration:none;border:1px solid var(--line,#e5e7eb);white-space:nowrap;
+ transition:background .15s,color .15s}
+.hubnav-item:hover{color:var(--fg,#1a1d23)}
+.hubnav-item.active{background:var(--accent,#7c3aed);color:#fff;border-color:var(--accent,#7c3aed)}
+.hubnav-item.active:hover{color:#fff}
+</style>
+</head><body>
+<nav class="hubnav"><a class="hubnav-item" href="../hub/">🏠 허브</a><a class="hubnav-item" href="../watch/">🎯 주도주</a><a class="hubnav-item" href="../thememap/">🗂️ 테마진입</a><a class="hubnav-item" href="../stock_summary/">📊 종목추세</a><a class="hubnav-item" href="../yoy/">💹 이익성장</a><a class="hubnav-item" href="../jensen/">🟢 젠슨황</a><a class="hubnav-item" href="../study/">📚 인사이트</a><a class="hubnav-item" href="../signal_dashboard/">📈 신호성과 🇰🇷</a><a class="hubnav-item" href="../us_dashboard/">📈 신호성과 🇺🇸</a><a class="hubnav-item" href="../flow2/">🐋 수급무브</a><a class="hubnav-item" href="../etf_check/">📦 ETF구성</a><a class="hubnav-item" href="../barbell/">⚖️ 바벨</a><a class="hubnav-item" href="../band/">📉 밸류밴드</a><a class="hubnav-item" href="../deck/">🕹️ 시그널덱</a><a class="hubnav-item active" href="../market/">📰 시황</a><a class="hubnav-item" href="../investmap/">🗺️ 투자지도</a></nav><main>
+<div class="top"><h1>📰 일일 시황</h1><button class="tbtn" id="tbtn" type="button">🌙 다크 모드</button></div>
+<div class="note">국내: 평일 밤 · 미국: 미국 거래일 다음 날 아침. AI 작성, 시스템 수집 수치만 사용 · 매매 추천 아님</div>
+<div class="card"><ul class="list"><li><a href="20261008-kr.html"><b>10/08 🇰🇷 국내 증시</b> — 코스피 2.62% 급락 마감, 코스닥은 0.69% 하락에 그쳐</a></li><li><a href="20261007-us.html"><b>10/07 🇺🇸 미국 증시</b> — 미국 증시 약보합 마감, 다우 -0.66%로 낙폭 최대… 산업재·소재 약세 속 헬스케어만 강세</a></li></ul></div>
+</main><script>
+(function(){var k="market_theme",r=document.documentElement,b=document.getElementById("tbtn");
+function lbl(){var d=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;b.textContent=d?"☀️ 라이트 모드":"🌙 다크 모드";}
+try{var s=localStorage.getItem(k);if(s)r.dataset.theme=s;}catch(e){}
+lbl();b.onclick=function(){var d=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+r.dataset.theme=d?"light":"dark";try{localStorage.setItem(k,r.dataset.theme);}catch(e){}lbl();};})();
+</script></body></html>
