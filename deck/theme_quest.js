@@ -42,6 +42,16 @@ document.body.style.background = "#1a1420";
 
 const M = D.market || {}, S = D.signals || {items:[]}, TH = D.themes || {items:[]}, FO = D.foreign || {buy:[],sell:[]};
 const all = S.items || [];
+const FN = D.funnel || {rows: [], watch: []};
+// ◀▶ 로 바꾸는 파티: 기존 신호 / 9대 테마 깔때기 / 주봉 엔벨 하단권 관찰
+const PARTIES = [
+  {title: "SIGNAL PARTY", kind: "sig", list: all.slice(0, 10)},
+  {title: "THEME QUEST", kind: "fun", list: FN.rows || []},
+  {title: "LOW CAVE", kind: "low", list: FN.watch || []},
+].filter((p, i) => i === 0 || p.list.length);
+let party = 0, top = 0;
+const isFun = () => PARTIES[party].kind !== "sig";
+const ROWS = 10;
 const ymd = s => s && s.length === 8 ? `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6)}` : (s || "");
 const sgn = (v, d = 1) => v == null ? "-" : (v > 0 ? "+" : "") + Number(v).toFixed(d);
 const josa = (w, a, b) => { const ch = w.charCodeAt(w.length - 1); if (ch >= 0xAC00 && ch <= 0xD7A3) return w + (((ch - 0xAC00) % 28) ? a : b); return w + b; };
@@ -63,7 +73,7 @@ root.innerHTML = `<div class="qs"><div class="console">
   <div class="ss"><button data-k="select" type="button">SELECT</button><button data-k="start" type="button">START</button></div>
 </div>
 <div class="help">
-  <span><kbd>↑↓</kbd> 이동</span><span><kbd>Z</kbd> A 결정</span><span><kbd>X</kbd> B 취소</span><span><kbd>ENTER</kbd> START 지도</span><span><kbd>SHIFT</kbd> SELECT 소리</span>
+  <span><kbd>↑↓</kbd> 이동</span><span><kbd>←→</kbd> 파티 (신호 · 테마 퀘스트 · 하단 동굴)</span><span><kbd>Z</kbd> A 결정</span><span><kbd>X</kbd> B 취소</span><span><kbd>ENTER</kbd> START 지도</span><span><kbd>SHIFT</kbd> SELECT 소리</span>
   <span>정보 표시 전용 — 매매 신호·추천 아님. ${ymd(S.date)} 신호 · 장후 1회 갱신.</span>
 </div></div>`;
 
@@ -74,8 +84,14 @@ const cv = root.querySelector("#qscr"), ctx = cv.getContext("2d"); ctx.imageSmoo
 const P = {black:"#000000",white:"#fcfcfc",gray:"#bcbcbc",dgray:"#545454",red:"#d82800",orange:"#fc9838",yellow:"#f8d878",green:"#00a800",lgreen:"#b8f818",blue:"#0058f8",lblue:"#3cbcfc",navy:"#0000a8",brown:"#c84c0c",dbrown:"#7c2c00",pink:"#f878f8"};
 const KR = '12px "Galmuri11", "Apple SD Gothic Neo", sans-serif', PX = '8px "Press Start 2P", monospace';
 
-const stocks = all.slice(0, 10);
-const flagOf = s => s.conf === "HIGH" ? "HIGH" : s.conf === "MED" ? "MED" : "LOW";
+let stocks = PARTIES[0].list;
+// 깔때기 종목은 주봉 엔벨 위치로 색을 정한다: 과열(≥1.5) 빨강 · 밴드~상단 초록 · 하단권 파랑
+const flagOf = s => "w_pb" in s ? (s.w_pb == null ? "LOW" : s.w_pb >= 1.5 ? "HIGH" : s.w_pb >= 0.25 ? "MED" : "LOW")
+  : s.conf === "HIGH" ? "HIGH" : s.conf === "MED" ? "MED" : "LOW";
+const zoneOf = pb => pb == null ? "-" : pb >= 1.5 ? "BURN" : pb >= 1 ? "RUN" : pb >= 0.25 ? "OK" : "LOW";
+const zoneCol = pb => pb == null ? "#bcbcbc" : pb >= 1.5 ? "#d82800" : pb >= 1 ? "#fc9838" : pb >= 0.25 ? "#b8f818" : "#3cbcfc";
+const zoneKr = pb => pb == null ? "정보 없음" : pb >= 1.5 ? "과열 지대" : pb >= 1 ? "상단 돌파" : pb >= 0.25 ? "밴드 안" : pb >= 0 ? "하단권" : "하단 이탈";
+const f2 = v => v == null ? "-" : Number(v).toFixed(2);
 const flagCol = f => f === "HIGH" ? P.red : f === "MED" ? P.lgreen : P.lblue;
 const ser = (M.series?.kospi || []).filter(v => v != null);
 
@@ -121,7 +137,8 @@ function downArrow(x, y) { if (!reduce && ((frame >> 4) & 1)) return; for (let i
 /* ---------- monster sprites (seeded by ticker) ---------- */
 const sprites = {};
 function sprite(s) {
-  if (sprites[s.code]) return sprites[s.code];
+  const key = s.code + flagOf(s);
+  if (sprites[key]) return sprites[key];
   const r = rng(parseInt(s.code, 10) + 7), N = 12, g = [];
   for (let y = 0; y < N; y++) { g.push(new Array(N).fill(0)); for (let x = 0; x < N/2; x++) {
     const dist = Math.abs(x - 5.5)/6 + Math.abs(y - 6)/9, v = r();
@@ -131,7 +148,7 @@ function sprite(s) {
   const pal = {HIGH: [P.red, P.orange], MED: [P.green, P.lgreen], LOW: [P.blue, P.lblue]}[flagOf(s)];
   const c = document.createElement("canvas"); c.width = N; c.height = N; const x2 = c.getContext("2d");
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const v = g[y][x]; if (!v) continue; x2.fillStyle = v === 1 ? pal[0] : v === 2 ? pal[1] : v === 3 ? P.white : P.black; x2.fillRect(x, y, 1, 1); }
-  return sprites[s.code] = c;
+  return sprites[key] = c;
 }
 
 /* ---------- state ---------- */
@@ -152,13 +169,26 @@ const foreignOf = s => FO.buy.find(x => x.code === s.code) || FO.sell.find(x => 
 function enterBattle(i) {
   const s = stocks[i]; scene = "battle"; cmdCur = 0;
   const n = sameCode(s).length;
-  setDialog([`야생의 ${josa(s.name, "이", "가")} 나타났다!`, n > 1 ? `오늘 신호가 ${n}개나 겹쳐 있다.` : `${s.label} 신호를 들고 왔다.`]);
+  if (isFun()) setDialog([`야생의 ${josa(s.name, "이", "가")} 나타났다!`, `주봉 엔벨 ${f2(s.w_pb)}, ${zoneKr(s.w_pb)}에 서 있다.`]);
+  else setDialog([`야생의 ${josa(s.name, "이", "가")} 나타났다!`, n > 1 ? `오늘 신호가 ${n}개나 겹쳐 있다.` : `${s.label} 신호를 들고 왔다.`]);
   beep(220, .08); setTimeout(() => beep(330, .08), 90); setTimeout(() => beep(440, .12), 180);
 }
-const CMDS = ["분석", "수급", "도망"];
+const cmds = () => isFun() ? ["분석", "엔벨", "도망"] : ["분석", "수급", "도망"];
 function runCmd(k) {
   const s = stocks[cur];
-  if (k === "분석") {
+  if (isFun() && k === "분석") {
+    setDialog([`${s.type} · ${(s.buckets || []).join(" / ") || "-"}.`,
+      `52주 고점 대비 ${sgn(s.dist_pct)}%, 200일선 대비 ${sgn(s.ma200_pct)}%.`,
+      `PER ${s.per ?? "-"} · 이익성장 ${s.growth_pct == null ? "-" : sgn(s.growth_pct) + "%"}${s.decel ? " (둔화 중)" : ""}.`,
+      `장세는 ${M.regime || "-"}. 판단은 플레이어 몫이다.`]);
+  } else if (k === "엔벨") {
+    const msgs = [`주봉 ${f2(s.w_pb)} ${zoneKr(s.w_pb)}, 일봉 ${f2(s.d_pb)} ${zoneKr(s.d_pb)}.`];
+    if (s.w_pb >= 1.5) msgs.push("과거 4년 이 지대에서 8주 뒤 평균 -1.2%, 중앙값 -10%였다. 숨 고르기를 기다리는 것도 전략이다.");
+    else if (s.w_pb >= 1) msgs.push("상단 돌파 구간은 과거 평균 수준이었다. 추세는 아직 살아 있다.");
+    else if (s.w_pb != null && s.w_pb < 0.25) msgs.push("하단권은 KOSPI 40주선 아래에서만 반등이 강했다(8주 +5.9%). 위에서는 -1.5%. 장세부터 확인하자.");
+    else msgs.push("밴드 안이다. 과열 부담은 덜하다.");
+    setDialog(msgs);
+  } else if (k === "분석") {
     const sig = sameCode(s).map(x => `${x.label}(${x.conf || "-"})`).join(", ");
     setDialog([`신호: ${sig}.`, `테마: ${(s.themes || []).join(" / ") || "없음"}.`, `장세는 ${M.regime || "-"}. 판단은 플레이어 몫이다.`]);
   } else if (k === "수급") {
@@ -173,9 +203,15 @@ function press(k) {
   if (k === "select") { snd = !snd; toast = {t: "SOUND " + (snd ? "ON" : "OFF"), until: frame + 80}; beep(880, .06); return; }
   if (k === "start") { scene = scene === "map" ? "menu" : "map"; beep(scene === "map" ? 523 : 392, .1); return; }
   if (scene === "menu") {
+    if ((k === "left" || k === "right") && PARTIES.length > 1) {
+      party = (party + (k === "right" ? 1 : PARTIES.length - 1)) % PARTIES.length;
+      stocks = PARTIES[party].list; cur = 0; top = 0; beep(523, .05); return;
+    }
     if (!stocks.length) return;
     if (k === "up") { cur = (cur + stocks.length - 1) % stocks.length; beep(660, .04); }
     if (k === "down") { cur = (cur + 1) % stocks.length; beep(660, .04); }
+    if (cur < top) top = cur;
+    if (cur >= top + ROWS) top = cur - ROWS + 1;
     if (k === "a") enterBattle(cur);
     return;
   }
@@ -189,10 +225,11 @@ function press(k) {
       if (dlg.p < dlg.pages.length - 1) { dlg.p++; dlg.shown = reduce ? 999 : 0; return; }
       const end = dlg.onEnd; dlg = null; mode = "cmd"; if (end) end(); return;
     }
-    if (k === "up") { cmdCur = (cmdCur + CMDS.length - 1) % CMDS.length; beep(660, .04); }
-    if (k === "down") { cmdCur = (cmdCur + 1) % CMDS.length; beep(660, .04); }
+    const C = cmds();
+    if (k === "up") { cmdCur = (cmdCur + C.length - 1) % C.length; beep(660, .04); }
+    if (k === "down") { cmdCur = (cmdCur + 1) % C.length; beep(660, .04); }
     if (k === "b") { scene = "menu"; beep(392, .06); }
-    if (k === "a") { beep(880, .05); runCmd(CMDS[cmdCur]); }
+    if (k === "a") { beep(880, .05); runCmd(C[cmdCur]); }
   }
 }
 
@@ -206,25 +243,35 @@ function header() {
 
 function drawMenu() {
   rect(0, 14, W, H - 14, P.black);
-  txt("SIGNAL PARTY", 6, 18, P.yellow);
-  txt(`${stocks.length}/${all.length} ${M.regime || ""}`, 250, 18, P.gray, {align: "right"});
+  const fun = isFun();
+  txt(PARTIES[party].title, 6, 18, P.yellow);
+  txt(fun ? `${stocks.length ? cur + 1 : 0}/${stocks.length} ${M.regime || ""}` : `${stocks.length}/${all.length} ${M.regime || ""}`, 250, 18, P.gray, {align: "right"});
   box(4, 28, 248, 137);
   if (!stocks.length) { txt("오늘은 몬스터가 없다", 128, 90, P.white, {kr: true, align: "center"}); }
-  stocks.forEach((s, i) => {
-    const y = 33 + i * 13;
+  stocks.slice(top, top + ROWS).forEach((s, j) => {
+    const i = top + j, y = 33 + j * 13;
     if (i === cur) { rect(8, y - 1, 240, 13, "#101040"); cursor(10, y + 2); }
     txt(fitTxt(s.name, 74), 19, y - 2, P.white, {kr: true});
+    if (fun) {
+      txt(fitTxt(`${(s.buckets || [])[0] || "-"} ${s.type || ""}`, 112), 98, y - 2, P.gray, {kr: true});
+      const z = zoneOf(s.w_pb);
+      txt(z, 246, y + 2, z === "BURN" ? ((!reduce && (frame >> 3) & 1) ? P.yellow : P.red) : zoneCol(s.w_pb), {align: "right"});
+      return;
+    }
     txt(fitTxt(s.label, 112), 98, y - 2, P.gray, {kr: true});
     const f = flagOf(s);
     txt(f === "HIGH" ? "HOT" : f === "MED" ? "GO" : "...", 246, y + 2, f === "HIGH" ? ((!reduce && (frame >> 3) & 1) ? P.yellow : P.red) : flagCol(f), {align: "right"});
   });
   const s = stocks[cur];
   box(4, 168, 248, 54);
-  if (s) {
+  if (s && fun) {
+    txt(fitTxt(`${s.name} · ${s.type} · ${s.code}`, 232), 12, 173, P.white, {kr: true});
+    txt(fitTxt(`주봉 ${f2(s.w_pb)} · 일봉 ${f2(s.d_pb)} · 고점 ${sgn(s.dist_pct)}%`, 232), 12, 188, P.gray, {kr: true});
+  } else if (s) {
     txt(fitTxt(`${s.name} · ${s.market} · ${s.code}`, 232), 12, 173, P.white, {kr: true});
     txt(fitTxt(`테마 ${(s.themes || []).join(" / ") || "-"}`, 232), 12, 188, P.gray, {kr: true});
   }
-  txt("A 전투   START 지도   SELECT 소리", 12, 203, P.yellow, {kr: true});
+  txt(PARTIES.length > 1 ? "◀▶ 파티   A 전투   START 지도" : "A 전투   START 지도   SELECT 소리", 12, 203, P.yellow, {kr: true});
 }
 
 function bar(x, y, w, frac, col) { rect(x, y, w, 6, P.dgray); rect(x+1, y+1, w-2, 4, P.black); rect(x+1, y+1, Math.round((w-2) * Math.max(0, Math.min(1, frac))), 4, col); }
@@ -237,6 +284,17 @@ function drawBattle() {
   ctx.drawImage(sprite(s), 162, 66 + bob, 48, 48);
   box(6, 20, 140, 80);
   txt(fitTxt(s.name, 84), 12, 25, P.white, {kr: true});
+  if (isFun()) {
+    rect(98, 25, 42, 14, {HIGH: P.red, MED: P.green, LOW: P.navy}[f]); txt(zoneOf(s.w_pb), 119, 28, P.white, {align: "center"});
+    // 바 = 엔벨 위치 0~2 (1 = 상단선), 흰 눈금 = 상단선
+    txt("WK", 12, 46, P.gray); bar(44, 46, 96, (s.w_pb ?? 0) / 2, zoneCol(s.w_pb)); rect(91, 45, 2, 8, P.white);
+    txt(f2(s.w_pb), 140, 56, P.gray, {align: "right"});
+    txt("DY", 12, 66, P.gray); bar(44, 66, 96, (s.d_pb ?? 0) / 2, zoneCol(s.d_pb)); rect(91, 65, 2, 8, P.white);
+    txt(f2(s.d_pb), 140, 76, P.gray, {align: "right"});
+    box(6, 106, 140, 42);
+    txt(fitTxt((s.buckets || []).join(" · ") || "-", 124), 12, 111, P.white, {kr: true});
+    txt(fitTxt(`고점 ${sgn(s.dist_pct)}% · 이익 ${s.growth_pct == null ? "-" : sgn(s.growth_pct, 0) + "%"}`, 124), 12, 127, P.lblue, {kr: true});
+  } else {
   rect(98, 25, 42, 14, {HIGH: P.red, MED: P.green, LOW: P.navy}[f]); txt(s.conf || "LOW", 119, 28, P.white, {align: "center"});
   txt("SIG", 12, 46, P.gray); bar(44, 46, 96, Math.min(1, n / 3), n >= 3 ? P.lgreen : n === 2 ? P.yellow : P.orange);
   txt(`${n}`, 140, 56, P.gray, {align: "right"});
@@ -246,6 +304,7 @@ function drawBattle() {
   box(6, 106, 140, 42);
   txt(fitTxt(s.label, 124), 12, 111, P.white, {kr: true});
   txt(fitTxt(`테마 ${(s.themes || [])[0] || "-"}`, 124), 12, 127, P.lblue, {kr: true});
+  }
   box(4, 152, 248, 70);
   if (mode === "dlg" && dlg) {
     let left = Math.floor(dlg.shown);
@@ -256,7 +315,7 @@ function drawBattle() {
     txt("무엇을 할까?", 12, 160, P.white, {kr: true});
     txt("B 메뉴로", 12, 196, P.dgray, {kr: true});
     rect(156, 156, 2, 62, P.navy);
-    CMDS.forEach((c, i) => { const y = 160 + i*19; if (i === cmdCur) cursor(166, y + 4); txt(c, 178, y, P.white, {kr: true}); });
+    cmds().forEach((c, i) => { const y = 160 + i*19; if (i === cmdCur) cursor(166, y + 4); txt(c, 178, y, P.white, {kr: true}); });
   }
 }
 

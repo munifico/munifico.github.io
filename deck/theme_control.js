@@ -59,6 +59,13 @@ const CSS = `
 .cr canvas.chart{width:100%;height:150px;display:block}
 .cr .log{height:150px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;font-size:10.5px}
 .cr .log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr .btn.on{border-color:var(--accent-hi);color:var(--accent-hi);background:rgba(111,168,255,.12)}
+.cr .fnp{margin-top:10px}
+.cr .fnp tbody tr{cursor:default}
+.cr .fnp td{max-width:none}
+.cr .gauge{width:120px;height:6px;background:#0f1a36;position:relative;display:inline-block;vertical-align:middle}
+.cr .gauge i{position:absolute;left:0;top:0;bottom:0}
+.cr .gauge::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--fg)}
 .cr .foot{margin-top:10px;color:var(--faint);font-size:10px;display:flex;flex-wrap:wrap;gap:6px 20px}
 @media (max-width:1100px){.cr .grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cr .center{grid-column:1/-1;order:-1}.cr .bottom{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 @media (max-width:640px){.cr .grid,.cr .bottom{grid-template-columns:minmax(0,1fr)}.cr .center,.cr canvas.globe{min-height:400px}.cr .caption{display:none}}
@@ -82,6 +89,8 @@ const all = S.items || [];
 const stocks = all.slice(0, 12);
 const confCol = c => c === "HIGH" ? "var(--warn)" : c === "MED" ? "var(--accent-hi)" : "var(--dim)";
 const regCls = {BULL:"ok", BEAR:"warn", RANGE:"amb"}[M.regime] || "";
+// 9대 테마 깔때기 + 주봉 엔벨 하단권 관찰. 엔벨 pb: 0 하단 · 1 상단(게이지 눈금), 주봉 1.5↑ = BURN
+const FN = D.funnel || {rows: [], watch: []};
 
 root.innerHTML = `<div class="cr">
 <header class="topbar">
@@ -141,6 +150,11 @@ root.innerHTML = `<div class="cr">
   <section class="panel"><div class="ph"><span class="t">Foreign · ${FO.window || 5}D</span><span class="lbl">억원 · 상위 매수/매도</span></div><canvas class="chart" id="crflow"></canvas></section>
   <section class="panel"><div class="ph"><span class="t">Events</span><span class="lbl">실적 D-day · 위험</span></div><div class="log" id="crlog"></div></section>
 </div>
+<section class="panel fnp"><div class="ph"><span class="t">Theme Funnel · Envelope 15</span>
+  <span style="display:flex;gap:6px"><button class="btn on" type="button" data-fn="rows">FUNNEL ${(FN.rows || []).length}</button><button class="btn" type="button" data-fn="watch">LOW CAVE ${(FN.watch || []).length}</button></span></div>
+  <div class="tablewrap" style="max-height:360px"><table><thead><tr><th>종목</th><th>테마</th><th>W-ENV</th><th>D-ENV</th><th>HIGH%</th></tr></thead><tbody id="crfn"></tbody></table></div>
+  <div class="lbl kr" id="crfnnote" style="text-transform:none;letter-spacing:0"></div>
+</section>
 <div class="foot"><span>정보 표시 전용 — 매매 신호·추천 아님. 데이터는 장후 1회 갱신.</span><span>Render: Canvas 2D · no libraries</span></div>
 </div>`;
 const Q = s => root.querySelector(s);
@@ -195,6 +209,25 @@ ${same.map(x => `· ${x.label}  conf ${x.conf || "-"}  ${x.stime}`).join("\n")}
 const pick = i => { selected = i; renderTable(); renderAdv(); };
 tb.addEventListener("click", e => { const r = e.target.closest("tr[data-i]"); if (r) pick(+r.dataset.i); });
 tb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { const r = e.target.closest("tr[data-i]"); if (r) { e.preventDefault(); pick(+r.dataset.i); tb.querySelector(`tr[data-i="${selected}"]`)?.focus(); } } });
+/* ---------- theme funnel ---------- */
+const zoneOf = (pb, weekly) => pb == null ? ["—", "var(--dim)"] : weekly && pb >= 1.5 ? ["BURN", "var(--warn)"] : pb >= 1 ? ["RUN", "var(--amber)"] : pb >= 0.25 ? ["OK", "var(--ok)"] : ["LOW", "var(--accent)"];
+const gauge = (pb, weekly) => { const [z, c] = zoneOf(pb, weekly); return `<span class="gauge"><i style="width:${Math.max(0, Math.min(1, (pb ?? 0) / 2)) * 100}%;background:${c}"></i></span> <span style="color:${c}">${pb == null ? "—" : pb.toFixed(2)} ${z}</span>`; };
+const FN_NOTE = {
+  rows: "테마∩유동성 → 이익 → 강도(고점 −25%·정배열) 통과. BURN = 주봉 15주선 +30% 초과: 4년 검증 8주 뒤 평균 −1.2%·중앙값 −10% → 신규 진입 보류 권장. RUN = 상단 돌파(추세 지속, 평균 수준).",
+  watch: "주봉 엔벨 하단권. KOSPI 40주선 위에서는 8주 −1.5%(추가 하락 쪽), 아래(하락장)에서만 +5.9% 반등 — regime 먼저 확인.",
+};
+function renderFunnel(k) {
+  const rows = FN[k] || [];
+  Q("#crfn").innerHTML = rows.map(r => `<tr><td><span class="kr">${esc(r.name)}</span> <span style="color:var(--faint)">${esc(r.code)}</span></td>
+    <td><span class="kr" style="color:var(--dim)">${esc((r.buckets || []).join(" · "))}</span></td>
+    <td>${gauge(r.w_pb, true)}</td><td>${gauge(r.d_pb, false)}</td><td class="warn">${sgn(r.dist_pct, 1)}%</td></tr>`).join("")
+    || '<tr><td colspan="5" class="lbl">NO DATA</td></tr>';
+  Q("#crfnnote").textContent = `${ymd(FN.asof)} · ${FN_NOTE[k]}`;
+  root.querySelectorAll("[data-fn]").forEach(b => b.classList.toggle("on", b.dataset.fn === k));
+}
+root.querySelectorAll("[data-fn]").forEach(b => b.addEventListener("click", () => renderFunnel(b.dataset.fn)));
+renderFunnel("rows");
+
 const copyBtn = Q("#crcopy");
 copyBtn.addEventListener("click", () => {
   const done = () => { copyBtn.textContent = "COPIED"; setTimeout(() => copyBtn.textContent = "COPY", 1400); };

@@ -50,6 +50,10 @@ const STYLE = `
 .bs ol li{margin:2px 0}
 .bs ul.ev{margin:0;padding-left:16px;font-size:12px}
 .bs .note{color:var(--muted);font-size:12px;margin-top:14px}
+.bs .zn{display:inline-block;min-width:4.4em;border-radius:6px;padding:0 6px;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;text-align:center;background:var(--soft);color:var(--muted)}
+.bs .zn.burn{background:var(--up);color:#fff}.bs .zn.run{background:#f59e0b;color:#1a1d23}.bs .zn.ok{background:var(--chip);color:var(--accent)}.bs .zn.low{background:var(--down);color:#fff}
+.bs details summary{cursor:pointer;font-size:13px;margin:10px 0 6px;color:var(--muted)}
+.bs .fnote{font-size:12px;color:var(--muted);margin:0 0 8px}
 @media (max-width:900px){.bs .grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:480px){.bs .two{grid-template-columns:1fr}}
 `;
@@ -89,6 +93,12 @@ const mxN = Math.max(1, ...(S.types || []).map(t => t.n));
 const mxT = Math.max(1, ...(TH.items || []).map(t => Math.abs(t.short ?? 0)));
 const fRow = r => `<li><b>${esc(r.name)}</b> <span class="${cls(r.net5)}">${sgn(r.net5, 0)}억</span> <span class="muted">(주가 ${sgn(r.p5, 1)}%)</span></li>`;
 const s = S.stats || {};
+// 9대 테마 깔때기: 주봉 엔벨 pb 1.5↑ 과열 · 1↑ 상단 돌파 · 0.25↑ 밴드 안 · 미만 하단권
+const FN = D.funnel || {rows: [], watch: []};
+const zone = (pb, weekly) => pb == null ? ["", "—"] : weekly && pb >= 1.5 ? ["burn", "과열"] : pb >= 1 ? ["run", "상단"] : pb >= 0.25 ? ["ok", "밴드"] : ["low", "하단"];
+const zn = (pb, weekly) => { const [c, t] = zone(pb, weekly); return `<span class="zn ${c}">${t} ${pb == null ? "" : pb.toFixed(2)}</span>`; };
+const fnTable = rows => rows.length ? `<div class="tbl"><table><thead><tr><th>종목</th><th>테마</th><th>주봉 엔벨</th><th>일봉 엔벨</th><th>고점대비</th></tr></thead><tbody>${rows.map(r =>
+  `<tr><td><b>${esc(r.name)}</b> <span class="code">${esc(r.code)} · ${esc(r.type)}</span></td><td class="muted">${esc((r.buckets || []).join(", "))}</td><td>${zn(r.w_pb, true)}</td><td>${zn(r.d_pb, false)}</td><td class="down">${sgn(r.dist_pct, 1)}%</td></tr>`).join("")}</tbody></table></div>` : '<p class="muted">통과 종목 없음</p>';
 
 root.innerHTML = `<div class="bs ${dark ? "dark" : ""}"><div class="wrap">
 <h1>🕹️ Signal Deck</h1>
@@ -107,6 +117,11 @@ root.innerHTML = `<div class="bs ${dark ? "dark" : ""}"><div class="wrap">
       <div class="filters"><input id="bsq" type="search" placeholder="종목명·코드·테마 검색" aria-label="신호 검색">
         <select id="bst" aria-label="신호 유형"><option value="">전체 유형</option>${(S.types || []).map(t => `<option value="${esc(t.type)}">${esc(t.label)} (${t.n})</option>`).join("")}</select></div>
       <div class="tbl"><table><thead><tr><th>종목</th><th>신호</th><th>등급</th><th>테마</th></tr></thead><tbody id="bsrows"></tbody></table></div>
+    </section>
+    <section class="card"><h2>🧭 9대 테마 깔때기 <small>${(FN.rows || []).length}종목 · ${esc(ymd(FN.asof))}</small></h2>
+      <p class="fnote">테마∩유동성 → 이익 → 강도(고점 −25%·정배열) 통과. 엔벨 = MA15 ±15% 안 위치(0 하단·1 상단). 주봉 <b>과열(1.5↑)</b>은 4년 검증상 8주 뒤 평균 −1.2%·중앙값 −10% → 신규 진입 보류 권장. 상단(1~1.5)은 추세 지속 구간.</p>
+      ${fnTable(FN.rows || [])}
+      ${(FN.watch || []).length ? `<details><summary>🔎 하단권 관찰 ${FN.watch.length}종목 — KOSPI 40주선 위에서는 추가 하락 쪽(8주 −1.5%), 아래에서만 반등(+5.9%)</summary>${fnTable(FN.watch)}</details>` : ""}
     </section>
   </div>
   <div class="col">

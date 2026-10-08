@@ -77,6 +77,11 @@ const ageH = (Date.now() - new Date((D.generated || "").replace(" ", "T") + ":00
 const REG = {BULL:"BULL",RANGE:"RANGE",BEAR:"BEAR"}[M.regime] || "----";
 const items = S.items || [];
 const TOPN = 15;
+// 9대 테마 깔때기 + 주봉 엔벨 하단권 관찰. 엔벨 pb: 0 하단 · 1 상단, 주봉 1.5↑ = BURN(과열)
+const FN = D.funnel || {rows: [], watch: []};
+const fnAll = [...(FN.rows || []), ...(FN.watch || [])];
+const zoneT = (pb, weekly) => pb == null ? "----" : weekly && pb >= 1.5 ? '<span class="inv">BURN</span>' : pb >= 1 ? "RUN " : pb >= 0.25 ? "OK  " : "LOW ";
+const f2 = v => v == null ? "--" : v.toFixed(2);
 
 /* ---------- layout ---------- */
 root.innerHTML = `<div class="t89"><div class="monitor"><div class="screen flicker">
@@ -172,8 +177,12 @@ const out = T.querySelector("#t89out");
 const print = html => { out.insertAdjacentHTML("beforeend", html + "\n"); out.scrollTop = out.scrollHeight; };
 const HR = '<span class="dim">----------------------------------------</span>';
 const line = s => ` ${esc(s.code)} ${pad(esc(s.conf || "-"), 4)}  <span class="kr">${esc(s.name)} · ${esc(s.label)}</span>`;
+const fnLine = r => ` ${esc(r.code)} WK ${pad(f2(r.w_pb), 5)} ${zoneT(r.w_pb, true)} DY ${pad(f2(r.d_pb), 5)} ${pad(sgn(r.dist_pct, 1), 6)}%  <span class="kr">${esc(r.name)} · ${esc((r.buckets || []).join("/"))}</span>`;
+const fnDetail = r => ` FUNNEL  WK ${f2(r.w_pb)} ${zoneT(r.w_pb, true)} · DY ${f2(r.d_pb)} ${zoneT(r.d_pb, false)} · <span class="kr">고점 ${sgn(r.dist_pct, 1)}% · ${esc(r.type)} · ${esc((r.buckets || []).join("/"))}</span>`;
 function show(q) {
   const hits = items.filter(s => s.code === q || s.name.toUpperCase() === q);
+  const fn = fnAll.find(r => r.code === q || r.name.toUpperCase() === q);
+  if (!hits.length && fn) return `${HR}\n <span class="kr">${esc(fn.name)}</span> (${esc(fn.code)})  <span class="dim">NO SIGNAL TODAY</span>\n${fnDetail(fn)}\n${HR}`;
   if (!hits.length) return `NOT FOUND IN ${esc(ymd(S.date))} SIGNALS: ${esc(q || "(EMPTY)")}\nTRY: LIST ALL`;
   const s = hits[0];
   const fb = FO.buy.find(f => f.code === s.code), fs = FO.sell.find(f => f.code === s.code), f = fb || fs;
@@ -183,7 +192,7 @@ function show(q) {
 ${hits.map(h => `   · <span class="kr">${esc(h.label)}</span>  CONF ${esc(h.conf || "-")}  ${esc(h.stime)}`).join("\n")}
  THEMES  <span class="kr">${esc((s.themes || []).join(" / ") || "-")}</span>
  FOREIGN ${f ? `<span class="kr">5일 ${sgn(f.net5, 1)}억 · 1일 ${sgn(f.net1, 1)}억 · 주가 ${sgn(f.p5, 1)}%</span>` : '<span class="dim">TOP 외인 리스트 밖</span>'}
-${HR}`;
+${fn ? fnDetail(fn) + "\n" : ""}${HR}`;
 }
 const cmds = {
   HELP: () => `AVAILABLE COMMANDS
@@ -195,6 +204,8 @@ const cmds = {
   MARKET          REGIME · VALUATION · RISK
   EVENTS          EARNINGS D-DAY · RISK ITEMS
   STATS           누적 신호 성과
+  FUNNEL          9대 테마 깔때기 + 주봉/일봉 엔벨
+  LOWCAVE         주봉 엔벨 하단권 관찰
   PHOSPHOR        GREEN / AMBER
   CLS             CLEAR SCREEN`,
   LIST: a => { const all = a[0] === "ALL", l = all ? items : items.slice(0, 20); return ` CODE   CONF  NAME · SIGNAL   (${l.length}/${items.length})\n` + l.map(line).join("\n"); },
@@ -213,6 +224,13 @@ const cmds = {
  <span class="kr">D+${S.fwd_days ?? 5} 내 최고가 +${S.surge_pct ?? 15}% 도달 ${s.hit_rate ?? "-"}% · 평균 D+5 ${sgn(s.avg_d5)}%</span>
  <span class="faint kr">신호 성과 대시보드(/signal_dashboard/) 집계 기준</span>`; },
   PHOSPHOR: () => { T.classList.toggle("amber"); const a = T.classList.contains("amber"); try { localStorage.setItem("deck_t89_amber", a ? "1" : "0"); } catch (e) {} drawK(); return "PHOSPHOR SET TO " + (a ? "P3 AMBER" : "P1 GREEN"); },
+  FUNNEL: () => (FN.rows || []).length ? ` 9대 테마 깔때기 (${esc(ymd(FN.asof))}) · <span class="kr">엔벨 MA15±15% 위치 0 하단 · 1 상단</span>
+ CODE   WK-ENV       DY-ENV   HIGH%   NAME · THEME
+${FN.rows.map(fnLine).join("\n")}
+ <span class="faint kr">BURN = 주봉 15주선 +30% 초과: 4년 검증 8주 뒤 평균 −1.2%·중앙값 −10% → 신규 진입 보류 권장</span>` : "NO FUNNEL DATA",
+  LOWCAVE: () => (FN.watch || []).length ? ` 주봉 엔벨 하단권 관찰 (${FN.watch.length})
+${FN.watch.map(fnLine).join("\n")}
+ <span class="faint kr">KOSPI 40주선 위에서는 8주 −1.5%(추가 하락 쪽), 아래에서만 +5.9% 반등 — REGIME 먼저 확인</span>` : "NO LOWCAVE DATA",
   CLS: () => { out.innerHTML = ""; return null; },
 };
 function run(raw) {
@@ -224,7 +242,7 @@ function run(raw) {
   print(`BAD COMMAND OR FILE NAME: ${esc(c)}\nTYPE HELP FOR A LIST OF COMMANDS`);
 }
 T.querySelector("#t89form").addEventListener("submit", e => { e.preventDefault(); const i = T.querySelector("#t89cmd"); run(i.value); i.value = ""; });
-const FK = [["F1","HELP"],["F2","LIST"],["F3","TYPES"],["F4","THEMES"],["F5","FOREIGN"],["F6","MARKET"],["F7","EVENTS"],["F8","STATS"],["F9","PHOSPHOR"],["F10","CLS"]];
+const FK = [["F1","HELP"],["F2","LIST"],["F3","TYPES"],["F4","THEMES"],["F5","FOREIGN"],["F6","MARKET"],["F7","EVENTS"],["F8","STATS"],["F9","PHOSPHOR"],["F10","CLS"],["FN","FUNNEL"],["LC","LOWCAVE"]];
 T.querySelector("#t89fk").innerHTML = FK.map(([k, c]) => `<button class="fk" type="button" data-cmd="${c}"><b>${k}</b>${c}</button>`).join("");
 T.querySelectorAll(".fk").forEach(b => b.addEventListener("click", () => run(b.dataset.cmd)));
 T.querySelector("#t89knob").addEventListener("click", () => run("PHOSPHOR"));
@@ -238,5 +256,6 @@ print(`<span class="dim">KSE DATASYSTEMS BIOS 2.03  (C) 1989
 MEMORY TEST ........ 640K OK
 LOADING DECK.JSON .. ${esc(D.generated || "?")}</span>
 ${esc(ymd(S.date))} SIGNALS ${items.length} · TYPES ${(S.types || []).length} · REGIME <span class="inv">${REG}</span>
+FUNNEL ${(FN.rows || []).length} · LOWCAVE ${(FN.watch || []).length}
 TYPE HELP OR PRESS F1`);
 }};
