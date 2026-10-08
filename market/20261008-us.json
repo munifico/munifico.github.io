@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261008",
+  "indicators": {
+   "S&P 500": {
+    "price": 7765.36,
+    "chg_pct": -0.47
+   },
+   "Nasdaq": {
+    "price": 27193.34,
+    "chg_pct": -1.25
+   },
+   "Dow Jones": {
+    "price": 51231.64,
+    "chg_pct": 0.1
+   },
+   "EWY": {
+    "price": 176.29,
+    "chg_pct": -4.03
+   },
+   "DRAM": {
+    "price": 56.93,
+    "chg_pct": -5.13
+   },
+   "VIX": {
+    "price": 15.41,
+    "chg_pct": 2.19
+   },
+   "US 10Y": {
+    "price": 5.23,
+    "chg_pct": -0.87
+   },
+   "Gold": {
+    "price": 4158.3,
+    "chg_pct": 0.43
+   },
+   "Silver": {
+    "price": 59.43,
+    "chg_pct": -0.78
+   },
+   "Copper": {
+    "price": 6.55,
+    "chg_pct": -0.7
+   },
+   "WTI": {
+    "price": 91.18,
+    "chg_pct": 3.29
+   },
+   "Bitcoin": {
+    "price": 81561.26,
+    "chg_pct": -2.06
+   },
+   "Ethereum": {
+    "price": 2471.11,
+    "chg_pct": -3.98
+   },
+   "USD/KRW": {
+    "price": 1341.88,
+    "chg_pct": 0.16
+   },
+   "JPY/KRW": {
+    "price": 8.48,
+    "chg_pct": 0.2
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 2.97,
+    "chg_5d_pct": 4.05
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 2.11,
+    "chg_5d_pct": 3.85
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 0.89,
+    "chg_5d_pct": 1.44
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.73,
+    "chg_5d_pct": 1.94
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.69,
+    "chg_5d_pct": 0.42
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.59,
+    "chg_5d_pct": 1.5
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.33,
+    "chg_5d_pct": -0.14
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.31,
+    "chg_5d_pct": 2.67
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -0.19,
+    "chg_5d_pct": 3.5
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -0.39,
+    "chg_5d_pct": 1.18
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -1.79,
+    "chg_5d_pct": -0.02
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 337,
+   "decliners": 162,
+   "median_chg_pct": 0.84,
+   "top_gainers": [
+    {
+     "ticker": "CSGP",
+     "name": "CoStar Group",
+     "chg_pct": 8.01
+    },
+    {
+     "ticker": "CMG",
+     "name": "Chipotle Mexican Grill",
+     "chg_pct": 6.21
+    },
+    {
+     "ticker": "GDDY",
+     "name": "GoDaddy",
+     "chg_pct": 6.15
+    },
+    {
+     "ticker": "ACN",
+     "name": "Accenture",
+     "chg_pct": 5.96
+    },
+    {
+     "ticker": "IT",
+     "name": "Gartner",
+     "chg_pct": 5.19
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "COHR",
+     "name": "Coherent Corp.",
+     "chg_pct": -9.63
+    },
+    {
+     "ticker": "GLW",
+     "name": "Corning Inc.",
+     "chg_pct": -6.38
+    },
+    {
+     "ticker": "VST",
+     "name": "Vistra Corp.",
+     "chg_pct": -6.35
+    },
+    {
+     "ticker": "BE",
+     "name": "Bloom Energy",
+     "chg_pct": -6.34
+    },
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "chg_pct": -5.62
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "나스닥 -1.25% 약세, 다우는 소폭 상승… 기술주 하락·에너지 강세",
+  "summary": "S&P 500은 -0.47%, 나스닥은 -1.25%로 내렸고 다우는 0.1% 올랐다. 기술·반도체 섹터가 약했고 에너지와 필수소비재가 상승을 이끌었다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7765.36(-0.47%), 나스닥은 27193.34(-1.25%)로 마감했고 다우존스는 51231.64(+0.1%)였다. VIX는 15.41로 2.19% 올랐다. 미 10년물 금리는 5.23으로 0.87% 하락했다.  EWY는 -4.03%, DRAM은 -5.13%로 낙폭이 컸다.  ."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "섹터 ETF 중 에너지(XLE)가 1일 +2.97%로 가장 강했고 필수소비재(XLP)가 +2.11%, 금융(XLF)이 +0.89%로 뒤를 이었다. 기술·반도체(XLK)는 -1.79%로 하락폭이 가장 컸고 헬스케어(XLV)는 -0.39%, 유틸리티·원전(XLU)은 -0.19%였다. 5일 기준으로는 XLK가 -0.02%, 산업재·방산(XLI)이 -0.14%로 약했다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 구성 종목 중 337개가 올랐고 162개가 내렸으며 중앙값 등락률은 +0.84%였다. 지수는 내렸지만 상승 종목 수가 더 많았다. 상승 상위는 CoStar Group(+8.01%), Chipotle(+6.21%), GoDaddy(+6.15%)였고, 하락 상위는 Coherent(-9.63%), Corning(-6.38%), Vistra(-6.35%), Bloom Energy(-6.34%), Lumentum(-5.62%)이었다. 개별 종목 등락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "원자재·환율·코인",
+    "body": "WTI는 91.18로 3.29% 올랐고 금은 4158.3(+0.43%)이었다. 은은 -0.78%, 구리는 -0.7%였다. 비트코인은 -2.06%, 이더리움은 -3.98%로 내렸다. USD/KRW는 1341.88(+0.16%)이었다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2648,
+    "out": 907,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-09 06:50"
+ }
+}
