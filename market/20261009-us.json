@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261009",
+  "indicators": {
+   "S&P 500": {
+    "price": 7811.54,
+    "chg_pct": 0.59
+   },
+   "Nasdaq": {
+    "price": 27366.17,
+    "chg_pct": 0.64
+   },
+   "Dow Jones": {
+    "price": 51654.95,
+    "chg_pct": 0.83
+   },
+   "EWY": {
+    "price": 177.24,
+    "chg_pct": 0.54
+   },
+   "DRAM": {
+    "price": 57.19,
+    "chg_pct": 0.46
+   },
+   "VIX": {
+    "price": 14.84,
+    "chg_pct": -3.7
+   },
+   "US 10Y": {
+    "price": 5.24,
+    "chg_pct": 0.25
+   },
+   "Gold": {
+    "price": 4220.3,
+    "chg_pct": 1.52
+   },
+   "Silver": {
+    "price": 61.11,
+    "chg_pct": 3.46
+   },
+   "Copper": {
+    "price": 6.71,
+    "chg_pct": 2.95
+   },
+   "WTI": {
+    "price": 91.66,
+    "chg_pct": 0.19
+   },
+   "Bitcoin": {
+    "price": 82456.72,
+    "chg_pct": 0.96
+   },
+   "Ethereum": {
+    "price": 2481.4,
+    "chg_pct": 0.38
+   },
+   "USD/KRW": {
+    "price": 1340.02,
+    "chg_pct": 0.07
+   },
+   "JPY/KRW": {
+    "price": 8.44,
+    "chg_pct": -0.41
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 1.86,
+    "chg_5d_pct": 1.96
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 1.58,
+    "chg_5d_pct": 2.79
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 1.02,
+    "chg_5d_pct": 2.55
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 0.92,
+    "chg_5d_pct": 2.32
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.83,
+    "chg_5d_pct": 3.97
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": 0.51,
+    "chg_5d_pct": -0.52
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.5,
+    "chg_5d_pct": -0.41
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.32,
+    "chg_5d_pct": 1.17
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.01,
+    "chg_5d_pct": 3.6
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -0.25,
+    "chg_5d_pct": 3.6
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -1.51,
+    "chg_5d_pct": 0.05
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 317,
+   "decliners": 183,
+   "median_chg_pct": 0.36,
+   "top_gainers": [
+    {
+     "ticker": "CCI",
+     "name": "Crown Castle",
+     "chg_pct": 15.6
+    },
+    {
+     "ticker": "MRNA",
+     "name": "Moderna",
+     "chg_pct": 14.21
+    },
+    {
+     "ticker": "HUM",
+     "name": "Humana",
+     "chg_pct": 11.56
+    },
+    {
+     "ticker": "AMT",
+     "name": "American Tower",
+     "chg_pct": 9.3
+    },
+    {
+     "ticker": "SBAC",
+     "name": "SBA Communications",
+     "chg_pct": 7.34
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "TMUS",
+     "name": "T-Mobile US",
+     "chg_pct": -13.27
+    },
+    {
+     "ticker": "T",
+     "name": "AT&T",
+     "chg_pct": -10.82
+    },
+    {
+     "ticker": "VZ",
+     "name": "Verizon",
+     "chg_pct": -10.14
+    },
+    {
+     "ticker": "HPQ",
+     "name": "HP Inc.",
+     "chg_pct": -6.91
+    },
+    {
+     "ticker": "CHTR",
+     "name": "Charter Communications",
+     "chg_pct": -5.74
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "美 3대 지수 동반 상승, VIX 14.84로 하락",
+  "summary": "S&P 500은 0.59%, 나스닥은 0.64%, 다우는 0.83% 올랐고 VIX는 3.7% 내렸다. 부동산·헬스케어 섹터가 강했고 커뮤니케이션 섹터는 1.51% 하락했다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7811.54(+0.59%), 나스닥은 27366.17(+0.64%), 다우는 51654.95(+0.83%)로 마감했다. VIX는 14.84로 3.7% 하락했다. 미 10년물 금리는 5.24로 0.25% 올랐다. EWY는 0.54%, DRAM은 0.46% 상승했다._"
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "하루 기준 부동산·리츠(XLRE)가 +1.86%로 가장 강했고 헬스케어(XLV) +1.58%, 경기소비재(XLY) +1.02%가 뒤를 이었다. 기술·반도체(XLK)는 +0.51%, 에너지(XLE)는 -0.25%였다. 커뮤니케이션(XLC)은 -1.51%로 유일하게 1%대 하락을 보였다. 5일 기준으로는 유틸리티·원전(XLU)이 +3.97%로 가장 높았다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 종목 500개 중 317개가 올랐고 183개가 내렸으며, 중앙값 등락률은 +0.36%였다. 상승 상위는 Crown Castle(+15.6%), Moderna(+14.21%), Humana(+11.56%), American Tower(+9.3%) 순이었다. 하락 상위는 T-Mobile US(-13.27%), AT&T(-10.82%), Verizon(-10.14%)으로 통신 3사가 두드러졌다. 이들 종목 움직임의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "원자재·환율·가상자산",
+    "body": "금은 4220.3으로 1.52%, 은은 61.11로 3.46%, 구리는 6.71로 2.95% 올랐다. WTI는 91.66(+0.19%)이었다. 비트코인은 82456.72(+0.96%), 이더리움은 2481.4(+0.38%)였다. USD/KRW는 1340.02로 0.07% 올랐고 JPY/KRW는 8.44로 0.41% 내렸다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2635,
+    "out": 904,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-10 06:50"
+ }
+}
