@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261012",
+  "indicators": {
+   "S&P 500": {
+    "price": 7807.24,
+    "chg_pct": -0.06
+   },
+   "Nasdaq": {
+    "price": 27245.9,
+    "chg_pct": -0.44
+   },
+   "Dow Jones": {
+    "price": 51850.55,
+    "chg_pct": 0.38
+   },
+   "EWY": {
+    "price": 170.11,
+    "chg_pct": -4.02
+   },
+   "DRAM": {
+    "price": 54.72,
+    "chg_pct": -4.32
+   },
+   "VIX": {
+    "price": 15.21,
+    "chg_pct": 2.49
+   },
+   "US 10Y": {
+    "price": 5.24,
+    "chg_pct": -0.08
+   },
+   "Gold": {
+    "price": 4195.9,
+    "chg_pct": -0.48
+   },
+   "Silver": {
+    "price": 60.57,
+    "chg_pct": -0.16
+   },
+   "Copper": {
+    "price": 6.76,
+    "chg_pct": 1.84
+   },
+   "WTI": {
+    "price": 93.16,
+    "chg_pct": 1.43
+   },
+   "Bitcoin": {
+    "price": 82551.35,
+    "chg_pct": -1.35
+   },
+   "Ethereum": {
+    "price": 2491.01,
+    "chg_pct": -1.72
+   },
+   "USD/KRW": {
+    "price": 1334.73,
+    "chg_pct": -0.62
+   },
+   "JPY/KRW": {
+    "price": 8.39,
+    "chg_pct": -1.26
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 1.43,
+    "chg_5d_pct": 4.03
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 1.17,
+    "chg_5d_pct": 4.16
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.97,
+    "chg_5d_pct": -0.14
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.75,
+    "chg_5d_pct": 3.07
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 0.69,
+    "chg_5d_pct": 2.76
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 0.58,
+    "chg_5d_pct": 2.17
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.53,
+    "chg_5d_pct": 4.15
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.02,
+    "chg_5d_pct": -0.12
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.06,
+    "chg_5d_pct": -0.56
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -0.51,
+    "chg_5d_pct": 1.68
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -1.22,
+    "chg_5d_pct": -2.27
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 318,
+   "decliners": 179,
+   "median_chg_pct": 0.42,
+   "top_gainers": [
+    {
+     "ticker": "FICO",
+     "name": "Fair Isaac",
+     "chg_pct": 10.85
+    },
+    {
+     "ticker": "MDT",
+     "name": "Medtronic",
+     "chg_pct": 3.9
+    },
+    {
+     "ticker": "ZBH",
+     "name": "Zimmer Biomet",
+     "chg_pct": 3.4
+    },
+    {
+     "ticker": "META",
+     "name": "Meta Platforms",
+     "chg_pct": 3.38
+    },
+    {
+     "ticker": "PODD",
+     "name": "Insulet Corporation",
+     "chg_pct": 3.35
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "CIEN",
+     "name": "Ciena",
+     "chg_pct": -9.95
+    },
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "chg_pct": -9.78
+    },
+    {
+     "ticker": "COHR",
+     "name": "Coherent Corp.",
+     "chg_pct": -7.87
+    },
+    {
+     "ticker": "CVNA",
+     "name": "Carvana",
+     "chg_pct": -6.62
+    },
+    {
+     "ticker": "BE",
+     "name": "Bloom Energy",
+     "chg_pct": -6.5
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "나스닥 -0.44%·다우 +0.38%, 기술주 약세 속 지수 엇갈려",
+  "summary": "S&P 500은 -0.06%로 보합권, 나스닥은 -0.44%, 다우는 +0.38%로 마감했다. 기술·반도체 섹터가 약했고 에너지·필수소비재 등 다수 섹터는 올랐다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7807.24(-0.06%), 나스닥은 27245.9(-0.44%), 다우존스는 51850.55(+0.38%)로 마감했다. VIX는 15.21로 2.49% 올랐다. 미국 10년물 금리는 5.24로 -0.08% 변동했다. 한국 관련 ETF인 EWY는 -4.02%, DRAM은 -4.32%로 낙폭이 컸으며, 데이터상 원인은 확인되지 않는다. ?"
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "섹터 ETF 중 에너지(XLE)가 +1.43%로 가장 크게 올랐고, 필수소비재(XLP) +1.17%, 커뮤니케이션(XLC) +0.97%가 뒤를 이었다. 반면 기술·반도체(XLK)는 -1.22%로 하락했고 5일 기준으로도 -2.27%를 기록했다. 경기소비재(XLY)는 -0.51%, 산업재·방산(XLI)은 -0.06%였다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 종목 중 상승은 318개, 하락은 179개였고 중앙값 등락률은 +0.42%였다. 지수 대비 상승 종목이 많아 시장 폭은 지수보다 양호했다. 상승률 상위에는 Fair Isaac(+10.85%), Medtronic(+3.9%), Zimmer Biomet(+3.4%), Meta Platforms(+3.38%)가 있었다. 하락률 상위에는 Ciena(-9.95%), Lumentum(-9.78%), Coherent(-7.87%) 등 광통신 관련 종목이 있었으며, 개별 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "원자재·환율·가상자산",
+    "body": "WTI는 93.16으로 +1.43%, 구리는 6.76으로 +1.84% 올랐다. 금은 -0.48%, 은은 -0.16%였다. 비트코인은 -1.35%, 이더리움은 -1.72%로 내렸다. USD/KRW는 1334.73(-0.62%), JPY/KRW는 8.39(-1.26%)였다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2646,
+    "out": 946,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-13 06:50"
+ }
+}
