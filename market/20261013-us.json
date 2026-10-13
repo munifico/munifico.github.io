@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261013",
+  "indicators": {
+   "S&P 500": {
+    "price": 7805.45,
+    "chg_pct": -0.02
+   },
+   "Nasdaq": {
+    "price": 27204.38,
+    "chg_pct": -0.15
+   },
+   "Dow Jones": {
+    "price": 51670.1,
+    "chg_pct": -0.35
+   },
+   "EWY": {
+    "price": 166.56,
+    "chg_pct": -2.09
+   },
+   "DRAM": {
+    "price": 52.84,
+    "chg_pct": -3.44
+   },
+   "VIX": {
+    "price": 15.27,
+    "chg_pct": 0.39
+   },
+   "US 10Y": {
+    "price": 5.22,
+    "chg_pct": -0.44
+   },
+   "Gold": {
+    "price": 4184.2,
+    "chg_pct": -0.15
+   },
+   "Silver": {
+    "price": 59.4,
+    "chg_pct": -1.24
+   },
+   "Copper": {
+    "price": 6.73,
+    "chg_pct": 0.43
+   },
+   "WTI": {
+    "price": 94.79,
+    "chg_pct": 1.12
+   },
+   "Bitcoin": {
+    "price": 83434.77,
+    "chg_pct": 2.05
+   },
+   "Ethereum": {
+    "price": 2509.77,
+    "chg_pct": 2.68
+   },
+   "USD/KRW": {
+    "price": 1340.13,
+    "chg_pct": -0.05
+   },
+   "JPY/KRW": {
+    "price": 8.44,
+    "chg_pct": -0.41
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 1.8,
+    "chg_5d_pct": 5.41
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.74,
+    "chg_5d_pct": 0.56
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.58,
+    "chg_5d_pct": 1.72
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.57,
+    "chg_5d_pct": -0.02
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.08,
+    "chg_5d_pct": 0.57
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -0.04,
+    "chg_5d_pct": -2.83
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": -0.21,
+    "chg_5d_pct": 1.78
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": -0.26,
+    "chg_5d_pct": 2.92
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.28,
+    "chg_5d_pct": -1.7
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -0.42,
+    "chg_5d_pct": 1.5
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -1.35,
+    "chg_5d_pct": 1.54
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 262,
+   "decliners": 237,
+   "median_chg_pct": 0.1,
+   "top_gainers": [
+    {
+     "ticker": "CDW",
+     "name": "CDW Corporation",
+     "chg_pct": 5.71
+    },
+    {
+     "ticker": "VLO",
+     "name": "Valero Energy",
+     "chg_pct": 4.69
+    },
+    {
+     "ticker": "CHTR",
+     "name": "Charter Communications",
+     "chg_pct": 4.36
+    },
+    {
+     "ticker": "ORCL",
+     "name": "Oracle Corporation",
+     "chg_pct": 4.23
+    },
+    {
+     "ticker": "EXE",
+     "name": "Expand Energy",
+     "chg_pct": 4.01
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "AMAT",
+     "name": "Applied Materials",
+     "chg_pct": -6.69
+    },
+    {
+     "ticker": "JNJ",
+     "name": "Johnson & Johnson",
+     "chg_pct": -5.73
+    },
+    {
+     "ticker": "C",
+     "name": "Citigroup",
+     "chg_pct": -5.6
+    },
+    {
+     "ticker": "FLEX",
+     "name": "Flex Ltd.",
+     "chg_pct": -5.42
+    },
+    {
+     "ticker": "DPZ",
+     "name": "Domino's",
+     "chg_pct": -4.76
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 혼조 마감, 에너지 강세 속 헬스케어·반도체 장비 약세",
+  "summary": "S&P 500은 -0.02%로 보합권, Nasdaq -0.15%, Dow Jones -0.35%로 소폭 하락했다. 에너지 섹터와 WTI가 오른 반면 헬스케어와 반도체 관련 종목은 약했다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7805.45(-0.02%), Nasdaq은 27204.38(-0.15%), Dow Jones는 51670.1(-0.35%)로 마감했다. VIX는 15.27로 0.39% 올랐다. US 10Y는 5.22로 0.44% 내렸다."
+   },
+   {
+    "title": "섹터 동향",
+    "body": "당일 에너지(XLE)가 +1.8%로 가장 강했고 커뮤니케이션(XLC) +0.74%, 유틸리티·원전(XLU) +0.58%, 소재·화학(XLB) +0.57%가 뒤를 이었다. 헬스케어(XLV)는 -1.35%로 가장 약했고 금융(XLF) -0.42%, 산업재·방산(XLI) -0.28%도 하락했다. 기술·반도체(XLK)는 당일 -0.04%였으나 5일 기준으로는 -2.83%를 기록했다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 종목 중 상승 262개, 하락 237개였고 중앙값 등락률은 0.1%였다. 상승 상위에는 CDW(+5.71%), Valero Energy(+4.69%), Charter Communications(+4.36%)가 올랐다. 하락 상위에는 Applied Materials(-6.69%), Johnson & Johnson(-5.73%), Citigroup(-5.6%)이 포함됐다. 개별 종목 움직임의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "체크포인트",
+    "body": "WTI는 94.79로 1.12% 올라 에너지 섹터 강세와 같은 방향이었다. DRAM은 -3.44%, EWY는 -2.09%로 약세였고, Silver -1.24%, Gold -0.15%, Copper +0.43%였다. Bitcoin은 +2.05%, Ethereum은 +2.68%였으며 USD/KRW는 1340.13(-0.05%)이었다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2651,
+    "out": 863,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-14 06:50"
+ }
+}
