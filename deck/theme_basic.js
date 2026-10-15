@@ -130,7 +130,11 @@ root.innerHTML = `<div class="bs ${dark ? "dark" : ""}"><div class="wrap">
       <span>KOSDAQ 밸류</span><span>${esc(band("kosdaq"))}</span>
       <span>위험 게이지</span><span>${esc(M.risk || "—")}</span>
       <span>디리스크</span><span>${esc(M.derisk || "—")}</span>
-      <span>버블 체크</span><span>${esc(M.bubble || "—")}</span></div></section>
+      <span>버블 체크</span><span>${esc(M.bubble || "—")}</span>
+      <span>대형주 이탈 폭</span><span title="${esc(M.breadth?.detail || "")}">${esc(M.breadth?.short || "—")}</span></div></section>
+    ${M.env_guide?.rows ? `<section class="card"><h2>TOP200 엔벨15 대응 <small>지금: ${esc(M.env_guide.action)}</small></h2>
+      <div class="kv">${M.env_guide.rows.map(r => `<span>${r.key === M.env_guide.key ? "▶ " : ""}<b>${esc(r.action)}</b></span><span class="${r.key === M.env_guide.key ? "" : "muted"}">${esc(r.cond)} · ${esc(r.exp)}</span>`).join("")}</div>
+      <details><summary class="muted">매매 규칙</summary><ul class="ev">${M.env_guide.rules.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details></section>` : ""}
     <section class="card"><h2>테마 모멘텀 <small>단기수익률 % · ${esc(ymd(TH.date))}</small></h2><div class="bars">${(TH.items || []).map(t => { const v = t.short ?? 0, w = Math.abs(v) / mxT * 50;
       return `<div class="brow"><span title="${esc(t.name)}">${esc(t.name)}</span><div class="track c"><i style="${v < 0 ? `right:50%;width:${w}%;background:var(--down)` : `left:50%;width:${w}%;background:var(--up)`}"></i></div><span class="${cls(v)}">${sgn(v)}</span></div>`; }).join("") || '<p class="muted">데이터 없음</p>'}</div></section>
     <section class="card"><h2>신호 유형 분포</h2><div class="bars">${(S.types || []).slice(0, 10).map(t =>

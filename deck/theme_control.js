@@ -171,6 +171,8 @@ Q("#crkv").innerHTML = [
   ["KOSPI PER", B.kospi ? `${num(B.kospi.per)} · ${B.kospi.per_pct}%ile` : "—"],
   ["KOSPI PBR", B.kospi ? `${num(B.kospi.pbr)} · ${B.kospi.pbr_pct}%ile` : "—"],
   ["위험 게이지", M.risk || "—"], ["디리스크", M.derisk || "—"], ["버블 체크", M.bubble || "—"],
+  ["대형주 이탈 폭", M.breadth?.short || "—"],
+  ["TOP200 대응", M.env_guide?.summary || "—"],
 ].map(([k, v]) => `<span class="kr">${esc(k)}</span><span class="kr">${esc(v)}</span>`).join("");
 const mxT = Math.max(1, ...(TH.items || []).map(t => Math.abs(t.short ?? 0)));
 Q("#crth").innerHTML = (TH.items || []).map(t => {

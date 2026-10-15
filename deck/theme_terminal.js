@@ -147,6 +147,8 @@ T.querySelector("#t89mkt").innerHTML = [
   ["KOSPI 밸류", bandTxt("kospi")], ["KOSDAQ 밸류", bandTxt("kosdaq")],
   ["VKOSPI", `${num(M.vkospi?.value)} (${sgn(M.vkospi?.chg)})`],
   ["위험 게이지", M.risk || "-"], ["디리스크", M.derisk || "-"], ["버블 체크", M.bubble || "-"],
+  ["대형주 이탈 폭", M.breadth?.short || "-"],
+  ["TOP200 대응", M.env_guide?.summary || "-"],
 ].map(([k, v]) => `<span class="dim kr">${esc(k)}</span><span class="kr">${esc(v)}</span>`).join("");
 T.querySelector("#t89th").innerHTML = (TH.items || []).map(t => {
   const v = t.short ?? 0, n = Math.max(1, Math.min(15, Math.round(Math.abs(v) * 3)));
@@ -218,7 +220,12 @@ const cmds = {
  KOSDAQ   ${num(M.kosdaq?.value)} ${sgn(M.kosdaq?.chg)}%
  VKOSPI   ${num(M.vkospi?.value)} (${sgn(M.vkospi?.chg)})
  <span class="kr">KOSPI ${esc(bandTxt("kospi"))}</span>
- <span class="kr">위험 ${esc(M.risk || "-")} · 디리스크 ${esc(M.derisk || "-")} · 버블 ${esc(M.bubble || "-")}</span>`,
+ <span class="kr">위험 ${esc(M.risk || "-")} · 디리스크 ${esc(M.derisk || "-")} · 버블 ${esc(M.bubble || "-")}</span>
+ <span class="kr">BREADTH  ${esc(M.breadth?.short || "-")}</span>
+ <span class="kr faint">         ${esc(M.breadth?.detail || "")}</span>
+ <span class="kr">TOP200   ${esc(M.env_guide?.summary || "-")}</span>
+${(M.env_guide?.rows || []).map(r => ` <span class="kr ${r.key === M.env_guide.key ? "" : "faint"}">  ${r.key === M.env_guide.key ? ">" : " "} ${esc(r.action)}  ${esc(r.cond)} · ${esc(r.exp)}</span>`).join("\n")}
+${(M.env_guide?.rules || []).map(x => ` <span class="kr faint">  - ${esc(x)}</span>`).join("\n")}`,
   EVENTS: () => EV.map(e => ` <span class="inv">${esc(e.kind)}</span> <span class="kr">${esc(e.text)}</span>`).join("\n") || "NO EVENTS",
   STATS: () => { const s = S.stats || {}; return ` TOTAL ${s.total ?? "-"} · DONE ${s.done ?? "-"} · PENDING ${s.pending ?? "-"}
  <span class="kr">D+${S.fwd_days ?? 5} 내 최고가 +${S.surge_pct ?? 15}% 도달 ${s.hit_rate ?? "-"}% · 평균 D+5 ${sgn(s.avg_d5)}%</span>
