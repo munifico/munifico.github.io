@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261015",
+  "indicators": {
+   "S&P 500": {
+    "price": 7744.06,
+    "chg_pct": 0.33
+   },
+   "Nasdaq": {
+    "price": 26713.03,
+    "chg_pct": 0.08
+   },
+   "Dow Jones": {
+    "price": 52177.69,
+    "chg_pct": 1.08
+   },
+   "EWY": {
+    "price": 156.22,
+    "chg_pct": -2.26
+   },
+   "DRAM": {
+    "price": 49.33,
+    "chg_pct": -1.62
+   },
+   "VIX": {
+    "price": 16.46,
+    "chg_pct": -2.43
+   },
+   "US 10Y": {
+    "price": 5.09,
+    "chg_pct": -1.95
+   },
+   "Gold": {
+    "price": 4192.5,
+    "chg_pct": 2.06
+   },
+   "Silver": {
+    "price": 57.6,
+    "chg_pct": 3.7
+   },
+   "Copper": {
+    "price": 6.56,
+    "chg_pct": -0.74
+   },
+   "WTI": {
+    "price": 96.12,
+    "chg_pct": 1.08
+   },
+   "Bitcoin": {
+    "price": 82232.33,
+    "chg_pct": 0.82
+   },
+   "Ethereum": {
+    "price": 2455.8,
+    "chg_pct": 1.55
+   },
+   "USD/KRW": {
+    "price": 1341.31,
+    "chg_pct": 0.07
+   },
+   "JPY/KRW": {
+    "price": 8.47,
+    "chg_pct": 0.02
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 1.86,
+    "chg_5d_pct": 5.37
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 1.79,
+    "chg_5d_pct": 2.62
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 1.71,
+    "chg_5d_pct": 1.52
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 1.46,
+    "chg_5d_pct": 0.33
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 1.38,
+    "chg_5d_pct": 1.92
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 1.21,
+    "chg_5d_pct": 2.79
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.72,
+    "chg_5d_pct": 3.91
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.51,
+    "chg_5d_pct": -0.3
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -0.17,
+    "chg_5d_pct": 1.41
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -0.65,
+    "chg_5d_pct": -4.34
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -1.58,
+    "chg_5d_pct": 2.02
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 379,
+   "decliners": 121,
+   "median_chg_pct": 1.5,
+   "top_gainers": [
+    {
+     "ticker": "EFX",
+     "name": "Equifax",
+     "chg_pct": 7.25
+    },
+    {
+     "ticker": "RDDT",
+     "name": "Reddit",
+     "chg_pct": 7.24
+    },
+    {
+     "ticker": "FICO",
+     "name": "Fair Isaac",
+     "chg_pct": 6.99
+    },
+    {
+     "ticker": "IP",
+     "name": "International Paper",
+     "chg_pct": 6.9
+    },
+    {
+     "ticker": "APP",
+     "name": "AppLovin",
+     "chg_pct": 6.52
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "HPE",
+     "name": "Hewlett Packard Enterprise",
+     "chg_pct": -7.1
+    },
+    {
+     "ticker": "DELL",
+     "name": "Dell Technologies",
+     "chg_pct": -6.8
+    },
+    {
+     "ticker": "P",
+     "name": "Everpure",
+     "chg_pct": -5.72
+    },
+    {
+     "ticker": "ANET",
+     "name": "Arista Networks",
+     "chg_pct": -5.04
+    },
+    {
+     "ticker": "WMB",
+     "name": "Williams Companies",
+     "chg_pct": -4.92
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "다우 1.08% 강세 속 S&P 500·나스닥 소폭 상승, 기술주는 약세",
+  "summary": "S&P 500은 0.33%, 나스닥은 0.08%, 다우는 1.08% 올랐다. 상승 종목이 379개로 하락 종목 121개를 크게 웃돌았고, 섹터는 헬스케어·소재·경기소비재가 앞섰으며 기술·반도체와 에너지는 내렸다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7744.06(+0.33%), 나스닥은 26713.03(+0.08%), 다우는 52177.69(+1.08%)로 마감했다. 다우의 상승폭이 가장 컸고 나스닥은 보합에 가까웠다. VIX는 16.46으로 2.43% 하락했다. 미국 10년물 금리는 5.09로 1.95% 내렸다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "하루 기준 헬스케어(XLV) +1.86%, 소재·화학(XLB) +1.79%, 경기소비재(XLY) +1.71% 순으로 강했다. 반면 에너지(XLE)는 -1.58%, 기술·반도체(XLK)는 -0.65%, 유틸리티·원전(XLU)은 -0.17%로 내렸다. 5일 기준으로는 헬스케어가 +5.37%로 가장 높았고 기술·반도체는 -4.34%로 가장 부진했다. 에너지는 이날 하락했지만 5일 기준 +2.02%다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 구성 종목 500개 중 379개가 올랐고 121개가 내렸으며, 중앙값 등락률은 +1.5%다. 지수 상승률(0.33%)보다 중앙값이 높아 대형 기술주 약세가 지수를 눌렀음을 시사하지만, 그 원인은 데이터상 확인되지 않는다. 상승 상위는 Equifax(+7.25%), Reddit(+7.24%), Fair Isaac(+6.99%)이었다. 하락 상위는 HPE(-7.1%), Dell(-6.8%), Everpure(-5.72%), Arista Networks(-5.04%) 등 IT 하드웨어·네트워크 계열이 많았다."
+   },
+   {
+    "title": "체크포인트",
+    "body": "금은 4192.5(+2.06%), 은은 57.6(+3.7%)으로 크게 올랐고 구리는 6.56(-0.74%), WTI는 96.12(+1.08%)였다. 비트코인은 82232.33(+0.82%), 이더리움은 2455.8(+1.55%)이었다. 한국 관련 EWY는 156.22(-2.26%), DRAM은 49.33(-1.62%)으로 내렸다. USD/KRW는 1341.31(+0.07%)이다. 이들 움직임의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2639,
+    "out": 1057,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-16 06:50"
+ }
+}
