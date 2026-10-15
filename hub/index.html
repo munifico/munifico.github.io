@@ -266,7 +266,7 @@ function renderBubble(b){
 }
 
 /* 🛡️ 디리스크 콕핏 — 한·미 MA200 추세 신호등 (검증된 대피 트리거) + 신용잔고(레버리지) */
-function renderDerisk(d,credit,gate){
+function renderDerisk(d,credit,gate,br,eg){
  const card=document.getElementById("derCard");
  if(!d||!d.items||!d.items.length){card.innerHTML='<div class="empty">데이터 없음</div>';return}
  const dot=s=>s==="red"?"🔴":(s==="yellow"?"🟡":"🟢");
@@ -315,6 +315,26 @@ function renderDerisk(d,credit,gate){
    '<span class="item-sig '+gl[2]+'">'+gl[0]+' '+gl[1]+'</span></div>'+
    '<div class="pain-sub">S&amp;P500 고점 '+sgn(r1(gate.dd_52w))+' · 20주선 '+sgn(r1(gate.pct_vs_ma100))+
    ' · 한국 대형주 과매도 반등은 미국 동반 약세에서만 유효(8주 PF 4.3 vs 강세 시 1.1, §166) · 🔴=20주선 하회 or 고점−5% · 🟡=고점−3% or 50일선</div></div>';
+ }
+ // 📉 대형주 엔벨15 하단 이탈 폭 × SPX 게이트 (§193, 금요일 주봉 확정)
+ if(br&&br.n!=null){
+  const bc=br.tone==="warn"?"lvl-bad":(br.tone==="index"?"lvl-ok":"");
+  const bd=String(br.date||"");
+  gt+='<div class="item"><div class="item-row"><span class="item-name">📉 대형주 하단 이탈 폭 (TOP200 주봉 엔벨15)</span>'+
+   '<span class="item-sig '+bc+'">'+br.n+'개</span></div>'+
+   '<div class="pain-sub"><b>'+esc(br.short)+'</b><br>'+esc(br.detail)+
+   ' · '+bd.slice(4,6)+'/'+bd.slice(6,8)+' 금 확정</div></div>';
+ }
+ // 🎯 TOP200 엔벨15 대응 — 게이트별 기대치 + 매매 규칙 (§193)
+ if(eg&&eg.rows){
+  const ac={"진입":"lvl-ok","관찰":"lvl-warn","보류":"lvl-bad"}[eg.action]||"";
+  const rows=eg.rows.map(r=>{const on=r.key===eg.key;
+   return '<div class="pain-sub" style="padding:3px 6px;border-left:3px solid '+(on?'var(--accent)':'transparent')+(on?';font-weight:700':'')+'">'+
+    (on?'▶ ':'')+'<b>'+esc(r.action)+'</b> · '+esc(r.cond)+'<br>'+esc(r.exp)+' · '+esc(r.note)+'</div>';}).join("");
+  gt+='<div class="item"><div class="item-row"><span class="item-name">🎯 한국 대형주(TOP200) 엔벨15 대응</span>'+
+   '<span class="item-sig '+ac+'">'+esc(eg.action)+'</span></div>'+rows+
+   '<details class="help"><summary>📋 매매 규칙 (10년 백테 기준)</summary><div>'+
+   eg.rules.map(x=>'· '+esc(x)).join('<br>')+'<br>· 판정 = 실시간 SPX 게이트 + 최근 금요일 이탈 폭 · 정보/맥락, 매수신호 아님</div></details></div>';
  }
  card.innerHTML='<div class="pain-head"><span class="pain-level '+ovc+'">'+esc(d.overall)+'</span>'+
   '<span class="pain-sub" style="margin-left:8px">'+esc(summary)+'</span></div>'+
@@ -586,7 +606,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderDerisk(j.derisk,j.credit,j.spx_gate);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderEarnings(j.earnings);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk,j.recovery);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
+ renderDerisk(j.derisk,j.credit,j.spx_gate,j.wenv_breadth,j.env_guide);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderEarnings(j.earnings);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk,j.recovery);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
