@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261019",
+  "indicators": {
+   "S&P 500": {
+    "price": 7690.73,
+    "chg_pct": 0.41
+   },
+   "Nasdaq": {
+    "price": 26430.89,
+    "chg_pct": 1.11
+   },
+   "Dow Jones": {
+    "price": 51966.03,
+    "chg_pct": -0.07
+   },
+   "EWY": {
+    "price": 156.58,
+    "chg_pct": 4.08
+   },
+   "DRAM": {
+    "price": 48.33,
+    "chg_pct": 4.05
+   },
+   "VIX": {
+    "price": 18.44,
+    "chg_pct": -7.75
+   },
+   "US 10Y": {
+    "price": 5.14,
+    "chg_pct": 0.75
+   },
+   "Gold": {
+    "price": 4160.3,
+    "chg_pct": -0.5
+   },
+   "Silver": {
+    "price": 57.23,
+    "chg_pct": 0.41
+   },
+   "Copper": {
+    "price": 6.58,
+    "chg_pct": 0.81
+   },
+   "WTI": {
+    "price": 98.24,
+    "chg_pct": -3.13
+   },
+   "Bitcoin": {
+    "price": 81918.73,
+    "chg_pct": -0.12
+   },
+   "Ethereum": {
+    "price": 2399.64,
+    "chg_pct": -0.38
+   },
+   "USD/KRW": {
+    "price": 1332.32,
+    "chg_pct": -0.64
+   },
+   "JPY/KRW": {
+    "price": 8.39,
+    "chg_pct": -1.03
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 1.78,
+    "chg_5d_pct": 1.95
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": 1.36,
+    "chg_5d_pct": -5.3
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.06,
+    "chg_5d_pct": 3.05
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -0.21,
+    "chg_5d_pct": -1.22
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": -0.47,
+    "chg_5d_pct": 3.32
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -0.6,
+    "chg_5d_pct": 2.13
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -0.64,
+    "chg_5d_pct": 2.71
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.64,
+    "chg_5d_pct": -1.46
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -0.83,
+    "chg_5d_pct": 0.02
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": -1.16,
+    "chg_5d_pct": -0.6
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -2.01,
+    "chg_5d_pct": -0.65
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 174,
+   "decliners": 323,
+   "median_chg_pct": -0.5,
+   "top_gainers": [
+    {
+     "ticker": "WDC",
+     "name": "Western Digital",
+     "chg_pct": 6.09
+    },
+    {
+     "ticker": "SNDK",
+     "name": "Sandisk",
+     "chg_pct": 5.53
+    },
+    {
+     "ticker": "DDOG",
+     "name": "Datadog",
+     "chg_pct": 5.36
+    },
+    {
+     "ticker": "TWLO",
+     "name": "Twilio",
+     "chg_pct": 5.29
+    },
+    {
+     "ticker": "AMZN",
+     "name": "Amazon",
+     "chg_pct": 4.98
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "MOS",
+     "name": "Mosaic Company (The)",
+     "chg_pct": -4.78
+    },
+    {
+     "ticker": "NRG",
+     "name": "NRG Energy",
+     "chg_pct": -4.21
+    },
+    {
+     "ticker": "AMP",
+     "name": "Ameriprise Financial",
+     "chg_pct": -4.07
+    },
+    {
+     "ticker": "ES",
+     "name": "Eversource Energy",
+     "chg_pct": -3.55
+    },
+    {
+     "ticker": "HONA",
+     "name": "Honeywell Aerospace",
+     "chg_pct": -3.33
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "나스닥 1.11% 상승, 다우 소폭 하락 속 지수 간 온도차",
+  "summary": "S&P 500은 0.41%, 나스닥은 1.11% 올랐고 다우는 0.07% 내렸다. VIX는 7.75% 하락한 18.44를 기록했다. 지수는 올랐지만 S&P 500 상승 종목은 174개, 하락 종목은 323개로 하락 종목이 더 많았다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7690.73(+0.41%), 나스닥은 26430.89(+1.11%)로 마감했고 다우는 51966.03(-0.07%)이었다. VIX는 18.44로 7.75% 내렸다. 미 10년물 금리는 5.14로 0.75% 상승했다. EWY는 4.08%, DRAM은 4.05% 올랐다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "경기소비재(XLY)가 1.78%, 기술·반도체(XLK)가 1.36% 올라 상승을 이끌었다. 유틸리티·원전(XLU)은 2.01%, 부동산·리츠(XLRE)는 1.16% 하락했다. 기술·반도체는 5일 기준으로는 5.3% 하락한 상태이며, 필수소비재(XLP)는 5일간 3.32% 올랐다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 종목 중 상승은 174개, 하락은 323개였고 중간값 등락률은 -0.5%였다. 상승 상위는 Western Digital(+6.09%), Sandisk(+5.53%), Datadog(+5.36%), Twilio(+5.29%), Amazon(+4.98%)이었다. 하락 상위는 Mosaic(-4.78%), NRG Energy(-4.21%), Ameriprise Financial(-4.07%) 등이었다. 지수 상승과 중간값 하락의 차이는 일부 대형주와 기술주에 상승이 집중됐음을 보여주지만, 구체적 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "원자재·환율·기타 자산",
+    "body": "WTI는 98.24로 3.13% 하락했고 금은 4160.3(-0.5%), 은은 57.23(+0.41%), 구리는 6.58(+0.81%)이었다. 비트코인은 -0.12%, 이더리움은 -0.38%였다. USD/KRW는 1332.32로 0.64% 내렸고 JPY/KRW는 8.39로 1.03% 하락했다. 이 움직임들의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2649,
+    "out": 950,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-20 06:50"
+ }
+}
