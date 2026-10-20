@@ -123,6 +123,11 @@ root.innerHTML = `<div class="bs ${dark ? "dark" : ""}"><div class="wrap">
       ${fnTable(FN.rows || [])}
       ${(FN.watch || []).length ? `<details><summary>🔎 하단권 관찰 ${FN.watch.length}종목 — KOSPI 40주선 위에서는 추가 하락 쪽(8주 −1.5%), 아래에서만 반등(+5.9%)</summary>${fnTable(FN.watch)}</details>` : ""}
     </section>
+    ${(FN.hidden || []).length ? `<section class="card"><h2>🕵️ 숨은 실적주 <small>${FN.hidden.length}종목 · <a href="../yoy/#hidden">상세</a></small></h2>
+      <p class="fnote">4년 흑자·이익 증가인데 PER 3~15·거래 한산·주가가 이익을 못 따라간 종목. DART 영업이익으로 일회성 제외, <b>가속</b> = 최근 분기 누적 YoY +15%↑. 관찰 목록 — 검증된 알파 아님, 분기 YoY 가 꺾이면 이탈.</p>
+      <div class="tbl"><table><thead><tr><th>종목</th><th>영업이익(억)</th><th>분기 YoY</th><th>PER</th><th>1년 주가</th></tr></thead><tbody>${FN.hidden.map(r =>
+        `<tr><td><b>${esc(r.name)}</b> <span class="code">${esc(r.code)} · ${esc(r.type)}</span></td><td class="muted">${esc((r.op_eok || []).map(v => num(v, 0)).join("→"))}</td><td class="${cls(r.q_yoy)}">${sgn(r.q_yoy, 0)}%</td><td>${num(r.per, 1)}</td><td class="${cls(r.r1y_pct)}">${sgn(r.r1y_pct, 0)}%</td></tr>`).join("")}</tbody></table></div>
+    </section>` : ""}
   </div>
   <div class="col">
     <section class="card"><h2>시장 상태</h2><div class="kv">

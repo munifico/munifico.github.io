@@ -151,7 +151,7 @@ root.innerHTML = `<div class="cr">
   <section class="panel"><div class="ph"><span class="t">Events</span><span class="lbl">실적 D-day · 위험</span></div><div class="log" id="crlog"></div></section>
 </div>
 <section class="panel fnp"><div class="ph"><span class="t">Theme Funnel · Envelope 15</span>
-  <span style="display:flex;gap:6px"><button class="btn on" type="button" data-fn="rows">FUNNEL ${(FN.rows || []).length}</button><button class="btn" type="button" data-fn="watch">LOW CAVE ${(FN.watch || []).length}</button></span></div>
+  <span style="display:flex;gap:6px"><button class="btn on" type="button" data-fn="rows">FUNNEL ${(FN.rows || []).length}</button><button class="btn" type="button" data-fn="watch">LOW CAVE ${(FN.watch || []).length}</button><button class="btn" type="button" data-fn="hidden">HIDDEN ${(FN.hidden || []).length}</button></span></div>
   <div class="tablewrap" style="max-height:360px"><table><thead><tr><th>종목</th><th>테마</th><th>W-ENV</th><th>D-ENV</th><th>HIGH%</th></tr></thead><tbody id="crfn"></tbody></table></div>
   <div class="lbl kr" id="crfnnote" style="text-transform:none;letter-spacing:0"></div>
 </section>
@@ -217,11 +217,12 @@ const gauge = (pb, weekly) => { const [z, c] = zoneOf(pb, weekly); return `<span
 const FN_NOTE = {
   rows: "테마∩유동성 → 이익 → 강도(고점 −25%·정배열) 통과. BURN = 주봉 15주선 +30% 초과: 4년 검증 8주 뒤 평균 −1.2%·중앙값 −10% → 신규 진입 보류 권장. RUN = 상단 돌파(추세 지속, 평균 수준).",
   watch: "주봉 엔벨 하단권. KOSPI 40주선 위에서는 8주 −1.5%(추가 하락 쪽), 아래(하락장)에서만 +5.9% 반등 — regime 먼저 확인.",
+  hidden: "숨은 실적주: 4년 흑자·이익 증가인데 PER 3~15·거래 한산·주가가 이익을 못 따라감. DART 영업이익으로 일회성 제외, 가속 = 최근 분기 누적 YoY +15%↑. 관찰 목록 — 검증된 알파 아님, 분기 YoY 꺾이면 이탈.",
 };
 function renderFunnel(k) {
   const rows = FN[k] || [];
   Q("#crfn").innerHTML = rows.map(r => `<tr><td><span class="kr">${esc(r.name)}</span> <span style="color:var(--faint)">${esc(r.code)}</span></td>
-    <td><span class="kr" style="color:var(--dim)">${esc((r.buckets || []).join(" · "))}</span></td>
+    <td><span class="kr" style="color:var(--dim)">${esc((r.buckets || []).join(" · "))}${r.q_yoy != null ? ` · ${esc(r.type)} 분기 ${sgn(r.q_yoy, 0)}% · PER ${r.per}` : ""}</span></td>
     <td>${gauge(r.w_pb, true)}</td><td>${gauge(r.d_pb, false)}</td><td class="warn">${sgn(r.dist_pct, 1)}%</td></tr>`).join("")
     || '<tr><td colspan="5" class="lbl">NO DATA</td></tr>';
   Q("#crfnnote").textContent = `${ymd(FN.asof)} · ${FN_NOTE[k]}`;

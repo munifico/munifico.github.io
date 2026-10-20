@@ -48,6 +48,7 @@ const PARTIES = [
   {title: "SIGNAL PARTY", kind: "sig", list: all.slice(0, 10)},
   {title: "THEME QUEST", kind: "fun", list: FN.rows || []},
   {title: "LOW CAVE", kind: "low", list: FN.watch || []},
+  {title: "HIDDEN GOLD", kind: "hid", list: FN.hidden || []},
 ].filter((p, i) => i === 0 || p.list.length);
 let party = 0, top = 0;
 const isFun = () => PARTIES[party].kind !== "sig";
@@ -178,7 +179,7 @@ function runCmd(k) {
   const s = stocks[cur];
   if (isFun() && k === "분석") {
     setDialog([`${s.type} · ${(s.buckets || []).join(" / ") || "-"}.`,
-      `52주 고점 대비 ${sgn(s.dist_pct)}%, 200일선 대비 ${sgn(s.ma200_pct)}%.`,
+      s.q_yoy != null ? `영업이익 ${(s.op_eok || []).join("→")}억, ${s.q} 누적 ${sgn(s.q_yoy, 0)}%.` : `52주 고점 대비 ${sgn(s.dist_pct)}%, 200일선 대비 ${sgn(s.ma200_pct)}%.`,
       `PER ${s.per ?? "-"} · 이익성장 ${s.growth_pct == null ? "-" : sgn(s.growth_pct) + "%"}${s.decel ? " (둔화 중)" : ""}.`,
       `장세는 ${M.regime || "-"}. 판단은 플레이어 몫이다.`]);
   } else if (k === "엔벨") {
@@ -268,7 +269,7 @@ function drawMenu() {
   box(4, 168, 248, 54);
   if (s && fun) {
     txt(fitTxt(`${s.name} · ${s.type} · ${s.code}`, 232), 12, 173, P.white, {kr: true});
-    txt(fitTxt(`주봉 ${f2(s.w_pb)} · 일봉 ${f2(s.d_pb)} · 고점 ${sgn(s.dist_pct)}%`, 232), 12, 188, P.gray, {kr: true});
+    txt(fitTxt(s.q_yoy != null ? `PER ${s.per} · 분기 ${sgn(s.q_yoy, 0)}% · 1년 ${sgn(s.r1y_pct, 0)}%` : `주봉 ${f2(s.w_pb)} · 일봉 ${f2(s.d_pb)} · 고점 ${sgn(s.dist_pct)}%`, 232), 12, 188, P.gray, {kr: true});
   } else if (s) {
     txt(fitTxt(`${s.name} · ${s.market} · ${s.code}`, 232), 12, 173, P.white, {kr: true});
     txt(fitTxt(`테마 ${(s.themes || []).join(" / ") || "-"}`, 232), 12, 188, P.gray, {kr: true});
