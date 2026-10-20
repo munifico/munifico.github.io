@@ -144,6 +144,10 @@ details.help div{font-size:12px;color:var(--muted);line-height:1.7;margin-top:6p
   <div class="sec-title">📅 다가오는 실적 <span class="sub">우리 추적 종목 · 예상 발표일(yfinance 컨센) · 정보성</span></div>
   <div class="card" id="earningsCard"><div class="empty">불러오는 중…</div></div>
 
+  <!-- 🕵️ 숨은 실적주 (yoy_screener 산출물) -->
+  <div class="sec-title">🕵️ 숨은 실적주 <span class="sub">4년 이익 증가 · 저PER · 거래 한산 · DART 영업이익 확인 · 관찰 목록(검증 알파 아님)</span></div>
+  <div class="card" id="hiddenCard"><div class="empty">불러오는 중…</div></div>
+
   <!-- 미장 + 페인지수 -->
   <div class="sec-title">🇺🇸 미장 · 트럼프 페인 인덱스 <span class="sub" id="usAsof"></span></div>
   <div class="card" id="painCard"><div class="empty">불러오는 중…</div></div>
@@ -442,6 +446,27 @@ function renderEarnings(e){
   '<b>⚠ '+esc(e.framing||"")+'</b></div></details>';
 }
 
+/* 🕵️ 숨은 실적주 (yoy_screener 산출물, 관찰 목록) */
+function renderHidden(h){
+ const card=document.getElementById("hiddenCard");
+ if(!h||!h.rows||!h.rows.length){card.innerHTML='<div class="empty">통과 종목 없음</div>';return}
+ const sg=v=>(v>=0?"+":"")+v;
+ const rows=h.rows.map(function(r){
+  return '<div class="item"><div class="item-row">'+
+   '<span class="item-name">'+esc(r.name)+' <span class="flag'+(r.type==="가속"?' near':'')+'">'+esc(r.type)+'</span></span>'+
+   '<span class="item-sig">PER '+r.per+' · '+esc(r.q)+' '+sg(r.q_yoy)+'% · 1년 '+sg(r.r1y_pct)+'%</span></div>'+
+   '<div class="pain-sub">영업이익 '+r.op_eok.join(' → ')+'억'+(r.buckets&&r.buckets.length?' · '+esc(r.buckets[0]):'')+' · 거래대금 '+r.tv20_eok+'억</div></div>';
+ }).join("");
+ const k=h.track;
+ const tk=k&&k.n?'<div class="pain-sub" style="margin-bottom:6px">📈 추적 '+k.n+'종목('+esc(k.since)+'~) · 평균 '+sg(k.avg_ret)+'% · 전체 중앙값 대비 '+(k.avg_excess==null?'–':sg(k.avg_excess))+'%p · 주목 '+k.n_attn+' · 이탈 '+k.n_out+'</div>':'';
+ card.innerHTML='<div class="pain-sub" style="margin-bottom:6px">'+h.rows.length+'종목 · 기준 '+esc(h.asof)+' · <a href="../yoy/#hidden">💹 이익성장 상세</a></div>'+tk+rows+
+  '<details class="help"><summary>📖 설명</summary><div>'+
+  '4년 연속 흑자·EPS 꾸준히 증가 ∩ ROE 10%↑ ∩ PER 3~15 ∩ 거래대금 20일 1~80억 ∩ 1년 주가상승 &lt; EPS 성장. DART 영업이익으로 일회성 이익 제외, '+
+  '<b>가속</b> = 최근 분기 누적 영업이익 YoY +15%↑. 지주·홀딩스 제외. '+
+  '<b>⚠ 관찰 목록 — 검증된 알파 아님.</b> 분기 YoY 가 꺾이면 이탈, 거래대금 1~2억은 계속 무관심일 위험. '+
+  '<b>📈 추적</b> = 처음 목록에 든 날 가격 대비 수익률, 같은 날 산 전체 종목 중앙값과 비교. 주목 = 20일 거래대금이 편입 때의 3배를 넘은 날. 빠진 종목도 계속 집계.</div></details>';
+}
+
 /* 미국 위험·심리 게이지 (FRED + CNN) */
 function renderRisk(b,recov){
  const card=document.getElementById("riskCard");
@@ -606,7 +631,7 @@ fetch("data.json?_="+Date.now()).then(r=>r.json()).then(j=>{
  document.getElementById("gen").textContent="갱신 "+j.generated;
  if(j.asof_us)document.getElementById("usAsof").textContent="기준 "+j.asof_us;
  if(j.asof_kr)document.getElementById("mktAsof").textContent="기준 "+j.asof_kr;
- renderDerisk(j.derisk,j.credit,j.spx_gate,j.wenv_breadth,j.env_guide);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderEarnings(j.earnings);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk,j.recovery);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
+ renderDerisk(j.derisk,j.credit,j.spx_gate,j.wenv_breadth,j.env_guide);renderBubble(j.bubble);renderArk(j.ark,j.attention);renderEarnings(j.earnings);renderHidden(j.hidden);renderPain(j.pain);renderSectors(j.sectors);renderRisk(j.risk,j.recovery);renderMarket((j.market||[]).filter(function(g){return (g.title||"").indexOf("한국")>=0}));renderVk(j.vkchart);
 }).catch(e=>{document.getElementById("err").style.display="block";
  document.getElementById("err").textContent="data.json 로드 실패 — http 로 열어주세요. "+e});
 
