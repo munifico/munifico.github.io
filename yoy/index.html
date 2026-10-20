@@ -190,6 +190,23 @@ function renderHidden(d){
        '<td>'+r.tv20_eok+'억'+hot+'</td></tr>';
   }
   h+='</tbody></table></div>';
+  const k=t.track;
+  if(k&&k.rows&&k.rows.length){
+    const sg=v=>v==null?'–':(v>=0?'+':'')+v;
+    h+='<div class="sec-title" style="margin-top:18px">📈 편입 후 추적 ('+esc(k.since)+'~)</div>'+
+       '<div class="note" style="margin:0 0 8px">'+k.n+'종목 · 평균 <b>'+sg(k.avg_ret)+'%</b> · 같은 날 산 전체 종목 중앙값 대비 <b>'+sg(k.avg_excess)+'%p</b> · '+
+       '주목 '+k.n_attn+' · 목록 이탈 '+k.n_out+'. <b>주목</b> = 20일 거래대금이 편입 때의 '+k.attn_x+'배를 처음 넘은 날. '+
+       '목록에서 빠진 종목도 계속 추적(빼면 살아남은 종목만 보게 됨).</div>';
+    h+='<div class="tbl-scroll"><table><thead><tr><th class="l">종목</th><th>편입</th><th>수익률</th><th>전체 중앙값</th>'+
+       '<th>거래대금(억)</th><th>주목</th><th>이탈</th></tr></thead><tbody>';
+    for(const r of k.rows){
+      h+='<tr><td class="l">'+esc(r.name)+'</td><td>'+esc(r.first)+'</td>'+
+         '<td class="'+(r.ret_pct<0?'neg':'pos')+'">'+sg(r.ret_pct)+'%</td><td>'+sg(r.bench_pct)+'%</td>'+
+         '<td>'+r.tv0_eok+' → '+r.tv_eok+(r.tv_x!=null?' <span class="tag">'+r.tv_x+'x</span>':'')+'</td>'+
+         '<td>'+(r.attn?esc(r.attn):'–')+'</td><td>'+(r.out?esc(r.out):'–')+'</td></tr>';
+    }
+    h+='</tbody></table></div>';
+  }
   h+='<div class="warnbox">⚠ <b>관찰 목록 — 검증된 알파 아님.</b> "언젠가 주목받는다"는 데이터로 검증 불가, 근거는 이익이 계속 느는지뿐. '+
      '§128 이익성장 효과는 <b>유동성 상위에서</b> 확인됐고 저유동 소형주는 단기 역전 경향. '+
      'PER 은 지난 4분기(LTM) 기준이라 이익 정점이면 착시 → <b>분기 YoY 가 꺾이면 이탈</b>. '+
