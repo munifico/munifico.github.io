@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261020",
+  "indicators": {
+   "S&P 500": {
+    "price": 7712.57,
+    "chg_pct": 0.28
+   },
+   "Nasdaq": {
+    "price": 26424.82,
+    "chg_pct": -0.02
+   },
+   "Dow Jones": {
+    "price": 52495.88,
+    "chg_pct": 1.02
+   },
+   "EWY": {
+    "price": 153.99,
+    "chg_pct": -1.65
+   },
+   "DRAM": {
+    "price": 47.72,
+    "chg_pct": -1.26
+   },
+   "VIX": {
+    "price": 17.31,
+    "chg_pct": -6.13
+   },
+   "US 10Y": {
+    "price": 5.12,
+    "chg_pct": -0.37
+   },
+   "Gold": {
+    "price": 4142.5,
+    "chg_pct": -0.42
+   },
+   "Silver": {
+    "price": 58.14,
+    "chg_pct": 2.05
+   },
+   "Copper": {
+    "price": 6.62,
+    "chg_pct": 1.19
+   },
+   "WTI": {
+    "price": 98.18,
+    "chg_pct": -5.29
+   },
+   "Bitcoin": {
+    "price": 82840.19,
+    "chg_pct": 1.21
+   },
+   "Ethereum": {
+    "price": 2449.33,
+    "chg_pct": 1.85
+   },
+   "USD/KRW": {
+    "price": 1326.83,
+    "chg_pct": -0.49
+   },
+   "JPY/KRW": {
+    "price": 8.37,
+    "chg_pct": -0.98
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 2.37,
+    "chg_5d_pct": 5.99
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 1.7,
+    "chg_5d_pct": 1.31
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 1.26,
+    "chg_5d_pct": 0.02
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 1.2,
+    "chg_5d_pct": 1.64
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.91,
+    "chg_5d_pct": 2.79
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.62,
+    "chg_5d_pct": 4.23
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.55,
+    "chg_5d_pct": 3.04
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 0.25,
+    "chg_5d_pct": 1.15
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.09,
+    "chg_5d_pct": -1.86
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.07,
+    "chg_5d_pct": -1.11
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -0.28,
+    "chg_5d_pct": -5.52
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 402,
+   "decliners": 98,
+   "median_chg_pct": 1.24,
+   "top_gainers": [
+    {
+     "ticker": "EFX",
+     "name": "Equifax",
+     "chg_pct": 11.33
+    },
+    {
+     "ticker": "HAS",
+     "name": "Hasbro",
+     "chg_pct": 11.2
+    },
+    {
+     "ticker": "MRNA",
+     "name": "Moderna",
+     "chg_pct": 6.69
+    },
+    {
+     "ticker": "MMM",
+     "name": "3M",
+     "chg_pct": 5.78
+    },
+    {
+     "ticker": "IT",
+     "name": "Gartner",
+     "chg_pct": 5.74
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "GM",
+     "name": "General Motors",
+     "chg_pct": -6.84
+    },
+    {
+     "ticker": "DVA",
+     "name": "DaVita",
+     "chg_pct": -6.23
+    },
+    {
+     "ticker": "GPC",
+     "name": "Genuine Parts Company",
+     "chg_pct": -5.12
+    },
+    {
+     "ticker": "FIX",
+     "name": "Comfort Systems USA",
+     "chg_pct": -4.57
+    },
+    {
+     "ticker": "HWM",
+     "name": "Howmet Aerospace",
+     "chg_pct": -3.82
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "다우 1.02% 상승·나스닥 보합권, VIX 6.13% 하락하며 폭넓은 상승",
+  "summary": "S&P 500과 다우는 상승했고 나스닥은 -0.02%로 보합권이었다. 상승 종목이 402개로 하락 98개를 크게 웃돌았고 VIX는 17.31로 내렸다. 기술·반도체만 섹터 중 하락했다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7712.57로 0.28% 올랐고 다우는 52495.88로 1.02% 상승했다. 나스닥은 26424.82로 -0.02%를 기록했다. VIX는 17.31로 6.13% 하락했다. 미국 10년물 금리는 5.12로 -0.37%였다."
+   },
+   {
+    "title": "섹터",
+    "body": "11개 섹터 ETF 중 10개가 상승했다. 헬스케어(XLV)가 2.37%로 가장 많이 올랐고 부동산·리츠(XLRE) 1.7%, 유틸리티·원전(XLU) 1.26%, 금융(XLF) 1.2%가 뒤따랐다. 기술·반도체(XLK)는 -0.28%로 유일하게 하락했으며 5일 기준으로도 -5.52%다. 커뮤니케이션(XLC)과 산업재·방산(XLI)도 5일 기준 각각 -1.86%, -1.11%였다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 500개 종목 중 402개가 올랐고 98개가 내렸으며 중앙값 등락률은 1.24%였다. 상승률 상위는 Equifax 11.33%, Hasbro 11.2%, Moderna 6.69%, 3M 5.78%, Gartner 5.74%다. 하락률 상위는 General Motors -6.84%, DaVita -6.23%, Genuine Parts Company -5.12%, Comfort Systems USA -4.57%, Howmet Aerospace -3.82%다. 개별 종목 등락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "원자재·환율·기타 자산",
+    "body": "WTI는 98.18로 -5.29% 하락했고 금은 -0.42%, 은은 2.05%, 구리는 1.19% 올랐다. 비트코인은 1.21%, 이더리움은 1.85% 상승했다. USD/KRW는 1326.83으로 -0.49%, JPY/KRW는 8.37로 -0.98%였다. EWY는 -1.65%, DRAM은 -1.26%로 함께 내렸으며 그 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2635,
+    "out": 954,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-21 06:50"
+ }
+}
