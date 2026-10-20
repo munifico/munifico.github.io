@@ -57,6 +57,9 @@ a.code{color:var(--accent);text-decoration:none;font-weight:600}
   <div class="sec-title">🧭 9대 테마 깔때기 (관찰 목록)</div>
   <div class="card" id="themeCard"><div class="note">불러오는 중…</div></div>
 
+  <div class="sec-title" id="hidden">🕵️ 숨은 실적주 (관찰 목록)</div>
+  <div class="card" id="hiddenCard"><div class="note">불러오는 중…</div></div>
+
   <div class="sec-title">검증 근거 (§128) · 주의</div>
   <div class="card">
     <div class="note">
@@ -158,7 +161,42 @@ function renderTheme(d){
      '200일선 +60% 이상은 주황 표시(과열 경계).</div>';
   card.innerHTML=h;
 }
-fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{render(d);renderTheme(d)}).catch(e=>{
+function renderHidden(d){
+  const card=document.getElementById("hiddenCard");
+  const t=d&&d.hidden;
+  if(!t){card.innerHTML='<div class="note">데이터 없음</div>';return}
+  const f=t.funnel;
+  let h='<div class="funnel">'+
+    '<div class="fchip">4년 흑자·이익 증가 <b>'+f.eps+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">저평가·한산 <b>'+f.quiet+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">영업이익 확인 <b>'+f.op+'</b></div><span class="arrow">→</span>'+
+    '<div class="fchip">분기 가속 <b>'+f.accel+'</b></div></div>';
+  h+='<div class="note" style="margin:2px 0 12px">이익 = 4년 연속 EPS 흑자 ∩ 1년 +10%↑ ∩ 3년 연 +12%↑ ∩ ROE 10%↑ · '+
+     '저평가·한산 = PER 3~15 ∩ 거래대금 20일 1~80억 ∩ 1년 주가상승 &lt; EPS 성장 · '+
+     '영업이익 = DART 4년 흑자 ∩ 4년 전보다 증가 ∩ 순이익 ≤ 영업이익×1.5(일회성 제외) ∩ 최근 분기 누적 YoY ≥ 0 · '+
+     '<b>가속</b> = 분기 YoY +15%↑ · 지주·홀딩스·스팩·리츠 제외</div>';
+  if(!t.rows.length){h+='<div class="note">오늘 통과 종목 없음.</div>';card.innerHTML=h;return}
+  h+='<div class="tbl-scroll"><table><thead><tr>'+
+     '<th class="l">종목</th><th class="l">영업이익(억) 4년</th><th>분기 YoY</th><th>PER</th><th>ROE</th><th>1년 주가</th><th>거래대금</th></tr></thead><tbody>';
+  for(const r of t.rows){
+    const tags='<span class="tag">'+esc(r.type)+'</span>'+(r.buckets.length?'<span class="tag">'+esc(r.buckets[0])+'</span>':'');
+    const hot=r.tv_ratio!=null&&r.tv_ratio>=1.5?' <span class="tag" title="20일 거래대금 / 120일">관심↑'+r.tv_ratio+'x</span>':'';
+    h+='<tr><td class="l"><a class="code" href="https://stock.naver.com/domestic/stock/'+esc(r.code)+
+       '/price" target="_blank">'+esc(r.name)+'</a>'+tags+'</td>'+
+       '<td class="l">'+r.op_eok.map(num).join(' → ')+'</td>'+
+       '<td class="'+(r.q_yoy>=15?'pos':'')+'">'+(r.q_yoy>=0?'+':'')+r.q_yoy+'% <span class="tag">'+esc(r.q)+'</span></td>'+
+       '<td>'+r.per+'</td><td>'+r.roe+'%</td>'+
+       '<td class="'+(r.r1y_pct<0?'neg':'pos')+'">'+(r.r1y_pct>=0?'+':'')+r.r1y_pct+'%</td>'+
+       '<td>'+r.tv20_eok+'억'+hot+'</td></tr>';
+  }
+  h+='</tbody></table></div>';
+  h+='<div class="warnbox">⚠ <b>관찰 목록 — 검증된 알파 아님.</b> "언젠가 주목받는다"는 데이터로 검증 불가, 근거는 이익이 계속 느는지뿐. '+
+     '§128 이익성장 효과는 <b>유동성 상위에서</b> 확인됐고 저유동 소형주는 단기 역전 경향. '+
+     'PER 은 지난 4분기(LTM) 기준이라 이익 정점이면 착시 → <b>분기 YoY 가 꺾이면 이탈</b>. '+
+     '거래대금 1~2억은 계속 무관심일 위험이 큼. 분기 실적은 DART 30일 캐시라 공시 후 최대 한 달 늦게 반영.</div>';
+  card.innerHTML=h;
+}
+fetch("data.json?_="+Date.now()).then(r=>r.json()).then(d=>{render(d);renderTheme(d);renderHidden(d)}).catch(e=>{
   document.getElementById("screenCard").innerHTML='<div class="note">로드 실패: '+esc(e)+'</div>'});
 </script>
 </body>
