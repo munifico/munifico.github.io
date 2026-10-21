@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261021",
+  "indicators": {
+   "S&P 500": {
+    "price": 7757.17,
+    "chg_pct": 0.58
+   },
+   "Nasdaq": {
+    "price": 26702.86,
+    "chg_pct": 1.05
+   },
+   "Dow Jones": {
+    "price": 52856.09,
+    "chg_pct": 0.69
+   },
+   "EWY": {
+    "price": 156.88,
+    "chg_pct": 1.88
+   },
+   "DRAM": {
+    "price": 49.16,
+    "chg_pct": 3.02
+   },
+   "VIX": {
+    "price": 16.68,
+    "chg_pct": -3.64
+   },
+   "US 10Y": {
+    "price": 5.15,
+    "chg_pct": 0.57
+   },
+   "Gold": {
+    "price": 4159.5,
+    "chg_pct": -0.01
+   },
+   "Silver": {
+    "price": 58.12,
+    "chg_pct": 0.71
+   },
+   "Copper": {
+    "price": 6.58,
+    "chg_pct": 0.59
+   },
+   "WTI": {
+    "price": 97.71,
+    "chg_pct": -5.74
+   },
+   "Bitcoin": {
+    "price": 84739.95,
+    "chg_pct": 2.17
+   },
+   "Ethereum": {
+    "price": 2496.01,
+    "chg_pct": 2.01
+   },
+   "USD/KRW": {
+    "price": 1326.62,
+    "chg_pct": -0.25
+   },
+   "JPY/KRW": {
+    "price": 8.37,
+    "chg_pct": -0.26
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": 1.67,
+    "chg_5d_pct": -0.99
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.91,
+    "chg_5d_pct": 0.76
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 0.57,
+    "chg_5d_pct": 2.79
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.29,
+    "chg_5d_pct": 0.67
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 0.28,
+    "chg_5d_pct": 0.78
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.18,
+    "chg_5d_pct": 3.32
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.03,
+    "chg_5d_pct": 3.61
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -0.49,
+    "chg_5d_pct": 2.86
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": -0.73,
+    "chg_5d_pct": 1.22
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": -0.76,
+    "chg_5d_pct": 1.37
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -1.11,
+    "chg_5d_pct": -1.67
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 279,
+   "decliners": 220,
+   "median_chg_pct": 0.21,
+   "top_gainers": [
+    {
+     "ticker": "SKYD",
+     "name": "Skydance Corporation",
+     "chg_pct": 10.85
+    },
+    {
+     "ticker": "SMCI",
+     "name": "Supermicro",
+     "chg_pct": 9.55
+    },
+    {
+     "ticker": "CRL",
+     "name": "Charles River Laboratories",
+     "chg_pct": 9.33
+    },
+    {
+     "ticker": "ECHO",
+     "name": "EchoStar",
+     "chg_pct": 7.23
+    },
+    {
+     "ticker": "BE",
+     "name": "Bloom Energy",
+     "chg_pct": 7.13
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "T",
+     "name": "AT&T",
+     "chg_pct": -6.45
+    },
+    {
+     "ticker": "DXCM",
+     "name": "Dexcom",
+     "chg_pct": -6.39
+    },
+    {
+     "ticker": "NFLX",
+     "name": "Netflix",
+     "chg_pct": -5.31
+    },
+    {
+     "ticker": "CMG",
+     "name": "Chipotle Mexican Grill",
+     "chg_pct": -5.16
+    },
+    {
+     "ticker": "EXPE",
+     "name": "Expedia Group",
+     "chg_pct": -5.03
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 3대 지수 동반 상승, 나스닥 1.05% 오르며 기술주 주도",
+  "summary": "S&P 500, 나스닥, 다우가 모두 올랐고 VIX는 내렸다. 기술·반도체 섹터가 강했던 반면 커뮤니케이션 섹터는 약세였고, WTI는 5.74% 하락했다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7757.17로 0.58%, 나스닥은 26702.86으로 1.05%, 다우존스는 52856.09로 0.69% 상승했다. VIX는 16.68로 3.64% 하락했다. 미국 10년물 금리는 5.15로 0.57% 올랐다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "하루 기준 XLK(기술·반도체)가 1.67%로 가장 크게 올랐고 XLI(산업재·방산) 0.91%, XLF(금융) 0.57%가 뒤를 이었다. 반면 XLC(커뮤니케이션)는 -1.11%, XLRE(부동산·리츠)는 -0.76%, XLP(필수소비재)는 -0.73%였다. XLK는 5일 기준으로는 -0.99%여서 이날 상승이 최근 5일 약세와 대비된다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 구성 종목 중 상승 279개, 하락 220개였고 중앙값 등락률은 0.21%였다. 상승률 상위는 Skydance 10.85%, Supermicro 9.55%, Charles River Laboratories 9.33% 순이었다. 하락률 상위는 AT&T -6.45%, Dexcom -6.39%, Netflix -5.31%였으며, 개별 움직임의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "체크포인트",
+    "body": "반도체 관련 DRAM은 3.02%, EWY는 1.88% 상승했다. WTI는 97.71로 5.74% 하락했지만 그 원인은 데이터상 확인되지 않는다. 금은 4159.5로 -0.01%로 보합권이었고 비트코인은 2.17%, 이더리움은 2.01% 올랐다. USD/KRW는 1326.62로 0.25% 하락했다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2650,
+    "out": 823,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-22 06:50"
+ }
+}
