@@ -304,10 +304,15 @@ function renderDerisk(d,credit,gate,br,eg){
  if(credit&&credit.value_jo!=null){
   const pos=credit.pct_of_range;
   const tag=pos>=80?" <b>고점권</b>":(pos<=20?" 저점권":"");
-  const c20=credit.chg20_pct!=null?(" · 20일 "+(credit.chg20_pct>=0?"+":"")+credit.chg20_pct+"%"):"";
+  const sg=v=>(v>=0?"+":"")+v+"%";
+  const c20=credit.chg20_pct!=null?(" · 20일 "+sg(credit.chg20_pct)):"";
+  const tr=credit.trend?('<div class="pain-sub"><b>추세: '+esc(credit.trend)+'</b> · 5일 '+sg(credit.chg5_pct)+c20+
+   (credit.down_days>=2?' · '+credit.down_days+'일 연속 감소':'')+
+   (credit.off_high_pct!=null?' · 120일 고점 대비 '+sg(credit.off_high_pct):'')+'</div>'):"";
+  const st=credit.stale?'<div class="pain-sub" style="color:var(--bad)">⚠ 데이터 '+esc(credit.asof)+' 이후 갱신 없음 — 수집 실패 의심</div>':"";
   cr='<div class="item"><div class="item-row"><span class="item-name">🇰🇷 신용잔고(레버리지)</span>'+
-   '<span class="item-sig">'+credit.value_jo+'조</span></div>'+
-   '<div class="pain-sub">1년 범위 '+pos+'%'+tag+c20+' · 범위 '+credit.lo_jo+'~'+credit.hi_jo+'조 · '+
+   '<span class="item-sig">'+credit.value_jo+'조</span></div>'+tr+st+
+   '<div class="pain-sub">1년 범위 '+pos+'%'+tag+' · 범위 '+credit.lo_jo+'~'+credit.hi_jo+'조 · '+
    '높을수록 폭락 시 강제청산 연료↑(꼬리 두께)'+(credit.asof?' · '+esc(credit.asof):"")+'</div></div>';
  }
  // 🌐 SPX 3단계 게이트 (§166 — 한국 낙폭매수 알파 진입창)
