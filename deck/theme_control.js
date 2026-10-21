@@ -79,6 +79,7 @@ document.body.style.background = "#060b1a";
 
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const M = D.market || {}, S = D.signals || {items:[],types:[],stats:{}}, TH = D.themes || {items:[]}, FO = D.foreign || {buy:[],sell:[]}, EV = D.events || [];
+const BR_ASOF = M.breadth?.date ? ` (${+M.breadth.date.slice(4, 6)}/${+M.breadth.date.slice(6)} 금 기준)` : "";
 const num = (v, d = 2) => v == null ? "—" : Number(v).toLocaleString("en-US", {minimumFractionDigits:d, maximumFractionDigits:d});
 const sgn = (v, d = 2) => v == null ? "—" : (v > 0 ? "+" : "") + Number(v).toFixed(d);
 const ymd = s => s && s.length === 8 ? `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6)}` : (s || "");
@@ -171,7 +172,7 @@ Q("#crkv").innerHTML = [
   ["KOSPI PER", B.kospi ? `${num(B.kospi.per)} · ${B.kospi.per_pct}%ile` : "—"],
   ["KOSPI PBR", B.kospi ? `${num(B.kospi.pbr)} · ${B.kospi.pbr_pct}%ile` : "—"],
   ["위험 게이지", M.risk || "—"], ["디리스크", M.derisk || "—"], ["버블 체크", M.bubble || "—"],
-  ["대형주 이탈 폭", M.breadth?.short || "—"],
+  ["대형주 이탈 폭", (M.breadth?.short || "—") + BR_ASOF],
   ["TOP200 대응", M.env_guide?.summary || "—"],
 ].map(([k, v]) => `<span class="kr">${esc(k)}</span><span class="kr">${esc(v)}</span>`).join("");
 const mxT = Math.max(1, ...(TH.items || []).map(t => Math.abs(t.short ?? 0)));

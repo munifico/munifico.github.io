@@ -68,6 +68,7 @@ const st = document.createElement("style"); st.textContent = CSS; document.head.
 /* ---------- data helpers ---------- */
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const M = D.market || {}, S = D.signals || {items:[],types:[],stats:{}}, TH = D.themes || {items:[]}, FO = D.foreign || {buy:[],sell:[]};
+const BR_ASOF = M.breadth?.date ? ` (${+M.breadth.date.slice(4, 6)}/${+M.breadth.date.slice(6)} 금 기준)` : "";
 const EV = D.events || [];
 const num = (v, d = 2) => v == null ? "----" : Number(v).toLocaleString("en-US", {minimumFractionDigits:d, maximumFractionDigits:d});
 const sgn = (v, d = 2) => v == null ? "--" : (v > 0 ? "+" : "") + Number(v).toFixed(d);
@@ -147,7 +148,7 @@ T.querySelector("#t89mkt").innerHTML = [
   ["KOSPI 밸류", bandTxt("kospi")], ["KOSDAQ 밸류", bandTxt("kosdaq")],
   ["VKOSPI", `${num(M.vkospi?.value)} (${sgn(M.vkospi?.chg)})`],
   ["위험 게이지", M.risk || "-"], ["디리스크", M.derisk || "-"], ["버블 체크", M.bubble || "-"],
-  ["대형주 이탈 폭", M.breadth?.short || "-"],
+  ["대형주 이탈 폭", (M.breadth?.short || "-") + BR_ASOF],
   ["TOP200 대응", M.env_guide?.summary || "-"],
 ].map(([k, v]) => `<span class="dim kr">${esc(k)}</span><span class="kr">${esc(v)}</span>`).join("");
 T.querySelector("#t89th").innerHTML = (TH.items || []).map(t => {
@@ -222,7 +223,7 @@ const cmds = {
  VKOSPI   ${num(M.vkospi?.value)} (${sgn(M.vkospi?.chg)})
  <span class="kr">KOSPI ${esc(bandTxt("kospi"))}</span>
  <span class="kr">위험 ${esc(M.risk || "-")} · 디리스크 ${esc(M.derisk || "-")} · 버블 ${esc(M.bubble || "-")}</span>
- <span class="kr">BREADTH  ${esc(M.breadth?.short || "-")}</span>
+ <span class="kr">BREADTH  ${esc((M.breadth?.short || "-") + BR_ASOF)}</span>
  <span class="kr faint">         ${esc(M.breadth?.detail || "")}</span>
  <span class="kr">TOP200   ${esc(M.env_guide?.summary || "-")}</span>
 ${(M.env_guide?.rows || []).map(r => ` <span class="kr ${r.key === M.env_guide.key ? "" : "faint"}">  ${r.key === M.env_guide.key ? ">" : " "} ${esc(r.action)}  ${esc(r.cond)} · ${esc(r.exp)}</span>`).join("\n")}

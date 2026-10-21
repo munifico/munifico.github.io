@@ -41,6 +41,7 @@ const st = document.createElement("style"); st.textContent = CSS; document.head.
 document.body.style.background = "#1a1420";
 
 const M = D.market || {}, S = D.signals || {items:[]}, TH = D.themes || {items:[]}, FO = D.foreign || {buy:[],sell:[]};
+const BR_ASOF = M.breadth?.date ? ` (${+M.breadth.date.slice(4, 6)}/${+M.breadth.date.slice(6)} 금 기준)` : "";
 const all = S.items || [];
 const FN = D.funnel || {rows: [], watch: []};
 // ◀▶ 로 바꾸는 파티: 기존 신호 / 9대 테마 깔때기 / 주봉 엔벨 하단권 관찰
@@ -188,8 +189,8 @@ function runCmd(k) {
     else if (s.w_pb >= 1) msgs.push("상단 돌파 구간은 과거 평균 수준이었다. 추세는 아직 살아 있다.");
     else if (s.w_pb != null && s.w_pb < 0.25) msgs.push("하단권은 KOSPI 40주선 아래에서만 반등이 강했다(8주 +5.9%). 위에서는 -1.5%. 장세부터 확인하자.");
     else msgs.push("밴드 안이다. 과열 부담은 덜하다.");
-    if (M.env_guide?.action) msgs.push(`대형주 엔벨15 대응은 지금 '${M.env_guide.action}'이다. 금요일 종가로 확인하고 월요일 시가에 들어가 8주를 버틴다.`);
-    if (M.breadth?.short) msgs.push(`이번 주 시장: ${M.breadth.short.replace(/→/g, "=>").replace(/—/g, "-").replace(/[^\x20-\x7E가-힣·]/g, "").trim()}.`);
+    if (M.env_guide?.action) msgs.push(`대형주 엔벨15 대응은 지금 '${M.env_guide.action}'이다. (규칙) 금요일 종가로 확인하고 월요일 시가에 들어가 8주를 버틴다.`);
+    if (M.breadth?.short) msgs.push(`이번 주 시장${BR_ASOF}: ${M.breadth.short.replace(/→/g, "=>").replace(/—/g, "-").replace(/[^\x20-\x7E가-힣·]/g, "").trim()}.`);
     setDialog(msgs);
   } else if (k === "분석") {
     const sig = sameCode(s).map(x => `${x.label}(${x.conf || "-"})`).join(", ");

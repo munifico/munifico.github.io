@@ -63,6 +63,7 @@ document.body.style.background = dark ? "#0f1115" : "#f6f7f9";
 
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const M = D.market || {}, S = D.signals || {items:[],types:[],stats:{}}, TH = D.themes || {items:[]}, FO = D.foreign || {buy:[],sell:[]}, EV = D.events || [];
+const BR_ASOF = M.breadth?.date ? ` (${+M.breadth.date.slice(4, 6)}/${+M.breadth.date.slice(6)} 금 기준)` : "";
 const all = S.items || [];
 const num = (v, d = 2) => v == null ? "—" : Number(v).toLocaleString("ko-KR", {minimumFractionDigits:d, maximumFractionDigits:d});
 const sgn = (v, d = 2) => v == null ? "—" : (v > 0 ? "+" : "") + Number(v).toFixed(d);
@@ -136,7 +137,7 @@ root.innerHTML = `<div class="bs ${dark ? "dark" : ""}"><div class="wrap">
       <span>위험 게이지</span><span>${esc(M.risk || "—")}</span>
       <span>디리스크</span><span>${esc(M.derisk || "—")}</span>
       <span>버블 체크</span><span>${esc(M.bubble || "—")}</span>
-      <span>대형주 이탈 폭</span><span title="${esc(M.breadth?.detail || "")}">${esc(M.breadth?.short || "—")}</span></div></section>
+      <span>대형주 이탈 폭</span><span title="${esc(M.breadth?.detail || "")}">${esc((M.breadth?.short || "—") + BR_ASOF)}</span></div></section>
     ${M.env_guide?.rows ? `<section class="card"><h2>TOP200 엔벨15 대응 <small>지금: ${esc(M.env_guide.action)}</small></h2>
       <div class="kv">${M.env_guide.rows.map(r => `<span>${r.key === M.env_guide.key ? "▶ " : ""}<b>${esc(r.action)}</b></span><span class="${r.key === M.env_guide.key ? "" : "muted"}">${esc(r.cond)} · ${esc(r.exp)}</span>`).join("")}</div>
       <details><summary class="muted">매매 규칙</summary><ul class="ev">${M.env_guide.rules.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details></section>` : ""}
