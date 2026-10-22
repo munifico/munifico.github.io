@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261022",
+  "indicators": {
+   "S&P 500": {
+    "price": 7663.43,
+    "chg_pct": -0.64
+   },
+   "Nasdaq": {
+    "price": 26008.86,
+    "chg_pct": -1.57
+   },
+   "Dow Jones": {
+    "price": 52867.98,
+    "chg_pct": 0.71
+   },
+   "EWY": {
+    "price": 149.06,
+    "chg_pct": -4.98
+   },
+   "DRAM": {
+    "price": 45.68,
+    "chg_pct": -7.08
+   },
+   "VIX": {
+    "price": 19.03,
+    "chg_pct": 9.94
+   },
+   "US 10Y": {
+    "price": 4.95,
+    "chg_pct": -3.21
+   },
+   "Gold": {
+    "price": 4039.8,
+    "chg_pct": -2.66
+   },
+   "Silver": {
+    "price": 54.63,
+    "chg_pct": -4.86
+   },
+   "Copper": {
+    "price": 6.4,
+    "chg_pct": -2.21
+   },
+   "WTI": {
+    "price": 99.1,
+    "chg_pct": 2.01
+   },
+   "Bitcoin": {
+    "price": 81372.84,
+    "chg_pct": -3.14
+   },
+   "Ethereum": {
+    "price": 2388.91,
+    "chg_pct": -3.31
+   },
+   "USD/KRW": {
+    "price": 1325.4,
+    "chg_pct": 0.11
+   },
+   "JPY/KRW": {
+    "price": 8.43,
+    "chg_pct": 0.85
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 2.55,
+    "chg_5d_pct": 4.57
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 2.36,
+    "chg_5d_pct": 2.76
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 1.09,
+    "chg_5d_pct": 2.5
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.9,
+    "chg_5d_pct": 4.07
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 0.82,
+    "chg_5d_pct": 4.22
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.33,
+    "chg_5d_pct": 2.48
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.04,
+    "chg_5d_pct": -0.19
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -0.42,
+    "chg_5d_pct": 3.15
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -0.87,
+    "chg_5d_pct": 1.52
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -1.42,
+    "chg_5d_pct": -4.46
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -3.29,
+    "chg_5d_pct": -3.62
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 345,
+   "decliners": 153,
+   "median_chg_pct": 1.64,
+   "top_gainers": [
+    {
+     "ticker": "ALLE",
+     "name": "Allegion",
+     "chg_pct": 12.41
+    },
+    {
+     "ticker": "ROP",
+     "name": "Roper Technologies",
+     "chg_pct": 9.55
+    },
+    {
+     "ticker": "NDAQ",
+     "name": "Nasdaq, Inc.",
+     "chg_pct": 8.97
+    },
+    {
+     "ticker": "ACN",
+     "name": "Accenture",
+     "chg_pct": 8.21
+    },
+    {
+     "ticker": "HPQ",
+     "name": "HP Inc.",
+     "chg_pct": 8.17
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "MRNA",
+     "name": "Moderna",
+     "chg_pct": -17.57
+    },
+    {
+     "ticker": "COHR",
+     "name": "Coherent Corp.",
+     "chg_pct": -12.51
+    },
+    {
+     "ticker": "FLEX",
+     "name": "Flex Ltd.",
+     "chg_pct": -12.34
+    },
+    {
+     "ticker": "LRCX",
+     "name": "Lam Research",
+     "chg_pct": -11.76
+    },
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "chg_pct": -11.54
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 혼조: 나스닥 -1.57%, 다우 +0.71%, 기술주 급락 속 방어 업종 강세",
+  "summary": "S&P 500은 -0.64%, 나스닥은 -1.57%로 하락한 반면 다우는 +0.71%로 올랐다. 기술·반도체 업종이 약했고 필수소비재와 유틸리티가 상승을 주도했으며, VIX는 19.03으로 9.94% 올랐다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7663.43(-0.64%), 나스닥은 26008.86(-1.57%)으로 마감했고 다우는 52867.98(+0.71%)로 상승했다. VIX는 19.03으로 9.94% 올랐다. 미국 10년물 금리는 4.95로 -3.21% 변동했다. 지수 간 엇갈린 흐름의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "필수소비재(XLP)가 +2.55%, 유틸리티·원전(XLU)이 +2.36%, 금융(XLF)이 +1.09%로 상승 상위였다. 반면 기술·반도체(XLK)는 -3.29%, 커뮤니케이션(XLC)은 -1.42%로 하락했다. 5일 기준으로도 XLK는 -3.62%, XLC는 -4.46%로 약세가 이어진 모습이다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 종목 중 상승은 345개, 하락은 153개였고 중간값 등락률은 +1.64%였다. 지수는 내렸지만 종목 다수는 올랐다. 상승 상위는 Allegion(+12.41%), Roper Technologies(+9.55%), Nasdaq, Inc.(+8.97%)였고, 하락 상위는 Moderna(-17.57%), Coherent(-12.51%), Flex(-12.34%), Lam Research(-11.76%), Lumentum(-11.54%)이었다."
+   },
+   {
+    "title": "반도체·원자재·기타 자산",
+    "body": "DRAM은 -7.08%, EWY는 -4.98%로 크게 하락했다. 금은 4039.8(-2.66%), 은은 54.63(-4.86%), 구리는 6.4(-2.21%)로 내렸고 WTI는 99.1(+2.01%)로 올랐다. 비트코인은 -3.14%, 이더리움은 -3.31%였으며 USD/KRW는 1325.4(+0.11%)였다. 이들 움직임의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2651,
+    "out": 943,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-23 06:50"
+ }
+}
