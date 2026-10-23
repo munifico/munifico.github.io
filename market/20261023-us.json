@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261023",
+  "indicators": {
+   "S&P 500": {
+    "price": 7623.68,
+    "chg_pct": -0.52
+   },
+   "Nasdaq": {
+    "price": 25955.34,
+    "chg_pct": -0.21
+   },
+   "Dow Jones": {
+    "price": 52215.16,
+    "chg_pct": -1.23
+   },
+   "EWY": {
+    "price": 151.26,
+    "chg_pct": 1.48
+   },
+   "DRAM": {
+    "price": 47.06,
+    "chg_pct": 3.02
+   },
+   "VIX": {
+    "price": 19.45,
+    "chg_pct": 2.21
+   },
+   "US 10Y": {
+    "price": 4.99,
+    "chg_pct": 0.71
+   },
+   "Gold": {
+    "price": 4010.0,
+    "chg_pct": -1.24
+   },
+   "Silver": {
+    "price": 53.96,
+    "chg_pct": -1.47
+   },
+   "Copper": {
+    "price": 6.5,
+    "chg_pct": 2.12
+   },
+   "WTI": {
+    "price": 103.44,
+    "chg_pct": 3.99
+   },
+   "Bitcoin": {
+    "price": 81247.26,
+    "chg_pct": -0.08
+   },
+   "Ethereum": {
+    "price": 2396.13,
+    "chg_pct": 0.42
+   },
+   "USD/KRW": {
+    "price": 1323.66,
+    "chg_pct": -0.15
+   },
+   "JPY/KRW": {
+    "price": 8.42,
+    "chg_pct": 0.41
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 2.6,
+    "chg_5d_pct": 1.6
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": 0.49,
+    "chg_5d_pct": -0.13
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.12,
+    "chg_5d_pct": 0.97
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -0.72,
+    "chg_5d_pct": 0.83
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": -0.74,
+    "chg_5d_pct": 0.77
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -1.11,
+    "chg_5d_pct": 1.45
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -1.27,
+    "chg_5d_pct": -1.87
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -1.32,
+    "chg_5d_pct": 0.68
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -1.66,
+    "chg_5d_pct": 0.57
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -1.78,
+    "chg_5d_pct": -4.36
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": -1.92,
+    "chg_5d_pct": 0.73
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 134,
+   "decliners": 365,
+   "median_chg_pct": -0.85,
+   "top_gainers": [
+    {
+     "ticker": "CCI",
+     "name": "Crown Castle",
+     "chg_pct": 9.06
+    },
+    {
+     "ticker": "CRWD",
+     "name": "CrowdStrike",
+     "chg_pct": 8.25
+    },
+    {
+     "ticker": "PANW",
+     "name": "Palo Alto Networks",
+     "chg_pct": 7.22
+    },
+    {
+     "ticker": "SLB",
+     "name": "Schlumberger",
+     "chg_pct": 7.08
+    },
+    {
+     "ticker": "HAL",
+     "name": "Halliburton",
+     "chg_pct": 5.21
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "BE",
+     "name": "Bloom Energy",
+     "chg_pct": -11.24
+    },
+    {
+     "ticker": "FIX",
+     "name": "Comfort Systems USA",
+     "chg_pct": -9.26
+    },
+    {
+     "ticker": "GL",
+     "name": "Globe Life",
+     "chg_pct": -8.09
+    },
+    {
+     "ticker": "T",
+     "name": "AT&T",
+     "chg_pct": -7.96
+    },
+    {
+     "ticker": "TMUS",
+     "name": "T-Mobile US",
+     "chg_pct": -7.71
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 하락 마감, 다우 -1.23%… 유가 급등 속 에너지만 강세",
+  "summary": "S&P 500은 -0.52%, Nasdaq은 -0.21%, Dow Jones는 -1.23%로 마감했다. WTI가 +3.99% 오르고 에너지 섹터가 +2.6%를 기록한 반면 S&P 500 종목 중 하락이 상승보다 훨씬 많았다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7623.68(-0.52%), Nasdaq은 25955.34(-0.21%), Dow Jones는 52215.16(-1.23%)으로 마감했다. 대형 기술주 비중이 높은 Nasdaq의 낙폭이 상대적으로 작았다. VIX는 19.45로 +2.21% 올랐고, US 10Y는 4.99로 +0.71% 상승했다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 ETF 중 상승은 에너지 XLE(+2.6%), 기술·반도체 XLK(+0.49%), 부동산·리츠 XLRE(+0.12%) 세 곳뿐이었다. 필수소비재 XLP(-1.92%), 커뮤니케이션 XLC(-1.78%), 경기소비재 XLY(-1.66%)가 낙폭 상위였다. XLC는 5일 기준으로도 -4.36%로 가장 부진했고, XLI도 5일 -1.87%였다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 500개 종목 중 상승은 134개, 하락은 365개였고 중앙값 등락률은 -0.85%였다. 상승 상위에는 Crown Castle(+9.06%), CrowdStrike(+8.25%), Palo Alto Networks(+7.22%), Schlumberger(+7.08%), Halliburton(+5.21%)이 올랐다. 하락 상위는 Bloom Energy(-11.24%), Comfort Systems USA(-9.26%), Globe Life(-8.09%), AT&T(-7.96%), T-Mobile US(-7.71%)였다. 개별 종목 급등락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "원자재·기타 자산",
+    "body": "WTI는 103.44로 +3.99%, Copper는 6.5로 +2.12% 올랐고 Gold는 4010.0(-1.24%), Silver는 53.96(-1.47%)으로 내렸다. 한국 관련 지표로 EWY는 +1.48%, DRAM은 +3.02%를 기록했다. Bitcoin은 81247.26(-0.08%), Ethereum은 2396.13(+0.42%)이었고, USD/KRW는 1323.66(-0.15%)이었다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2645,
+    "out": 1002,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-24 06:50"
+ }
+}
