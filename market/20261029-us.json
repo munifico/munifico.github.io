@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261029",
+  "indicators": {
+   "S&P 500": {
+    "price": 7720.39,
+    "chg_pct": -0.3
+   },
+   "Nasdaq": {
+    "price": 26184.72,
+    "chg_pct": -1.38
+   },
+   "Dow Jones": {
+    "price": 52342.56,
+    "chg_pct": -0.25
+   },
+   "EWY": {
+    "price": 161.83,
+    "chg_pct": -2.46
+   },
+   "DRAM": {
+    "price": 51.75,
+    "chg_pct": -4.38
+   },
+   "VIX": {
+    "price": 17.2,
+    "chg_pct": 1.71
+   },
+   "US 10Y": {
+    "price": 4.99,
+    "chg_pct": -1.11
+   },
+   "Gold": {
+    "price": 4033.3,
+    "chg_pct": -0.45
+   },
+   "Silver": {
+    "price": 52.22,
+    "chg_pct": -2.31
+   },
+   "Copper": {
+    "price": 6.59,
+    "chg_pct": -0.78
+   },
+   "WTI": {
+    "price": 102.86,
+    "chg_pct": 0.08
+   },
+   "Bitcoin": {
+    "price": 79120.25,
+    "chg_pct": -2.64
+   },
+   "Ethereum": {
+    "price": 2276.39,
+    "chg_pct": -3.45
+   },
+   "USD/KRW": {
+    "price": 1338.83,
+    "chg_pct": 0.91
+   },
+   "JPY/KRW": {
+    "price": 8.47,
+    "chg_pct": 0.85
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 2.4,
+    "chg_5d_pct": 1.51
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 2.21,
+    "chg_5d_pct": 1.27
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 1.54,
+    "chg_5d_pct": -2.01
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 1.53,
+    "chg_5d_pct": 0.63
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 1.44,
+    "chg_5d_pct": 0.51
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 1.29,
+    "chg_5d_pct": 1.63
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.97,
+    "chg_5d_pct": 2.04
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.75,
+    "chg_5d_pct": 1.03
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 0.38,
+    "chg_5d_pct": 1.69
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -1.18,
+    "chg_5d_pct": 3.51
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -1.87,
+    "chg_5d_pct": -5.78
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 403,
+   "decliners": 97,
+   "median_chg_pct": 1.47,
+   "top_gainers": [
+    {
+     "ticker": "GEN",
+     "name": "Gen Digital",
+     "chg_pct": 15.81
+    },
+    {
+     "ticker": "CVNA",
+     "name": "Carvana",
+     "chg_pct": 15.68
+    },
+    {
+     "ticker": "NCLH",
+     "name": "Norwegian Cruise Line Holdings",
+     "chg_pct": 13.45
+    },
+    {
+     "ticker": "HII",
+     "name": "Huntington Ingalls Industries",
+     "chg_pct": 13.23
+    },
+    {
+     "ticker": "TXT",
+     "name": "Textron",
+     "chg_pct": 11.67
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "NOW",
+     "name": "ServiceNow",
+     "chg_pct": -26.95
+    },
+    {
+     "ticker": "FTNT",
+     "name": "Fortinet",
+     "chg_pct": -20.09
+    },
+    {
+     "ticker": "MRVL",
+     "name": "Marvell Technology",
+     "chg_pct": -13.24
+    },
+    {
+     "ticker": "GOOGL",
+     "name": "Alphabet Inc. (Class A)",
+     "chg_pct": -12.64
+    },
+    {
+     "ticker": "GOOG",
+     "name": "Alphabet Inc. (Class C)",
+     "chg_pct": -12.29
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 혼조 속 나스닥 -1.38%, 상승 종목 403개 대 하락 97개로 엇갈린 흐름",
+  "summary": "S&P 500은 -0.3%, 나스닥은 -1.38%, 다우는 -0.25%로 마감했다. 지수는 내렸지만 S&P 500 구성 종목 중 상승 종목이 더 많았고, 기술·커뮤니케이션 섹터와 일부 대형주의 낙폭이 지수를 눌렀다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7720.39(-0.3%), 나스닥은 26184.72(-1.38%), 다우는 52342.56(-0.25%)로 마감했다. 나스닥의 하락폭이 가장 컸다. VIX는 17.2로 1.71% 올랐고, 미국 10년물 금리는 4.99로 1.11% 내렸다. EWY는 -2.46%, DRAM은 -4.38%로 약세였다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 중 9개가 올랐다. 헬스케어(XLV) +2.4%, 부동산·리츠(XLRE) +2.21%, 필수소비재(XLP) +1.54%, 유틸리티·원전(XLU) +1.53% 순으로 상승폭이 컸다. 반면 커뮤니케이션(XLC)은 -1.87%, 기술·반도체(XLK)는 -1.18%였다. XLK의 5일 수익률은 +3.51%, XLC는 -5.78%다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 500개 종목 중 403개가 올랐고 97개가 내렸으며, 중앙값 등락률은 +1.47%였다. 지수 등락률과 중앙값이 반대 방향이어서 일부 대형 종목의 하락이 지수에 크게 반영된 모습이다. 상승률 상위는 Gen Digital +15.81%, Carvana +15.68%, Norwegian Cruise Line Holdings +13.45%, Huntington Ingalls Industries +13.23%, Textron +11.67%였다. 하락률 상위는 ServiceNow -26.95%, Fortinet -20.09%, Marvell Technology -13.24%, Alphabet A -12.64%, Alphabet C -12.29%였다. 개별 종목 급등락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "원자재·환율·가상자산",
+    "body": "금은 4033.3(-0.45%), 은은 52.22(-2.31%), 구리는 6.59(-0.78%)로 내렸다. WTI는 102.86으로 0.08% 올랐다. 비트코인은 79120.25(-2.64%), 이더리움은 2276.39(-3.45%)였다. USD/KRW는 1338.83(+0.91%), JPY/KRW는 8.47(+0.85%)로 상승했다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2674,
+    "out": 1048,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-30 06:50"
+ }
+}
