@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261030",
+  "indicators": {
+   "S&P 500": {
+    "price": 7580.07,
+    "chg_pct": -1.82
+   },
+   "Nasdaq": {
+    "price": 25437.0,
+    "chg_pct": -2.86
+   },
+   "Dow Jones": {
+    "price": 51770.31,
+    "chg_pct": -1.09
+   },
+   "EWY": {
+    "price": 152.89,
+    "chg_pct": -5.52
+   },
+   "DRAM": {
+    "price": 48.01,
+    "chg_pct": -7.23
+   },
+   "VIX": {
+    "price": 19.42,
+    "chg_pct": 12.91
+   },
+   "US 10Y": {
+    "price": 4.93,
+    "chg_pct": -1.2
+   },
+   "Gold": {
+    "price": 3884.9,
+    "chg_pct": -3.63
+   },
+   "Silver": {
+    "price": 49.13,
+    "chg_pct": -5.86
+   },
+   "Copper": {
+    "price": 6.51,
+    "chg_pct": -1.09
+   },
+   "WTI": {
+    "price": 102.95,
+    "chg_pct": 0.93
+   },
+   "Bitcoin": {
+    "price": 76600.01,
+    "chg_pct": -1.51
+   },
+   "Ethereum": {
+    "price": 2234.32,
+    "chg_pct": -0.67
+   },
+   "USD/KRW": {
+    "price": 1333.44,
+    "chg_pct": -0.51
+   },
+   "JPY/KRW": {
+    "price": 8.44,
+    "chg_pct": -0.61
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 1.91,
+    "chg_5d_pct": 1.0
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 1.41,
+    "chg_5d_pct": 1.31
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.67,
+    "chg_5d_pct": 2.04
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 0.45,
+    "chg_5d_pct": 3.12
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.4,
+    "chg_5d_pct": 2.79
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.26,
+    "chg_5d_pct": 1.41
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -0.71,
+    "chg_5d_pct": 2.02
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -0.76,
+    "chg_5d_pct": 1.09
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -1.29,
+    "chg_5d_pct": -5.32
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -1.6,
+    "chg_5d_pct": 1.69
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -4.89,
+    "chg_5d_pct": -2.03
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 224,
+   "decliners": 276,
+   "median_chg_pct": -0.32,
+   "top_gainers": [
+    {
+     "ticker": "FDXF",
+     "name": "FedEx Freight",
+     "chg_pct": 14.91
+    },
+    {
+     "ticker": "REGN",
+     "name": "Regeneron Pharmaceuticals",
+     "chg_pct": 13.33
+    },
+    {
+     "ticker": "GPN",
+     "name": "Global Payments",
+     "chg_pct": 12.97
+    },
+    {
+     "ticker": "GDDY",
+     "name": "GoDaddy",
+     "chg_pct": 10.72
+    },
+    {
+     "ticker": "CSGP",
+     "name": "CoStar Group",
+     "chg_pct": 7.21
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "RDDT",
+     "name": "Reddit",
+     "chg_pct": -29.22
+    },
+    {
+     "ticker": "INTC",
+     "name": "Intel",
+     "chg_pct": -28.58
+    },
+    {
+     "ticker": "ILMN",
+     "name": "Illumina, Inc.",
+     "chg_pct": -18.64
+    },
+    {
+     "ticker": "TWLO",
+     "name": "Twilio",
+     "chg_pct": -15.24
+    },
+    {
+     "ticker": "SNDK",
+     "name": "Sandisk",
+     "chg_pct": -13.47
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 3대 지수 동반 하락, 나스닥 -2.86%·기술주 급락에 VIX 12.91% 상승",
+  "summary": "S&P 500은 -1.82%, 나스닥은 -2.86%, 다우는 -1.09%로 마감했다. 기술·반도체 섹터가 -4.89%로 가장 크게 내렸고 VIX는 19.42로 올랐다. 하락 종목이 상승 종목보다 많았으며, 움직임의 원인은 입력 데이터로 확인되지 않는다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7580.07(-1.82%), 나스닥은 25437.0(-2.86%), 다우존스는 51770.31(-1.09%)로 마감했다. 나스닥의 낙폭이 세 지수 중 가장 컸다. VIX는 19.42로 12.91% 상승했고, 미 10년물 금리는 4.93으로 -1.2%를 기록했다. 하락의 구체적 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "기술·반도체(XLK)가 -4.89%로 가장 크게 하락했고, 산업재·방산(XLI) -1.6%, 커뮤니케이션(XLC) -1.29%, 금융(XLF) -0.76%, 경기소비재(XLY) -0.71%가 뒤를 이었다. 반면 에너지(XLE) +1.91%, 필수소비재(XLP) +1.41%, 유틸리티·원전(XLU) +0.67%, 헬스케어(XLV) +0.45% 등은 상승했다. 5일 기준으로는 XLK가 -2.03%, XLC가 -5.32%로 약세였다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 500개 종목 중 상승은 224개, 하락은 276개였고 중앙값 등락률은 -0.32%였다. 지수 낙폭에 비해 중앙값 하락폭은 작았다. 상승 상위는 FedEx Freight +14.91%, Regeneron +13.33%, Global Payments +12.97%였다. 하락 상위는 Reddit -29.22%, Intel -28.58%, Illumina -18.64%, Twilio -15.24%, Sandisk -13.47%였다. 개별 종목 급등락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "체크포인트: 자산·환율",
+    "body": "EWY는 -5.52%, DRAM은 -7.23%로 반도체 관련 상품도 약세였다. 금은 -3.63%, 은은 -5.86%, 구리는 -1.09% 하락한 반면 WTI는 102.95로 0.93% 올랐다. 비트코인은 -1.51%, 이더리움은 -0.67%였고 USD/KRW는 1333.44로 -0.51%, JPY/KRW는 8.44로 -0.61%였다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2652,
+    "out": 1054,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-10-31 06:50"
+ }
+}
