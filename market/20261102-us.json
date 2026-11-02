@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261102",
+  "indicators": {
+   "S&P 500": {
+    "price": 7541.4,
+    "chg_pct": -0.51
+   },
+   "Nasdaq": {
+    "price": 25164.32,
+    "chg_pct": -1.07
+   },
+   "Dow Jones": {
+    "price": 51983.98,
+    "chg_pct": 0.41
+   },
+   "EWY": {
+    "price": 151.62,
+    "chg_pct": -0.83
+   },
+   "DRAM": {
+    "price": 46.32,
+    "chg_pct": -3.52
+   },
+   "VIX": {
+    "price": 21.15,
+    "chg_pct": 8.91
+   },
+   "US 10Y": {
+    "price": 4.89,
+    "chg_pct": -0.71
+   },
+   "Gold": {
+    "price": 3954.8,
+    "chg_pct": 1.43
+   },
+   "Silver": {
+    "price": 50.63,
+    "chg_pct": 3.12
+   },
+   "Copper": {
+    "price": 6.54,
+    "chg_pct": 1.23
+   },
+   "WTI": {
+    "price": 96.45,
+    "chg_pct": -7.37
+   },
+   "Bitcoin": {
+    "price": 76652.25,
+    "chg_pct": -2.04
+   },
+   "Ethereum": {
+    "price": 2251.14,
+    "chg_pct": -0.96
+   },
+   "USD/KRW": {
+    "price": 1345.53,
+    "chg_pct": 0.56
+   },
+   "JPY/KRW": {
+    "price": 8.5,
+    "chg_pct": 0.29
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 2.41,
+    "chg_5d_pct": 3.41
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 1.86,
+    "chg_5d_pct": 2.75
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 1.76,
+    "chg_5d_pct": 4.46
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 1.58,
+    "chg_5d_pct": 3.26
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 1.38,
+    "chg_5d_pct": 1.65
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 1.09,
+    "chg_5d_pct": 1.96
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.55,
+    "chg_5d_pct": 2.63
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.36,
+    "chg_5d_pct": -3.46
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -0.15,
+    "chg_5d_pct": 2.97
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -2.95,
+    "chg_5d_pct": -6.49
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -3.96,
+    "chg_5d_pct": -3.43
+   }
+  ],
+  "sp500_breadth": {
+   "n": 499,
+   "advancers": 343,
+   "decliners": 156,
+   "median_chg_pct": 1.07,
+   "top_gainers": [
+    {
+     "ticker": "IDXX",
+     "name": "Idexx Laboratories",
+     "chg_pct": 21.85
+    },
+    {
+     "ticker": "HWM",
+     "name": "Howmet Aerospace",
+     "chg_pct": 6.91
+    },
+    {
+     "ticker": "PNR",
+     "name": "Pentair",
+     "chg_pct": 6.49
+    },
+    {
+     "ticker": "CRH",
+     "name": "CRH plc",
+     "chg_pct": 6.36
+    },
+    {
+     "ticker": "DASH",
+     "name": "DoorDash",
+     "chg_pct": 6.19
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "chg_pct": -18.59
+    },
+    {
+     "ticker": "MRVL",
+     "name": "Marvell Technology",
+     "chg_pct": -12.72
+    },
+    {
+     "ticker": "CIEN",
+     "name": "Ciena",
+     "chg_pct": -11.34
+    },
+    {
+     "ticker": "P",
+     "name": "Everpure",
+     "chg_pct": -10.4
+    },
+    {
+     "ticker": "INTC",
+     "name": "Intel",
+     "chg_pct": -8.8
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시, 기술주 급락에 S&P 500·나스닥 하락…다우는 상승",
+  "summary": "S&P 500은 -0.51%, 나스닥은 -1.07%로 내렸고 다우는 0.41% 올랐다. 기술·반도체와 에너지가 크게 밀린 반면 경기소비재, 금융, 소재가 강세를 보였다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7541.4(-0.51%), 나스닥은 25164.32(-1.07%)로 마감했고 다우는 51983.98(+0.41%)로 상승했다. VIX는 21.15로 8.91% 올랐다. 미 10년물 금리는 4.89로 -0.71% 변동했다. 지수별로 방향이 갈렸으며, 이 차이의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 ETF 중 경기소비재(XLY)가 +2.41%로 가장 강했고 금융(XLF) +1.86%, 소재·화학(XLB) +1.76%, 필수소비재(XLP) +1.58%가 뒤를 이었다. 반면 에너지(XLE)는 -3.96%, 기술·반도체(XLK)는 -2.95%로 약했다. XLK의 5일 변화율은 -6.49%이다. 반도체 ETF인 DRAM도 -3.52% 하락했다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 499개 종목 중 상승은 343개, 하락은 156개였고 중앙값 등락률은 +1.07%였다. 지수는 내렸지만 종목 다수는 올랐다. 상승 상위에는 Idexx Laboratories(+21.85%), Howmet Aerospace(+6.91%), Pentair(+6.49%)가 있었다. 하락 상위에는 Lumentum(-18.59%), Marvell Technology(-12.72%), Ciena(-11.34%), Intel(-8.8%) 등 기술 관련주가 많았다."
+   },
+   {
+    "title": "원자재·기타 자산",
+    "body": "WTI는 96.45로 -7.37% 하락해 에너지 섹터 약세와 같은 방향을 보였다. 금은 3954.8(+1.43%), 은은 50.63(+3.12%), 구리는 6.54(+1.23%)로 올랐다. 비트코인은 -2.04%, 이더리움은 -0.96%였다. USD/KRW는 1345.53으로 0.56% 올랐고 EWY는 -0.83%였다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2638,
+    "out": 925,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-03 06:50"
+ }
+}
