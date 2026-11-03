@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261103",
+  "indicators": {
+   "S&P 500": {
+    "price": 7568.92,
+    "chg_pct": 0.36
+   },
+   "Nasdaq": {
+    "price": 25372.01,
+    "chg_pct": 0.83
+   },
+   "Dow Jones": {
+    "price": 51786.72,
+    "chg_pct": -0.38
+   },
+   "EWY": {
+    "price": 155.06,
+    "chg_pct": 2.27
+   },
+   "DRAM": {
+    "price": 47.64,
+    "chg_pct": 2.85
+   },
+   "VIX": {
+    "price": 20.83,
+    "chg_pct": -1.51
+   },
+   "US 10Y": {
+    "price": 4.95,
+    "chg_pct": 1.19
+   },
+   "Gold": {
+    "price": 3938.1,
+    "chg_pct": -0.79
+   },
+   "Silver": {
+    "price": 49.84,
+    "chg_pct": -1.74
+   },
+   "Copper": {
+    "price": 6.41,
+    "chg_pct": -2.04
+   },
+   "WTI": {
+    "price": 96.79,
+    "chg_pct": 0.34
+   },
+   "Bitcoin": {
+    "price": 77788.73,
+    "chg_pct": 1.45
+   },
+   "Ethereum": {
+    "price": 2291.22,
+    "chg_pct": 1.88
+   },
+   "USD/KRW": {
+    "price": 1344.54,
+    "chg_pct": 1.43
+   },
+   "JPY/KRW": {
+    "price": 8.45,
+    "chg_pct": -0.01
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": 1.31,
+    "chg_5d_pct": -6.85
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 1.18,
+    "chg_5d_pct": -2.07
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.95,
+    "chg_5d_pct": 2.02
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.07,
+    "chg_5d_pct": 2.9
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -0.31,
+    "chg_5d_pct": 2.7
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -0.57,
+    "chg_5d_pct": 1.33
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -0.64,
+    "chg_5d_pct": 2.34
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -0.7,
+    "chg_5d_pct": 1.63
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -0.85,
+    "chg_5d_pct": -2.24
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": -2.01,
+    "chg_5d_pct": 1.56
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": -2.07,
+    "chg_5d_pct": 2.07
+   }
+  ],
+  "sp500_breadth": {
+   "n": 499,
+   "advancers": 188,
+   "decliners": 311,
+   "median_chg_pct": -0.49,
+   "top_gainers": [
+    {
+     "ticker": "FISV",
+     "name": "Fiserv",
+     "chg_pct": 12.46
+    },
+    {
+     "ticker": "BE",
+     "name": "Bloom Energy",
+     "chg_pct": 9.05
+    },
+    {
+     "ticker": "DD",
+     "name": "DuPont",
+     "chg_pct": 8.61
+    },
+    {
+     "ticker": "RVTY",
+     "name": "Revvity",
+     "chg_pct": 7.84
+    },
+    {
+     "ticker": "APP",
+     "name": "AppLovin",
+     "chg_pct": 7.28
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "IT",
+     "name": "Gartner",
+     "chg_pct": -13.19
+    },
+    {
+     "ticker": "SYY",
+     "name": "Sysco",
+     "chg_pct": -9.33
+    },
+    {
+     "ticker": "ZBRA",
+     "name": "Zebra Technologies",
+     "chg_pct": -8.76
+    },
+    {
+     "ticker": "BALL",
+     "name": "Ball Corporation",
+     "chg_pct": -7.14
+    },
+    {
+     "ticker": "ADM",
+     "name": "Archer Daniels Midland",
+     "chg_pct": -6.82
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "나스닥 0.83% 상승, 다우 0.38% 하락… 지수 간 엇갈림 속 상승 종목 수는 하락의 절반 수준",
+  "summary": "S&P 500은 0.36%, 나스닥은 0.83% 오른 반면 다우는 0.38% 내렸다. 기술·커뮤니케이션 섹터가 상승을 이끌었고 필수소비재·소재는 2% 넘게 하락했다. S&P 500 종목 중 하락이 311개로 상승 188개보다 많았다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7568.92(+0.36%), 나스닥은 25372.01(+0.83%)로 마감했고 다우는 51786.72(-0.38%)로 하락했다. VIX는 20.83으로 1.51% 내렸다. 미 10년물 금리는 4.95로 1.19% 상승했다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "1일 기준 기술·반도체(XLK)가 +1.31%, 커뮤니케이션(XLC)이 +1.18%, 산업재·방산(XLI)이 +0.95%로 강세였다. 필수소비재(XLP)는 -2.07%, 소재·화학(XLB)은 -2.01%, 에너지(XLE)는 -0.85%로 약세였다. XLK는 5일 기준으로는 -6.85%로 11개 섹터 중 하락폭이 가장 크다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 499개 종목 중 상승은 188개, 하락은 311개였고 중앙값 등락률은 -0.49%였다. 지수는 올랐지만 종목 중앙값은 하락해 상승이 일부 종목에 집중된 모습이다. 상승률 상위는 Fiserv(+12.46%), Bloom Energy(+9.05%), DuPont(+8.61%)였고, 하락률 상위는 Gartner(-13.19%), Sysco(-9.33%), Zebra Technologies(-8.76%)였다. 개별 종목 급등락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "체크포인트: 자산·환율",
+    "body": "EWY는 +2.27%, DRAM은 +2.85%로 올랐고 비트코인은 +1.45%, 이더리움은 +1.88% 상승했다. 금은 -0.79%, 은은 -1.74%, 구리는 -2.04%로 내렸고 WTI는 96.79(+0.34%)였다. USD/KRW는 1344.54로 1.43% 올랐다. 이들 움직임의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2639,
+    "out": 952,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-04 06:50"
+ }
+}
