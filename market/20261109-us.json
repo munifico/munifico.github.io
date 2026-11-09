@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261109",
+  "indicators": {
+   "S&P 500": {
+    "price": 7549.94,
+    "chg_pct": 2.35
+   },
+   "Nasdaq": {
+    "price": 25253.14,
+    "chg_pct": 2.74
+   },
+   "Dow Jones": {
+    "price": 52389.75,
+    "chg_pct": 2.15
+   },
+   "EWY": {
+    "price": 142.1,
+    "chg_pct": 3.72
+   },
+   "DRAM": {
+    "price": 41.78,
+    "chg_pct": 6.34
+   },
+   "VIX": {
+    "price": 19.92,
+    "chg_pct": -22.31
+   },
+   "US 10Y": {
+    "price": 4.86,
+    "chg_pct": 0.1
+   },
+   "Gold": {
+    "price": 4146.7,
+    "chg_pct": 1.76
+   },
+   "Silver": {
+    "price": 53.37,
+    "chg_pct": 3.02
+   },
+   "Copper": {
+    "price": 6.38,
+    "chg_pct": 2.52
+   },
+   "WTI": {
+    "price": 86.69,
+    "chg_pct": -4.56
+   },
+   "Bitcoin": {
+    "price": 74849.99,
+    "chg_pct": 0.36
+   },
+   "Ethereum": {
+    "price": 2126.29,
+    "chg_pct": 0.25
+   },
+   "USD/KRW": {
+    "price": 1339.9,
+    "chg_pct": -1.21
+   },
+   "JPY/KRW": {
+    "price": 8.47,
+    "chg_pct": -1.75
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 3.82,
+    "chg_5d_pct": -0.48
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": 3.73,
+    "chg_5d_pct": -1.92
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 2.92,
+    "chg_5d_pct": 2.41
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 2.45,
+    "chg_5d_pct": 7.08
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 1.91,
+    "chg_5d_pct": 2.02
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 1.91,
+    "chg_5d_pct": -1.36
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 1.53,
+    "chg_5d_pct": 0.27
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 1.45,
+    "chg_5d_pct": 0.75
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 1.45,
+    "chg_5d_pct": 2.29
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.9,
+    "chg_5d_pct": 0.07
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 0.52,
+    "chg_5d_pct": -7.9
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 421,
+   "decliners": 77,
+   "median_chg_pct": 2.03,
+   "top_gainers": [
+    {
+     "ticker": "COHR",
+     "name": "Coherent Corp.",
+     "chg_pct": 16.79
+    },
+    {
+     "ticker": "MPWR",
+     "name": "Monolithic Power Systems",
+     "chg_pct": 16.6
+    },
+    {
+     "ticker": "AMD",
+     "name": "Advanced Micro Devices",
+     "chg_pct": 13.26
+    },
+    {
+     "ticker": "TER",
+     "name": "Teradyne",
+     "chg_pct": 12.73
+    },
+    {
+     "ticker": "FLEX",
+     "name": "Flex Ltd.",
+     "chg_pct": 12.02
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "FSLR",
+     "name": "First Solar",
+     "chg_pct": -4.74
+    },
+    {
+     "ticker": "NVDA",
+     "name": "Nvidia",
+     "chg_pct": -4.27
+    },
+    {
+     "ticker": "TTWO",
+     "name": "Take-Two Interactive",
+     "chg_pct": -3.48
+    },
+    {
+     "ticker": "AKAM",
+     "name": "Akamai Technologies",
+     "chg_pct": -3.37
+    },
+    {
+     "ticker": "AXON",
+     "name": "Axon Enterprise",
+     "chg_pct": -3.14
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 3대 지수 일제히 2%대 급등, VIX 22.31% 급락",
+  "summary": "S&P 500이 2.35%, 나스닥이 2.74%, 다우가 2.15% 오르며 위험자산 선호가 뚜렷했다. VIX는 19.92로 22.31% 내렸고, 상승 종목이 421개로 하락 77개를 크게 웃돌았다. 움직임의 원인은 입력 데이터상 확인되지 않는다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7549.94(+2.35%), 나스닥은 25253.14(+2.74%), 다우는 52389.75(+2.15%)로 마감했다. 한국 관련 ETF인 EWY는 3.72% 올랐고 DRAM은 6.34% 상승했다. VIX는 19.92로 22.31% 하락했다. 미 10년물 금리는 4.86으로 0.1% 변동에 그쳤다."
+   },
+   {
+    "title": "섹터",
+    "body": "11개 섹터 ETF가 모두 상승했다. 산업재·방산(XLI)이 3.82%, 기술·반도체(XLK)가 3.73%로 가장 크게 올랐고 경기소비재(XLY)가 2.92%, 커뮤니케이션(XLC)이 2.45%로 뒤를 이었다. 에너지(XLE)는 0.52%, 필수소비재(XLP)는 0.9%로 상승폭이 작았다. 5일 기준으로는 XLC가 7.08% 올랐고 XLE는 -7.9%, XLK는 -1.92%였다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 500개 종목 중 421개가 올랐고 77개가 내렸으며, 등락률 중앙값은 2.03%였다. 상승률 상위는 Coherent 16.79%, Monolithic Power Systems 16.6%, AMD 13.26%, Teradyne 12.73%, Flex 12.02%로 반도체·전자 관련 종목이 많았다. 하락 상위는 First Solar -4.74%, Nvidia -4.27%, Take-Two -3.48%, Akamai -3.37%, Axon -3.14%였다. 기술 섹터가 강했음에도 Nvidia는 하락했다."
+   },
+   {
+    "title": "체크포인트: 원자재·환율·가상자산",
+    "body": "금은 4146.7로 1.76%, 은은 53.37로 3.02%, 구리는 6.38로 2.52% 올랐다. WTI는 86.69로 4.56% 내렸다. USD/KRW는 1339.9로 1.21%, JPY/KRW는 8.47로 1.75% 하락했다. 비트코인은 0.36%, 이더리움은 0.25% 오르는 데 그쳤다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2662,
+    "out": 995,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-10 06:50"
+ }
+}
