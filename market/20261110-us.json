@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261110",
+  "indicators": {
+   "S&P 500": {
+    "price": 7520.93,
+    "chg_pct": -0.38
+   },
+   "Nasdaq": {
+    "price": 25065.88,
+    "chg_pct": -0.74
+   },
+   "Dow Jones": {
+    "price": 52231.89,
+    "chg_pct": -0.3
+   },
+   "EWY": {
+    "price": 139.18,
+    "chg_pct": -2.05
+   },
+   "DRAM": {
+    "price": 40.64,
+    "chg_pct": -2.73
+   },
+   "VIX": {
+    "price": 19.46,
+    "chg_pct": -2.31
+   },
+   "US 10Y": {
+    "price": 4.98,
+    "chg_pct": 2.45
+   },
+   "Gold": {
+    "price": 4036.7,
+    "chg_pct": -1.89
+   },
+   "Silver": {
+    "price": 51.47,
+    "chg_pct": -2.07
+   },
+   "Copper": {
+    "price": 6.28,
+    "chg_pct": -0.85
+   },
+   "WTI": {
+    "price": 86.53,
+    "chg_pct": -0.37
+   },
+   "Bitcoin": {
+    "price": 73815.82,
+    "chg_pct": -1.87
+   },
+   "Ethereum": {
+    "price": 2056.64,
+    "chg_pct": -3.51
+   },
+   "USD/KRW": {
+    "price": 1343.15,
+    "chg_pct": -1.43
+   },
+   "JPY/KRW": {
+    "price": 8.43,
+    "chg_pct": -1.99
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 0.52,
+    "chg_5d_pct": 1.92
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 0.44,
+    "chg_5d_pct": -6.7
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.37,
+    "chg_5d_pct": 6.23
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 0.29,
+    "chg_5d_pct": 2.64
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.15,
+    "chg_5d_pct": 2.34
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.03,
+    "chg_5d_pct": 3.17
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.09,
+    "chg_5d_pct": -1.51
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": -0.13,
+    "chg_5d_pct": 2.08
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -0.14,
+    "chg_5d_pct": 0.71
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": -0.17,
+    "chg_5d_pct": 0.49
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -1.15,
+    "chg_5d_pct": -4.31
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 245,
+   "decliners": 250,
+   "median_chg_pct": -0.0,
+   "top_gainers": [
+    {
+     "ticker": "CHTR",
+     "name": "Charter Communications",
+     "chg_pct": 10.61
+    },
+    {
+     "ticker": "TTWO",
+     "name": "Take-Two Interactive",
+     "chg_pct": 8.31
+    },
+    {
+     "ticker": "CVS",
+     "name": "CVS Health",
+     "chg_pct": 4.41
+    },
+    {
+     "ticker": "AKAM",
+     "name": "Akamai Technologies",
+     "chg_pct": 4.26
+    },
+    {
+     "ticker": "EQT",
+     "name": "EQT Corporation",
+     "chg_pct": 4.19
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "SKYD",
+     "name": "Skydance",
+     "chg_pct": -7.59
+    },
+    {
+     "ticker": "MRNA",
+     "name": "Moderna",
+     "chg_pct": -6.75
+    },
+    {
+     "ticker": "FSLR",
+     "name": "First Solar",
+     "chg_pct": -5.55
+    },
+    {
+     "ticker": "NVDA",
+     "name": "Nvidia",
+     "chg_pct": -5.47
+    },
+    {
+     "ticker": "LEN",
+     "name": "Lennar",
+     "chg_pct": -5.37
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 3대 지수 동반 하락, 기술·반도체 약세가 나스닥 부담",
+  "summary": "S&P 500은 -0.38%, 나스닥은 -0.74%, 다우는 -0.3%로 마감했다. 기술·반도체 섹터가 -1.15%로 가장 크게 내렸고 VIX는 19.46으로 -2.31% 하락했다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7520.93(-0.38%), 나스닥은 25065.88(-0.74%), 다우는 52231.89(-0.3%)로 마감했다. 나스닥의 하락폭이 가장 컸다. VIX는 19.46으로 -2.31% 하락해 지수 약세와 동시에 변동성 지표는 내렸다. 미국 10년물 금리는 4.98으로 +2.45% 올랐다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 중 금융(+0.52%), 에너지(+0.44%), 커뮤니케이션(+0.37%), 헬스케어(+0.29%)가 상승했다. 기술·반도체는 -1.15%로 하락폭이 가장 컸고 5일 기준으로도 -4.31%였다. 에너지는 당일 상승했으나 5일 기준 -6.7%이고, 커뮤니케이션은 5일 기준 +6.23%였다. 소재·화학(-0.17%), 유틸리티·원전(-0.14%), 부동산·리츠(-0.13%)는 소폭 내렸다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 상승 종목은 245개, 하락 종목은 250개로 비슷했고 중앙값 등락률은 -0.0%였다. 지수 하락폭에 비해 시장 폭은 중립에 가까웠다. 상승 상위는 Charter Communications(+10.61%), Take-Two Interactive(+8.31%), CVS Health(+4.41%)였고, 하락 상위는 Skydance(-7.59%), Moderna(-6.75%), First Solar(-5.55%), Nvidia(-5.47%)였다. 개별 종목 움직임의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "체크포인트",
+    "body": "EWY는 -2.05%, DRAM은 -2.73%로 하락했다. 금(-1.89%), 은(-2.07%), 구리(-0.85%), WTI(-0.37%)가 모두 내렸고 비트코인은 -1.87%, 이더리움은 -3.51%였다. USD/KRW는 1343.15(-1.43%), JPY/KRW는 8.43(-1.99%)을 기록했다. 이들 움직임의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2645,
+    "out": 988,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-11 06:50"
+ }
+}
