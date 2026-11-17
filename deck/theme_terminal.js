@@ -150,6 +150,7 @@ T.querySelector("#t89mkt").innerHTML = [
   ["위험 게이지", M.risk || "-"], ["디리스크", M.derisk || "-"], ["버블 체크", M.bubble || "-"],
   ["대형주 이탈 폭", (M.breadth?.short || "-") + BR_ASOF],
   ["TOP200 대응", M.env_guide?.summary || "-"],
+  ["손절 가이드", M.stop_guide ? `${M.stop_guide.badge} · ${M.stop_guide.text}` : "-"],
 ].map(([k, v]) => `<span class="dim kr">${esc(k)}</span><span class="kr">${esc(v)}</span>`).join("");
 T.querySelector("#t89th").innerHTML = (TH.items || []).map(t => {
   const v = t.short ?? 0, n = Math.max(1, Math.min(15, Math.round(Math.abs(v) * 3)));

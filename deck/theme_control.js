@@ -174,6 +174,7 @@ Q("#crkv").innerHTML = [
   ["위험 게이지", M.risk || "—"], ["디리스크", M.derisk || "—"], ["버블 체크", M.bubble || "—"],
   ["대형주 이탈 폭", (M.breadth?.short || "—") + BR_ASOF],
   ["TOP200 대응", M.env_guide?.summary || "—"],
+  ["손절 가이드", M.stop_guide ? `${M.stop_guide.badge} · ${M.stop_guide.text}` : "—"],
 ].map(([k, v]) => `<span class="kr">${esc(k)}</span><span class="kr">${esc(v)}</span>`).join("");
 const mxT = Math.max(1, ...(TH.items || []).map(t => Math.abs(t.short ?? 0)));
 Q("#crth").innerHTML = (TH.items || []).map(t => {

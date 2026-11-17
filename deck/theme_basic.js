@@ -138,6 +138,9 @@ root.innerHTML = `<div class="bs ${dark ? "dark" : ""}"><div class="wrap">
       <span>디리스크</span><span>${esc(M.derisk || "—")}</span>
       <span>버블 체크</span><span>${esc(M.bubble || "—")}</span>
       <span>대형주 이탈 폭</span><span title="${esc(M.breadth?.detail || "")}">${esc((M.breadth?.short || "—") + BR_ASOF)}</span></div></section>
+    ${M.stop_guide ? `<section class="card"><h2>🛡️ 손절 가이드 <small>${esc(M.stop_guide.head)}</small></h2>
+      <p style="margin:0 0 6px"><b>${esc(M.stop_guide.badge)}</b> — ${esc(M.stop_guide.text)}</p>
+      <p class="fnote">하락장이면서 시장 전체가 투매 중(코스피 5일 −2% 이하)일 때만 손절선을 깨도 버티는 쪽이 나았음. 혼자 깨거나 상승장이면 손절이 나았음 (전 종목 4년 검증, 정보 표시).</p></section>` : ""}
     ${M.env_guide?.rows ? `<section class="card"><h2>TOP200 엔벨15 대응 <small>지금: ${esc(M.env_guide.action)}</small></h2>
       <div class="kv">${M.env_guide.rows.map(r => `<span>${r.key === M.env_guide.key ? "▶ " : ""}<b>${esc(r.action)}</b></span><span class="${r.key === M.env_guide.key ? "" : "muted"}">${esc(r.cond)} · ${esc(r.exp)}</span>`).join("")}</div>
       <details><summary class="muted">매매 규칙</summary><ul class="ev">${M.env_guide.rules.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details></section>` : ""}
@@ -170,7 +173,7 @@ function render() {
     if (open === id) {
       const same = all.filter(y => y.code === x.code && y !== x).map(y => `${y.label}(${y.conf || "-"})`);
       const f = FO.buy.find(y => y.code === x.code) || FO.sell.find(y => y.code === x.code);
-      h += `<tr class="det"><td colspan="4">발생 ${esc(x.stime)} · 같은 날 다른 신호: ${esc(same.join(", ") || "없음")} · 외국인 ${FO.window || 5}일: ${f ? `${sgn(f.net5, 1)}억 (주가 ${sgn(f.p5, 1)}%)` : "상위 목록 밖"}</td></tr>`;
+      h += `<tr class="det"><td colspan="4">발생 ${esc(x.stime)} · 같은 날 다른 신호: ${esc(same.join(", ") || "없음")} · 외국인 ${FO.window || 5}일: ${f ? `${sgn(f.net5, 1)}억 (주가 ${sgn(f.p5, 1)}%)` : "상위 목록 밖"}${M.stop_guide ? ` · 🛡️ 손절선 깨면: ${esc(M.stop_guide.badge)}` : ""}</td></tr>`;
     }
     return h;
   }).join("") || '<tr><td colspan="4" class="muted">조건에 맞는 신호가 없습니다</td></tr>';

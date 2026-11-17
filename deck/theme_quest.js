@@ -30,6 +30,9 @@ const CSS = `
 .qs .ss button:active::before,.qs .ss button.on::before{background:#4a434f}
 .qs button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .qs .help{max-width:1040px;margin:14px auto 0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:#9e95a8;line-height:1.6}
+.qs .sg{max-width:1040px;margin:0 auto 14px;padding:8px 12px;border:2px solid #fc9838;background:#000;color:#fcfcfc;font-size:13px;line-height:1.5}
+.qs .sg.hold{border-color:#b8f818}
+.qs .sg b{color:#f8d878}
 .qs .help kbd{font-family:var(--pixel);font-size:8px;background:#2c2433;color:var(--shell);padding:3px 5px;border-radius:3px}
 @media (max-width:760px){.qs .console{grid-template-columns:1fr 1fr;grid-template-areas:"logo logo" "screen screen" "pad ab" "ss ss";padding:14px 14px 24px;border-radius:20px 20px 46px 46px}
  .qs .screenwrap{padding:10px 10px 8px}.qs .pad{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,40px)}.qs .ab button{width:52px;height:52px}}
@@ -44,6 +47,11 @@ const M = D.market || {}, S = D.signals || {items:[]}, TH = D.themes || {items:[
 const BR_ASOF = M.breadth?.date ? ` (${+M.breadth.date.slice(4, 6)}/${+M.breadth.date.slice(6)} 금 기준)` : "";
 const all = S.items || [];
 const FN = D.funnel || {rows: [], watch: []};
+// 🛡️ 손절 가이드 (텔레그램과 같은 규칙, 장세 기준이라 전 종목 동일). 픽셀 폰트에 없는 기호는 바꾼다
+const SG = M.stop_guide;
+const escH = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const pxSafe = s => s.replace(/→/g, "=>").replace(/−/g, "-").replace(/[^ -~가-힣·]/g, "").trim();
+const sgMsg = () => SG ? [`손절선을 깨면? ${pxSafe(SG.text)}.`] : [];
 // ◀▶ 로 바꾸는 파티: 기존 신호 / 9대 테마 깔때기 / 주봉 엔벨 하단권 관찰
 const PARTIES = [
   {title: "SIGNAL PARTY", kind: "sig", list: all.slice(0, 10)},
@@ -58,7 +66,7 @@ const ymd = s => s && s.length === 8 ? `${s.slice(0,4)}-${s.slice(4,6)}-${s.slic
 const sgn = (v, d = 1) => v == null ? "-" : (v > 0 ? "+" : "") + Number(v).toFixed(d);
 const josa = (w, a, b) => { const ch = w.charCodeAt(w.length - 1); if (ch >= 0xAC00 && ch <= 0xD7A3) return w + (((ch - 0xAC00) % 28) ? a : b); return w + b; };
 
-root.innerHTML = `<div class="qs"><div class="console">
+root.innerHTML = `<div class="qs">${SG ? `<div class="sg ${escH(SG.key)}">🛡️ <b>손절 가이드</b> (${escH(SG.head)}) — ${escH(SG.text)}</div>` : ""}<div class="console">
   <div class="logo"><b>KOSPI QUEST</b><span>SIGNAL ENTERTAINMENT SYSTEM</span></div>
   <div class="pad" aria-label="방향 패드">
     <button class="u" data-k="up" aria-label="위" type="button">▲</button>
@@ -182,7 +190,7 @@ function runCmd(k) {
     setDialog([`${s.type} · ${(s.buckets || []).join(" / ") || "-"}.`,
       s.q_yoy != null ? `영업이익 ${(s.op_eok || []).join("→")}억, ${s.q} 누적 ${sgn(s.q_yoy, 0)}%.` : `52주 고점 대비 ${sgn(s.dist_pct)}%, 200일선 대비 ${sgn(s.ma200_pct)}%.`,
       `PER ${s.per ?? "-"} · 이익성장 ${s.growth_pct == null ? "-" : sgn(s.growth_pct) + "%"}${s.decel ? " (둔화 중)" : ""}.`,
-      `장세는 ${M.regime || "-"}. 판단은 플레이어 몫이다.`]);
+      ...sgMsg(), `장세는 ${M.regime || "-"}. 판단은 플레이어 몫이다.`]);
   } else if (k === "엔벨") {
     const msgs = [`주봉 ${f2(s.w_pb)} ${zoneKr(s.w_pb)}, 일봉 ${f2(s.d_pb)} ${zoneKr(s.d_pb)}.`];
     if (s.w_pb >= 1.5) msgs.push("과거 4년 이 지대에서 8주 뒤 평균 -1.2%, 중앙값 -10%였다. 숨 고르기를 기다리는 것도 전략이다.");
@@ -194,7 +202,7 @@ function runCmd(k) {
     setDialog(msgs);
   } else if (k === "분석") {
     const sig = sameCode(s).map(x => `${x.label}(${x.conf || "-"})`).join(", ");
-    setDialog([`신호: ${sig}.`, `테마: ${(s.themes || []).join(" / ") || "없음"}.`, `장세는 ${M.regime || "-"}. 판단은 플레이어 몫이다.`]);
+    setDialog([`신호: ${sig}.`, `테마: ${(s.themes || []).join(" / ") || "없음"}.`, ...sgMsg(), `장세는 ${M.regime || "-"}. 판단은 플레이어 몫이다.`]);
   } else if (k === "수급") {
     const f = foreignOf(s);
     setDialog(f ? [`외국인 ${FO.window || 5}일 순매수 ${sgn(f.net5)}억!`, `같은 기간 주가 ${sgn(f.p5)}%.`] : ["외국인 상위 매수·매도 목록에는 없다…"]);
@@ -286,6 +294,7 @@ function drawBattle() {
   for (let r = 0; r < 10; r++) { const w = Math.round(48 * Math.sqrt(1 - ((r - 5)/5.5)**2)); rect(186 - w, 112 + r, w*2, 1, r < 3 ? P.lgreen : P.green); }
   const bob = reduce ? 0 : (((frame >> 4) & 1) ? -1 : 0);
   ctx.drawImage(sprite(s), 162, 66 + bob, 48, 48);
+  if (SG) txt("손절선 " + SG.badge, 200, 128, SG.key === "hold" ? P.lgreen : P.orange, {kr: true, align: "center"});
   box(6, 20, 140, 80);
   txt(fitTxt(s.name, 84), 12, 25, P.white, {kr: true});
   if (isFun()) {
