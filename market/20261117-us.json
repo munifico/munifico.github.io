@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261117",
+  "indicators": {
+   "S&P 500": {
+    "price": 7340.53,
+    "chg_pct": -1.03
+   },
+   "Nasdaq": {
+    "price": 24328.38,
+    "chg_pct": -0.74
+   },
+   "Dow Jones": {
+    "price": 50759.42,
+    "chg_pct": -1.64
+   },
+   "EWY": {
+    "price": 135.32,
+    "chg_pct": -0.9
+   },
+   "DRAM": {
+    "price": 38.93,
+    "chg_pct": -0.87
+   },
+   "VIX": {
+    "price": 25.46,
+    "chg_pct": 11.13
+   },
+   "US 10Y": {
+    "price": 5.1,
+    "chg_pct": -0.35
+   },
+   "Gold": {
+    "price": 3854.2,
+    "chg_pct": 0.03
+   },
+   "Silver": {
+    "price": 47.35,
+    "chg_pct": 1.2
+   },
+   "Copper": {
+    "price": 6.0,
+    "chg_pct": -0.03
+   },
+   "WTI": {
+    "price": 85.61,
+    "chg_pct": -0.13
+   },
+   "Bitcoin": {
+    "price": 64255.69,
+    "chg_pct": -0.93
+   },
+   "Ethereum": {
+    "price": 1804.27,
+    "chg_pct": -0.82
+   },
+   "USD/KRW": {
+    "price": 1334.35,
+    "chg_pct": 0.08
+   },
+   "JPY/KRW": {
+    "price": 8.35,
+    "chg_pct": 0.08
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -0.52,
+    "chg_5d_pct": 1.85
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.55,
+    "chg_5d_pct": -2.36
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -0.89,
+    "chg_5d_pct": -3.26
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -0.91,
+    "chg_5d_pct": -3.34
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": -1.22,
+    "chg_5d_pct": -3.8
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": -1.23,
+    "chg_5d_pct": 0.47
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -1.41,
+    "chg_5d_pct": -1.93
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -1.46,
+    "chg_5d_pct": -2.32
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": -1.49,
+    "chg_5d_pct": -2.22
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -1.59,
+    "chg_5d_pct": -0.71
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -1.91,
+    "chg_5d_pct": -2.09
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 75,
+   "decliners": 424,
+   "median_chg_pct": -1.35,
+   "top_gainers": [
+    {
+     "ticker": "FIX",
+     "name": "Comfort Systems USA",
+     "chg_pct": 3.91
+    },
+    {
+     "ticker": "COHR",
+     "name": "Coherent Corp.",
+     "chg_pct": 3.65
+    },
+    {
+     "ticker": "CIEN",
+     "name": "Ciena",
+     "chg_pct": 2.82
+    },
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "chg_pct": 2.56
+    },
+    {
+     "ticker": "AVGO",
+     "name": "Broadcom",
+     "chg_pct": 2.46
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "CRM",
+     "name": "Salesforce",
+     "chg_pct": -9.45
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit",
+     "chg_pct": -7.17
+    },
+    {
+     "ticker": "NOW",
+     "name": "ServiceNow",
+     "chg_pct": -6.51
+    },
+    {
+     "ticker": "SBAC",
+     "name": "SBA Communications",
+     "chg_pct": -6.46
+    },
+    {
+     "ticker": "NKE",
+     "name": "Nike, Inc.",
+     "chg_pct": -6.3
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 3대 지수 동반 하락, 다우 -1.64%·VIX 11.13% 급등",
+  "summary": "S&P 500은 -1.03%, Nasdaq은 -0.74%, Dow Jones는 -1.64%로 마감했고 VIX는 25.46으로 11.13% 올랐다. 11개 섹터 ETF가 모두 하락했으며 S&P 500 종목 중 424개가 내렸다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7340.53(-1.03%), Nasdaq은 24328.38(-0.74%), Dow Jones는 50759.42(-1.64%)로 마감했다. VIX는 25.46으로 11.13% 상승했다. 미국 10년물 금리는 5.1로 -0.35% 변동했다. 하락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "섹터 ETF 11개 모두 하루 기준 하락했다. 금융(XLF)이 -1.91%로 가장 크게 내렸고, 유틸리티·원전(XLU) -1.59%, 부동산·리츠(XLRE) -1.49%가 뒤를 이었다. 에너지(XLE)는 -0.52%, 산업재·방산(XLI)은 -0.55%로 낙폭이 가장 작았다. 5일 기준으로는 에너지(+1.85%)와 필수소비재(+0.47%)만 상승했다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 500개 종목 중 상승 75개, 하락 424개였고 중앙값 등락률은 -1.35%였다. 상승 상위에는 Comfort Systems USA(+3.91%), Coherent(+3.65%), Ciena(+2.82%), Lumentum(+2.56%), Broadcom(+2.46%)이 올랐다. 하락 상위는 Salesforce(-9.45%), Intuit(-7.17%), ServiceNow(-6.51%), SBA Communications(-6.46%), Nike(-6.3%) 순이었다."
+   },
+   {
+    "title": "체크포인트",
+    "body": "원자재에서는 금이 3854.2(+0.03%), 은이 47.35(+1.2%)였고 WTI는 85.61(-0.13%), 구리는 6.0(-0.03%)이었다. Bitcoin은 -0.93%, Ethereum은 -0.82%였다. EWY는 -0.9%, DRAM은 -0.87%였으며 USD/KRW는 1334.35(+0.08%)였다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2645,
+    "out": 912,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-18 06:50"
+ }
+}
