@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261118",
+  "indicators": {
+   "S&P 500": {
+    "price": 7303.98,
+    "chg_pct": -0.5
+   },
+   "Nasdaq": {
+    "price": 24322.71,
+    "chg_pct": -0.02
+   },
+   "Dow Jones": {
+    "price": 50089.71,
+    "chg_pct": -1.32
+   },
+   "EWY": {
+    "price": 135.74,
+    "chg_pct": 0.31
+   },
+   "DRAM": {
+    "price": 38.76,
+    "chg_pct": -0.44
+   },
+   "VIX": {
+    "price": 24.69,
+    "chg_pct": -3.02
+   },
+   "US 10Y": {
+    "price": 5.07,
+    "chg_pct": -0.61
+   },
+   "Gold": {
+    "price": 3758.1,
+    "chg_pct": -2.75
+   },
+   "Silver": {
+    "price": 44.96,
+    "chg_pct": -4.93
+   },
+   "Copper": {
+    "price": 5.66,
+    "chg_pct": -5.3
+   },
+   "WTI": {
+    "price": 82.94,
+    "chg_pct": -3.57
+   },
+   "Bitcoin": {
+    "price": 62301.75,
+    "chg_pct": -3.99
+   },
+   "Ethereum": {
+    "price": 1762.3,
+    "chg_pct": -3.33
+   },
+   "USD/KRW": {
+    "price": 1332.32,
+    "chg_pct": -0.25
+   },
+   "JPY/KRW": {
+    "price": 8.34,
+    "chg_pct": -0.39
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.98,
+    "chg_5d_pct": -2.26
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.08,
+    "chg_5d_pct": -3.0
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.01,
+    "chg_5d_pct": -0.9
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -0.26,
+    "chg_5d_pct": -6.61
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": -0.29,
+    "chg_5d_pct": -0.28
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.32,
+    "chg_5d_pct": -3.95
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": -0.56,
+    "chg_5d_pct": -2.79
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": -1.14,
+    "chg_5d_pct": -5.21
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -1.19,
+    "chg_5d_pct": -3.82
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -1.67,
+    "chg_5d_pct": -3.6
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -2.04,
+    "chg_5d_pct": -2.05
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 181,
+   "decliners": 317,
+   "median_chg_pct": -0.4,
+   "top_gainers": [
+    {
+     "ticker": "TJX",
+     "name": "TJX Companies",
+     "chg_pct": 10.2
+    },
+    {
+     "ticker": "TTWO",
+     "name": "Take-Two Interactive",
+     "chg_pct": 7.7
+    },
+    {
+     "ticker": "PANW",
+     "name": "Palo Alto Networks",
+     "chg_pct": 5.85
+    },
+    {
+     "ticker": "TGT",
+     "name": "Target Corporation",
+     "chg_pct": 5.83
+    },
+    {
+     "ticker": "OKTA",
+     "name": "Okta, Inc.",
+     "chg_pct": 5.58
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "FCX",
+     "name": "Freeport-McMoRan",
+     "chg_pct": -7.78
+    },
+    {
+     "ticker": "NEM",
+     "name": "Newmont",
+     "chg_pct": -6.84
+    },
+    {
+     "ticker": "HUM",
+     "name": "Humana",
+     "chg_pct": -6.36
+    },
+    {
+     "ticker": "UNH",
+     "name": "UnitedHealth Group",
+     "chg_pct": -6.15
+    },
+    {
+     "ticker": "CNC",
+     "name": "Centene Corporation",
+     "chg_pct": -5.47
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 혼조, 다우 -1.32% 하락 속 나스닥은 보합권",
+  "summary": "S&P 500은 -0.5%, 다우는 -1.32% 내렸고 나스닥은 -0.02%로 거의 보합이었다. VIX는 -3.02% 하락한 24.69를 기록했고, 원자재와 가상자산은 대체로 크게 약세였다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7303.98로 -0.5%, 다우존스는 50089.71로 -1.32% 하락했다. 나스닥은 24322.71로 -0.02%에 그쳐 지수별 낙폭 차이가 컸다. VIX는 24.69로 -3.02% 내렸고, 미국 10년물 금리는 5.07로 -0.61%를 기록했다. EWY는 +0.31%, DRAM은 -0.44%였다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 ETF 중 경기소비재(XLY)가 +0.98%로 가장 강했고 커뮤니케이션(XLC) +0.08%, 유틸리티(XLU) +0.01%가 뒤를 이었다. 에너지(XLE)는 -2.04%, 헬스케어(XLV)는 -1.67%, 금융(XLF)은 -1.19%, 소재(XLB)는 -1.14%로 낙폭이 컸다. 5일 기준으로는 기술·반도체(XLK)가 -6.61%, 소재(XLB)가 -5.21%로 약했다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 구성 종목 중 상승은 181개, 하락은 317개였고 중앙값 등락률은 -0.4%였다. 상승률 상위는 TJX +10.2%, Take-Two +7.7%, Palo Alto Networks +5.85% 순이었다. 하락률 상위는 Freeport-McMoRan -7.78%, Newmont -6.84%, Humana -6.36%, UnitedHealth -6.15%였다. 이 종목들의 움직임에 대한 데이터상 원인은 확인되지 않는다."
+   },
+   {
+    "title": "원자재·가상자산·환율",
+    "body": "금은 -2.75%, 은은 -4.93%, 구리는 -5.3%, WTI는 -3.57%로 원자재가 일제히 하락했다. 비트코인은 -3.99%, 이더리움은 -3.33%였다. USD/KRW는 1332.32로 -0.25%, JPY/KRW는 8.34로 -0.39%였다. 이러한 동반 하락의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2655,
+    "out": 947,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-19 06:50"
+ }
+}
