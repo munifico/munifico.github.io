@@ -1,0 +1,238 @@
+{
+ "inputs": {
+  "market_date": "20261120",
+  "indicators": {
+   "S&P 500": {
+    "price": 6910.39,
+    "chg_pct": -3.7
+   },
+   "Nasdaq": {
+    "price": 22617.73,
+    "chg_pct": -5.28
+   },
+   "Dow Jones": {
+    "price": 48147.33,
+    "chg_pct": -1.93
+   },
+   "EWY": {
+    "price": 123.26,
+    "chg_pct": -8.42
+   },
+   "DRAM": {
+    "price": 33.36,
+    "chg_pct": -13.19
+   },
+   "VIX": {
+    "price": 35.89,
+    "chg_pct": 26.2
+   },
+   "US 10Y": {
+    "price": 4.91,
+    "chg_pct": -2.77
+   },
+   "Gold": {
+    "price": 3527.1,
+    "chg_pct": -4.3
+   },
+   "Silver": {
+    "price": 40.95,
+    "chg_pct": -7.6
+   },
+   "Copper": {
+    "price": 5.46,
+    "chg_pct": -2.9
+   },
+   "WTI": {
+    "price": 83.61,
+    "chg_pct": 0.48
+   },
+   "Bitcoin": {
+    "price": 59042.1,
+    "chg_pct": -4.62
+   },
+   "Ethereum": {
+    "price": 1621.44,
+    "chg_pct": -7.62
+   },
+   "USD/KRW": {
+    "price": 1346.03,
+    "chg_pct": 1.17
+   },
+   "JPY/KRW": {
+    "price": 8.46,
+    "chg_pct": 1.38
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.67,
+    "chg_5d_pct": -2.05
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -0.12,
+    "chg_5d_pct": -6.15
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": -0.62,
+    "chg_5d_pct": -6.85
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": -0.74,
+    "chg_5d_pct": -3.07
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": -0.98,
+    "chg_5d_pct": -4.3
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": -1.82,
+    "chg_5d_pct": -7.0
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": -2.19,
+    "chg_5d_pct": -7.45
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": -2.66,
+    "chg_5d_pct": -7.97
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -2.95,
+    "chg_5d_pct": -6.27
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -3.09,
+    "chg_5d_pct": -7.35
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -7.27,
+    "chg_5d_pct": -12.49
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 122,
+   "decliners": 375,
+   "median_chg_pct": -1.57,
+   "top_gainers": [
+    {
+     "ticker": "GPN",
+     "name": "Global Payments",
+     "chg_pct": 9.95
+    },
+    {
+     "ticker": "GIS",
+     "name": "General Mills",
+     "chg_pct": 3.65
+    },
+    {
+     "ticker": "MKC",
+     "name": "McCormick & Company",
+     "chg_pct": 3.43
+    },
+    {
+     "ticker": "HCA",
+     "name": "HCA Healthcare",
+     "chg_pct": 3.31
+    },
+    {
+     "ticker": "CSGP",
+     "name": "CoStar Group",
+     "chg_pct": 3.17
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "SNDK",
+     "name": "Sandisk",
+     "chg_pct": -16.05
+    },
+    {
+     "ticker": "BE",
+     "name": "Bloom Energy",
+     "chg_pct": -15.3
+    },
+    {
+     "ticker": "NVDA",
+     "name": "Nvidia",
+     "chg_pct": -14.01
+    },
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "chg_pct": -13.94
+    },
+    {
+     "ticker": "MU",
+     "name": "Micron Technology",
+     "chg_pct": -13.89
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 일제 급락, 기술·반도체 중심 약세 속 VIX 35.89로 급등",
+  "summary": "S&P 500이 -3.7%, Nasdaq이 -5.28%, Dow Jones가 -1.93% 하락했고 VIX는 26.2% 올라 35.89를 기록했다. 기술·반도체 섹터 ETF(XLK)가 -7.27%로 가장 크게 밀렸으며, 급락의 원인은 데이터상 확인되지 않는다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 6910.39(-3.7%), Nasdaq은 22617.73(-5.28%), Dow Jones는 48147.33(-1.93%)로 마감했다. 기술주 비중이 큰 Nasdaq의 낙폭이 가장 컸다. VIX는 35.89로 26.2% 상승했다. 하락의 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 ETF 중 필수소비재(XLP)만 +0.67%로 상승했고 헬스케어(XLV)는 -0.12%로 보합권이었다. 기술·반도체(XLK)는 1일 -7.27%, 5일 -12.49%로 낙폭이 가장 컸다. 산업재·방산(XLI) -3.09%, 경기소비재(XLY) -2.95%, 커뮤니케이션(XLC) -2.66% 순으로 약세였다."
+   },
+   {
+    "title": "시장 폭·종목",
+    "body": "S&P 500 구성 종목 중 상승은 122개, 하락은 375개였고 중앙값 등락률은 -1.57%였다. 하락 상위는 Sandisk -16.05%, Bloom Energy -15.3%, Nvidia -14.01%, Lumentum -13.94%, Micron Technology -13.89%였다. 상승 상위는 Global Payments +9.95%, General Mills +3.65%, McCormick & Company +3.43% 등이다."
+   },
+   {
+    "title": "반도체 관련 및 기타 자산",
+    "body": "DRAM은 -13.19%, EWY는 -8.42%로 하락했다. 금 -4.3%, 은 -7.6%, 구리 -2.9%, Bitcoin -4.62%, Ethereum -7.62%로 주요 자산이 함께 내렸고 WTI만 +0.48%로 소폭 올랐다. US 10Y는 4.91(-2.77%)이었다."
+   },
+   {
+    "title": "체크포인트",
+    "body": "USD/KRW는 1346.03(+1.17%), JPY/KRW는 8.46(+1.38%)으로 상승했다. 지수 하락과 VIX 급등, 기술·반도체 섹터 약세가 같은 날 동시에 나타났다. 이들 움직임의 구체적 원인은 입력 데이터로 설명되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2641,
+    "out": 1022,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-21 06:50"
+ }
+}
