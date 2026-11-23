@@ -313,7 +313,12 @@ function renderDerisk(d,credit,gate,br,eg){
   cr='<div class="item"><div class="item-row"><span class="item-name">🇰🇷 신용잔고(레버리지)</span>'+
    '<span class="item-sig">'+credit.value_jo+'조</span></div>'+tr+st+
    '<div class="pain-sub">1년 범위 '+pos+'%'+tag+' · 범위 '+credit.lo_jo+'~'+credit.hi_jo+'조 · '+
-   '높을수록 폭락 시 강제청산 연료↑(꼬리 두께)'+(credit.asof?' · '+esc(credit.asof):"")+'</div></div>';
+   '높을수록 폭락 시 강제청산 연료↑(꼬리 두께)'+(credit.asof?' · '+esc(credit.asof):"")+'</div>'+
+   (credit.margin?('<div class="pain-sub">🧯 미수금 '+credit.margin.misu_eok.toLocaleString()+'억('+(credit.margin.misu_chg>=0?"+":"")+credit.margin.misu_chg.toLocaleString()+') · 반대매매 '+
+    credit.margin.forced_eok.toLocaleString()+'억(비중 '+credit.margin.ratio+'% · 1년 '+credit.margin.forced_pct+'%ile) · 5일 최대 '+credit.margin.max5_eok.toLocaleString()+'억('+
+    esc(credit.margin.max5_date)+' · '+credit.margin.max5_pct+'%ile) · 예탁금 '+credit.margin.deposit_jo+'조 · '+esc(credit.margin.asof)+
+    ' — 급증=단일 종목 사고일 수도(2023-10), 이후 수익 예측력 없음(§202)'+
+    (credit.margin.stale?' <b style="color:var(--bad)">⚠ 갱신 없음</b>':'')+'</div>'):"")+'</div>';
  }
  // 🌐 SPX 3단계 게이트 (§166 — 한국 낙폭매수 알파 진입창)
  let gt="";
@@ -483,7 +488,7 @@ function renderRisk(b,recov){
  }
  const ic=s=>s==="bad"?"🚨":(s==="warn"?"⚠️":"✅");
  const rows=b.items.map(it=>'<div class="item"><div class="item-row">'+
-  '<span class="item-name">'+ic(it.status)+' '+esc(it.name)+(it.psych?' <span class="flag near">'+((it.key==="dxy"||it.key==="breadth"||it.key==="sector")?"맥락":"심리")+'</span>':"")+'</span>'+
+  '<span class="item-name">'+ic(it.status)+' '+esc(it.name)+(it.psych?' <span class="flag near">'+((it.key==="dxy"||it.key==="breadth"||it.key==="sector"||it.key==="hyg")?"맥락":"심리")+'</span>':"")+'</span>'+
   '<span class="item-sig '+cls(it.status)+'">'+esc(it.value)+esc(it.unit)+'</span></div>'+
   '<div class="pain-sub">'+esc(it.note)+'</div></div>').join("");
  const ovc=b.overall==="위험"?"lvl-bad":(b.overall==="주의"?"lvl-warn":"lvl-ok");
@@ -540,7 +545,11 @@ var VK_SERIES=[
  {key:"vk",   label:"VKOSPI",      color:"#f59e0b", axis:"L", on:true,  dash:false},
  {key:"ma9",  label:"9일선",        color:"#3b82f6", axis:"L", on:false, dash:true},
  {key:"ksadr",label:"코스피 ADR",   color:"#ef4444", axis:"R", on:true,  dash:false},
- {key:"ks",   label:"KOSPI(추세)",  color:"#94a3b8", axis:"N", on:true,  dash:false}
+ {key:"ks",   label:"KOSPI(추세)",  color:"#94a3b8", axis:"N", on:true,  dash:false},
+ {key:"dep",  label:"예탁금",        color:"#10b981", axis:"N", on:false, dash:false, unit:"조", ctx:1},
+ {key:"crk",  label:"코스피 신용융자", color:"#8b5cf6", axis:"N", on:false, dash:false, unit:"조", ctx:1, extra:["cra","전체"]},
+ {key:"misu", label:"미수금",        color:"#ec4899", axis:"N", on:false, dash:false, unit:"억", ctx:1},
+ {key:"fd5",  label:"반대매매(5일 합)", color:"#dc2626", axis:"N", on:false, dash:false, unit:"억", ctx:1, extra:["fd","당일"]}
 ];
 let _vk=null,_vkLo=null,_vkHi=null;
 function _vkClamp(){const all=_vk.dates.length;
@@ -551,7 +560,7 @@ function _vkMM(arrs){let mn=Infinity,mx=-Infinity;arrs.forEach(a=>a.forEach(v=>{
 function renderVk(d){
  const card=document.getElementById("vkCard");
  if(!d||!d.dates||!d.dates.length){card.style.display="none";return}
- if(!d.ksadr)d.ksadr=d.dates.map(()=>null);
+ VK_SERIES.forEach(se=>{if(!d[se.key])d[se.key]=d.dates.map(()=>null);if(se.extra&&!d[se.extra[0]])d[se.extra[0]]=d.dates.map(()=>null);});
  _vk=d;_vkLo=null;_vkHi=null;document.getElementById("vkPeriods").style.display="flex";
  const n=d.dates.length-1,lvl=d.vk[n],ma=d.ma9[n],peaked=d.peaks[n]===1,adr=d.ksadr[n];
  const tag=lvl>=30&&!peaked?'<span class="tag warn">정점 미확인(칼날 주의)</span>':
@@ -563,7 +572,8 @@ function renderVk(d){
    document.querySelectorAll("#vkPeriods button").forEach(x=>x.classList.remove("on"));b.classList.add("on");setVkRange(+b.dataset.p);});
  const L=document.getElementById("vkLegend");L.innerHTML="";
  VK_SERIES.forEach((se,idx)=>{const b=document.createElement("button");b.className=se.on?"on":"";
-  b.innerHTML='<i style="background:'+se.color+'"></i>'+se.label+(se.axis==="R"?" %":"");
+  b.innerHTML='<i style="background:'+se.color+'"></i>'+se.label+(se.axis==="R"?" %":"")+(se.ctx?' <small style="opacity:.7">맥락</small>':'');
+  if(se.ctx)b.title="금투협 FreeSIS · 하루 늦게 공표 · 이후 수익 예측력 없음(§202) — 각 선은 자기 범위로 정규화";
   b.onclick=()=>{VK_SERIES[idx].on=!VK_SERIES[idx].on;b.className=VK_SERIES[idx].on?"on":"";drawVk();};L.appendChild(b);});
  const pb=document.createElement("button");pb.className="on";pb.style.cursor="default";
  pb.innerHTML='<i class="dot" style="background:#ef4444"></i>정점통과';pb.title="공포≥30 & 9일선 하회";L.appendChild(pb);
@@ -579,10 +589,11 @@ function drawVk(){
  VK_SERIES.forEach(se=>slice[se.key]=_vk[se.key].slice(s,_vkHi+1));
  const Lon=VK_SERIES.filter(x=>x.on&&x.axis==="L"),Ron=VK_SERIES.filter(x=>x.on&&x.axis==="R"),Non=VK_SERIES.filter(x=>x.on&&x.axis==="N");
  const padL=Lon.length?34:8,padR=Ron.length?44:8,padT=10,padB=20,pw=W-padL-padR,ph=H-padT-padB;
- const Lr=_vkMM(Lon.map(x=>slice[x.key])),Rr=_vkMM(Ron.map(x=>slice[x.key])),Nr=_vkMM(Non.map(x=>slice[x.key]));
- const Lmin=Math.max(0,Lr[0]*0.9),Lmax=Lr[1]*1.06,Rmin=Math.max(0,Rr[0]*0.9),Rmax=Rr[1]*1.06,Nmin=Nr[0]*0.98,Nmax=Nr[1]*1.02;
+ const Lr=_vkMM(Lon.map(x=>slice[x.key])),Rr=_vkMM(Ron.map(x=>slice[x.key]));
+ const Lmin=Math.max(0,Lr[0]*0.9),Lmax=Lr[1]*1.06,Rmin=Math.max(0,Rr[0]*0.9),Rmax=Rr[1]*1.06;
+ const NR={};Non.forEach(se=>{const r=_vkMM([slice[se.key]]);NR[se.key]=[r[0]*0.98,r[1]*1.02];});
  const x=i=>padL+pw*(cnt<=1?0:i/(cnt-1));
- const yL=v=>padT+ph*(1-(v-Lmin)/(Lmax-Lmin||1)),yR=v=>padT+ph*(1-(v-Rmin)/(Rmax-Rmin||1)),yN=v=>padT+ph*(1-(v-Nmin)/(Nmax-Nmin||1));
+ const yL=v=>padT+ph*(1-(v-Lmin)/(Lmax-Lmin||1)),yR=v=>padT+ph*(1-(v-Rmin)/(Rmax-Rmin||1)),yN=k=>v=>padT+ph*(1-(v-NR[k][0])/(NR[k][1]-NR[k][0]||1));
  const css=getComputedStyle(document.documentElement),grid=css.getPropertyValue("--line")||"#eee",muted=css.getPropertyValue("--muted")||"#888";
  ctx.font="10px system-ui";ctx.strokeStyle=grid;ctx.lineWidth=1;
  for(let g=0;g<=4;g++){const yy=padT+ph*g/4;ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR,yy);ctx.stroke();ctx.globalAlpha=1;}
@@ -593,11 +604,11 @@ function drawVk(){
  if(Ron.length){[[100,"#94a3b8",.5],[75,"#10b981",.35],[120,"#ef4444",.35]].forEach(b=>{if(b[0]>Rmin&&b[0]<Rmax){ctx.strokeStyle=b[1];ctx.setLineDash([3,3]);ctx.globalAlpha=b[2];ctx.beginPath();ctx.moveTo(padL,yR(b[0]));ctx.lineTo(W-padR,yR(b[0]));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;}});}
  ctx.fillStyle=muted;ctx.textAlign="center";
  for(let g=0;g<=4;g++){const i=Math.round((cnt-1)*g/4);ctx.fillText((dates[i]||"").slice(2),x(i),H-5);}
- VK_SERIES.forEach(se=>{if(!se.on)return;const a=slice[se.key],yf=se.axis==="L"?yL:(se.axis==="R"?yR:yN);
+ VK_SERIES.forEach(se=>{if(!se.on)return;const a=slice[se.key],yf=se.axis==="L"?yL:(se.axis==="R"?yR:yN(se.key));
    ctx.strokeStyle=se.color;ctx.lineWidth=se.axis==="N"?1.2:(se.dash?1.4:1.8);ctx.setLineDash(se.dash?[5,3]:[]);
    ctx.beginPath();let st=false;for(let i=0;i<cnt;i++){if(a[i]==null){st=false;continue}const xx=x(i),yy=yf(a[i]);st?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);st=true}ctx.stroke();ctx.setLineDash([]);});
  if(Lon.some(x=>x.key==="vk")){ctx.fillStyle="#ef4444";for(let i=0;i<cnt;i++){if(pk[i]){ctx.beginPath();ctx.arc(x(i),yL(slice.vk[i]),2.4,0,7);ctx.fill();}}}
- cv._geom={cnt,x,padL,pw,dates,slice};
+ cv._geom={cnt,x,padL,pw,dates,slice,s};
 }
 (function(){const cv=document.getElementById("vkCanvas"),wrap=cv.parentNode;
  const tip=document.createElement("div");tip.className="vk-tip";wrap.appendChild(tip);
@@ -609,7 +620,8 @@ function drawVk(){
    if(drag){const span=drag.hi-drag.lo,dIdx=Math.round(-(e.clientX-drag.x)/g.pw*span);
      let lo=Math.max(0,Math.min(drag.lo+dIdx,allN()-1-span));_vkLo=lo;_vkHi=lo+span;drawVk();return;}
    let i=Math.round((e.clientX-r.left-g.padL)/g.pw*(g.cnt-1));i=Math.max(0,Math.min(g.cnt-1,i));
-   let html=g.dates[i];VK_SERIES.forEach(se=>{if(!se.on)return;const v=g.slice[se.key][i];const vs=v==null?"–":(se.axis==="N"?v.toLocaleString():v);html+="<br><span style='color:"+se.color+"'>●</span> "+se.label+" <b>"+vs+"</b>"+(se.axis==="R"?"%":"");});
+   let html=g.dates[i];VK_SERIES.forEach(se=>{if(!se.on)return;const v=g.slice[se.key][i];const vs=v==null?"–":(se.axis==="N"?v.toLocaleString():v);const ex=se.extra&&v!=null?_vk[se.extra[0]][g.s+i]:null;
+   html+="<br><span style='color:"+se.color+"'>●</span> "+se.label+" <b>"+vs+"</b>"+(se.axis==="R"?"%":(v==null?"":(se.unit||"")))+(ex!=null?" ("+se.extra[1]+" "+ex.toLocaleString()+se.unit+")":"");});
    tip.style.display="block";tip.innerHTML=html;
    let tx=g.x(i)+8;if(tx>r.width-150)tx=g.x(i)-150;tip.style.left=tx+"px";tip.style.top="6px"});
  cv.addEventListener("mouseleave",()=>tip.style.display="none");
