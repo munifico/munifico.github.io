@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261124",
+  "indicators": {
+   "S&P 500": {
+    "price": 7201.09,
+    "chg_pct": -0.5
+   },
+   "Nasdaq": {
+    "price": 23733.54,
+    "chg_pct": -1.48
+   },
+   "Dow Jones": {
+    "price": 50018.7,
+    "chg_pct": 0.85
+   },
+   "EWY": {
+    "price": 130.7,
+    "chg_pct": -3.7
+   },
+   "DRAM": {
+    "price": 35.92,
+    "chg_pct": -9.22
+   },
+   "VIX": {
+    "price": 26.36,
+    "chg_pct": -0.98
+   },
+   "US 10Y": {
+    "price": 4.9,
+    "chg_pct": -0.28
+   },
+   "Gold": {
+    "price": 3551.2,
+    "chg_pct": -2.74
+   },
+   "Silver": {
+    "price": 40.61,
+    "chg_pct": -5.88
+   },
+   "Copper": {
+    "price": 5.48,
+    "chg_pct": -2.55
+   },
+   "WTI": {
+    "price": 81.59,
+    "chg_pct": 1.77
+   },
+   "Bitcoin": {
+    "price": 59831.08,
+    "chg_pct": -2.25
+   },
+   "Ethereum": {
+    "price": 1678.65,
+    "chg_pct": -1.77
+   },
+   "USD/KRW": {
+    "price": 1340.42,
+    "chg_pct": -0.29
+   },
+   "JPY/KRW": {
+    "price": 8.4,
+    "chg_pct": -0.72
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 2.95,
+    "chg_5d_pct": -0.28
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 1.66,
+    "chg_5d_pct": 0.46
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 1.31,
+    "chg_5d_pct": -0.3
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 0.97,
+    "chg_5d_pct": -4.59
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 0.83,
+    "chg_5d_pct": -1.68
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.82,
+    "chg_5d_pct": -0.77
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 0.68,
+    "chg_5d_pct": 0.53
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 0.54,
+    "chg_5d_pct": -1.32
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.18,
+    "chg_5d_pct": -0.05
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": -0.53,
+    "chg_5d_pct": -1.91
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -3.26,
+    "chg_5d_pct": -3.78
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 343,
+   "decliners": 156,
+   "median_chg_pct": 0.96,
+   "top_gainers": [
+    {
+     "ticker": "DLTR",
+     "name": "Dollar Tree",
+     "chg_pct": 11.18
+    },
+    {
+     "ticker": "CSGP",
+     "name": "CoStar Group",
+     "chg_pct": 8.08
+    },
+    {
+     "ticker": "MRNA",
+     "name": "Moderna",
+     "chg_pct": 7.21
+    },
+    {
+     "ticker": "CHTR",
+     "name": "Charter Communications",
+     "chg_pct": 6.21
+    },
+    {
+     "ticker": "NKE",
+     "name": "Nike, Inc.",
+     "chg_pct": 5.89
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "ADI",
+     "name": "Analog Devices",
+     "chg_pct": -17.37
+    },
+    {
+     "ticker": "HPE",
+     "name": "Hewlett Packard Enterprise",
+     "chg_pct": -16.31
+    },
+    {
+     "ticker": "DELL",
+     "name": "Dell Technologies",
+     "chg_pct": -11.83
+    },
+    {
+     "ticker": "TXN",
+     "name": "Texas Instruments",
+     "chg_pct": -11.25
+    },
+    {
+     "ticker": "SNDK",
+     "name": "Sandisk",
+     "chg_pct": -11.13
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "기술주 급락에 나스닥 -1.48%, 다우는 0.85% 상승하며 지수 엇갈려",
+  "summary": "S&P 500은 -0.5%, 나스닥은 -1.48%로 하락했고 다우존스는 +0.85%로 올랐다. 기술·반도체 섹터가 -3.26%로 부진했으나 S&P 500 종목의 상승 수가 하락 수보다 많았다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7201.09(-0.5%), 나스닥은 23733.54(-1.48%)로 마감했고, 다우존스는 50018.7(+0.85%)로 상승했다. VIX는 26.36으로 -0.98% 변동했다. 미국 10년물 금리는 4.9로 -0.28% 움직였다. 지수별 방향이 갈린 원인은 데이터상 기술주 약세와 다른 섹터의 강세 대비에서 확인된다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 ETF 중 9개가 상승했다. 헬스케어(XLV)가 +2.95%로 가장 강했고 필수소비재(XLP) +1.66%, 부동산·리츠(XLRE) +1.31%가 뒤를 이었다. 반면 기술·반도체(XLK)는 -3.26%, 산업재·방산(XLI)은 -0.53%였다. XLK의 5일 변동률도 -3.78%로 약세가 이어진 모습이다."
+   },
+   {
+    "title": "시장 폭과 종목",
+    "body": "S&P 500 500종목 중 343개가 상승, 156개가 하락했고 중앙값 등락률은 +0.96%였다. 지수는 내렸지만 개별 종목 다수는 올랐다는 의미다. 상승 상위는 Dollar Tree(+11.18%), CoStar Group(+8.08%), Moderna(+7.21%)였다. 하락 상위는 Analog Devices(-17.37%), Hewlett Packard Enterprise(-16.31%), Dell Technologies(-11.83%), Texas Instruments(-11.25%), Sandisk(-11.13%)로 반도체·IT 하드웨어 종목에 집중됐다."
+   },
+   {
+    "title": "체크포인트: 반도체·원자재·환율",
+    "body": "DRAM은 -9.22%, EWY는 -3.7%로 하락했다. 금은 -2.74%, 은은 -5.88%, 구리는 -2.55%로 내렸고 WTI는 +1.77%로 올랐다. 비트코인은 -2.25%, 이더리움은 -1.77%였다. USD/KRW는 1340.42로 -0.29%, JPY/KRW는 8.4로 -0.72% 변동했다. 이들 움직임의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2656,
+    "out": 1003,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-25 06:50"
+ }
+}
