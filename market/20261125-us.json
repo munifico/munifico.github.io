@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261125",
+  "indicators": {
+   "S&P 500": {
+    "price": 7182.78,
+    "chg_pct": -0.25
+   },
+   "Nasdaq": {
+    "price": 23585.8,
+    "chg_pct": -0.62
+   },
+   "Dow Jones": {
+    "price": 50182.95,
+    "chg_pct": 0.33
+   },
+   "EWY": {
+    "price": 129.19,
+    "chg_pct": -1.16
+   },
+   "DRAM": {
+    "price": 34.83,
+    "chg_pct": -3.03
+   },
+   "VIX": {
+    "price": 28.29,
+    "chg_pct": 7.32
+   },
+   "US 10Y": {
+    "price": 4.85,
+    "chg_pct": -1.14
+   },
+   "Gold": {
+    "price": 3603.2,
+    "chg_pct": 1.16
+   },
+   "Silver": {
+    "price": 41.37,
+    "chg_pct": 1.5
+   },
+   "Copper": {
+    "price": 5.48,
+    "chg_pct": 2.13
+   },
+   "WTI": {
+    "price": 84.11,
+    "chg_pct": 2.51
+   },
+   "Bitcoin": {
+    "price": 60241.05,
+    "chg_pct": 0.83
+   },
+   "Ethereum": {
+    "price": 1686.77,
+    "chg_pct": 0.54
+   },
+   "USD/KRW": {
+    "price": 1343.78,
+    "chg_pct": 0.21
+   },
+   "JPY/KRW": {
+    "price": 8.42,
+    "chg_pct": -0.16
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 2.07,
+    "chg_5d_pct": 1.49
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.92,
+    "chg_5d_pct": 0.55
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 0.89,
+    "chg_5d_pct": -0.19
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 0.83,
+    "chg_5d_pct": -1.04
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 0.74,
+    "chg_5d_pct": -0.64
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 0.71,
+    "chg_5d_pct": 0.16
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.48,
+    "chg_5d_pct": 0.14
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.46,
+    "chg_5d_pct": 1.23
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": -0.2,
+    "chg_5d_pct": -1.43
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": -0.56,
+    "chg_5d_pct": 1.39
+   },
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": -0.83,
+    "chg_5d_pct": -4.9
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 369,
+   "decliners": 128,
+   "median_chg_pct": 0.89,
+   "top_gainers": [
+    {
+     "ticker": "HPQ",
+     "name": "HP Inc.",
+     "chg_pct": 11.49
+    },
+    {
+     "ticker": "CHTR",
+     "name": "Charter Communications",
+     "chg_pct": 8.39
+    },
+    {
+     "ticker": "AXON",
+     "name": "Axon Enterprise",
+     "chg_pct": 7.43
+    },
+    {
+     "ticker": "CDW",
+     "name": "CDW Corporation",
+     "chg_pct": 6.59
+    },
+    {
+     "ticker": "ADI",
+     "name": "Analog Devices",
+     "chg_pct": 6.44
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "LRCX",
+     "name": "Lam Research",
+     "chg_pct": -5.68
+    },
+    {
+     "ticker": "SNDK",
+     "name": "Sandisk",
+     "chg_pct": -5.57
+    },
+    {
+     "ticker": "ORCL",
+     "name": "Oracle Corporation",
+     "chg_pct": -5.13
+    },
+    {
+     "ticker": "MU",
+     "name": "Micron Technology",
+     "chg_pct": -4.53
+    },
+    {
+     "ticker": "DDOG",
+     "name": "Datadog",
+     "chg_pct": -4.31
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시, 다우만 상승하고 나스닥 약세…VIX 28.29로 7.32% 상승",
+  "summary": "S&P 500은 -0.25%, 나스닥은 -0.62%로 하락했고 다우존스는 0.33% 올랐다. 기술·반도체 섹터가 약했던 반면 S&P 500 종목 다수는 상승해 지수와 종목 흐름이 엇갈렸다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7182.78(-0.25%), 나스닥은 23585.8(-0.62%)로 마감했다. 다우존스는 50182.95로 0.33% 상승했다. VIX는 28.29로 7.32% 올랐고, 미국 10년물 금리는 4.85로 1.14% 하락했다."
+   },
+   {
+    "title": "섹터 흐름",
+    "body": "11개 섹터 ETF 중 8개가 상승했고 소재·화학(XLB)이 2.07%로 가장 강했다. 부동산·리츠(XLRE)는 0.92%, 커뮤니케이션(XLC)은 0.89% 올랐다. 기술·반도체(XLK)는 -0.83%로 가장 약했고 5일 기준으로도 -4.9%를 기록했다. 헬스케어(XLV)는 -0.56%, 경기소비재(XLY)는 -0.2%였다."
+   },
+   {
+    "title": "시장 폭·개별 종목",
+    "body": "S&P 500 구성 종목 중 상승 369개, 하락 128개였고 중앙값 등락률은 0.89%였다. 지수는 내렸지만 종목 대다수는 올랐다. 상승률 상위는 HP Inc. 11.49%, Charter Communications 8.39%, Axon Enterprise 7.43%였다. 하락 상위는 Lam Research -5.68%, Sandisk -5.57%, Oracle -5.13%, Micron -4.53% 등으로 반도체·장비 종목이 다수였다."
+   },
+   {
+    "title": "원자재·기타 자산",
+    "body": "구리는 2.13%, WTI는 2.51%(84.11), 금은 1.16%(3603.2), 은은 1.5% 상승했다. DRAM은 -3.03%, EWY는 -1.16%였다. 비트코인은 0.83%, 이더리움은 0.54% 올랐고 USD/KRW는 1343.78(0.21%)이었다. 이들 움직임의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2648,
+    "out": 876,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-26 06:50"
+ }
+}
