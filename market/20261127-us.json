@@ -1,0 +1,234 @@
+{
+ "inputs": {
+  "market_date": "20261127",
+  "indicators": {
+   "S&P 500": {
+    "price": 7297.49,
+    "chg_pct": 1.6
+   },
+   "Nasdaq": {
+    "price": 24129.5,
+    "chg_pct": 2.31
+   },
+   "Dow Jones": {
+    "price": 50774.94,
+    "chg_pct": 1.18
+   },
+   "EWY": {
+    "price": 135.86,
+    "chg_pct": 5.16
+   },
+   "DRAM": {
+    "price": 37.57,
+    "chg_pct": 7.87
+   },
+   "VIX": {
+    "price": 23.81,
+    "chg_pct": -11.16
+   },
+   "US 10Y": {
+    "price": 4.94,
+    "chg_pct": 1.82
+   },
+   "Gold": {
+    "price": 3668.5,
+    "chg_pct": 3.75
+   },
+   "Silver": {
+    "price": 43.7,
+    "chg_pct": 9.11
+   },
+   "Copper": {
+    "price": 5.6,
+    "chg_pct": 5.03
+   },
+   "WTI": {
+    "price": 83.08,
+    "chg_pct": -0.72
+   },
+   "Bitcoin": {
+    "price": 59722.51,
+    "chg_pct": -1.28
+   },
+   "Ethereum": {
+    "price": 1662.56,
+    "chg_pct": -1.49
+   },
+   "USD/KRW": {
+    "price": 1333.2,
+    "chg_pct": -0.73
+   },
+   "JPY/KRW": {
+    "price": 8.33,
+    "chg_pct": -1.21
+   }
+  },
+  "sector_etf": [
+   {
+    "etf": "XLK",
+    "sector": "기술·반도체",
+    "chg_1d_pct": 2.8,
+    "chg_5d_pct": -0.34
+   },
+   {
+    "etf": "XLY",
+    "sector": "경기소비재",
+    "chg_1d_pct": 2.11,
+    "chg_5d_pct": 3.53
+   },
+   {
+    "etf": "XLC",
+    "sector": "커뮤니케이션",
+    "chg_1d_pct": 1.99,
+    "chg_5d_pct": 4.59
+   },
+   {
+    "etf": "XLB",
+    "sector": "소재·화학",
+    "chg_1d_pct": 1.84,
+    "chg_5d_pct": 5.52
+   },
+   {
+    "etf": "XLI",
+    "sector": "산업재·방산",
+    "chg_1d_pct": 1.6,
+    "chg_5d_pct": 2.6
+   },
+   {
+    "etf": "XLE",
+    "sector": "에너지",
+    "chg_1d_pct": 1.26,
+    "chg_5d_pct": 1.28
+   },
+   {
+    "etf": "XLF",
+    "sector": "금융",
+    "chg_1d_pct": 1.15,
+    "chg_5d_pct": 2.84
+   },
+   {
+    "etf": "XLRE",
+    "sector": "부동산·리츠",
+    "chg_1d_pct": 0.64,
+    "chg_5d_pct": 2.94
+   },
+   {
+    "etf": "XLP",
+    "sector": "필수소비재",
+    "chg_1d_pct": 0.41,
+    "chg_5d_pct": 3.14
+   },
+   {
+    "etf": "XLV",
+    "sector": "헬스케어",
+    "chg_1d_pct": 0.28,
+    "chg_5d_pct": 3.8
+   },
+   {
+    "etf": "XLU",
+    "sector": "유틸리티·원전",
+    "chg_1d_pct": 0.28,
+    "chg_5d_pct": 1.67
+   }
+  ],
+  "sp500_breadth": {
+   "n": 500,
+   "advancers": 406,
+   "decliners": 93,
+   "median_chg_pct": 0.91,
+   "top_gainers": [
+    {
+     "ticker": "SNDK",
+     "name": "Sandisk",
+     "chg_pct": 15.96
+    },
+    {
+     "ticker": "COHR",
+     "name": "Coherent Corp.",
+     "chg_pct": 14.07
+    },
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "chg_pct": 7.98
+    },
+    {
+     "ticker": "STX",
+     "name": "Seagate Technology",
+     "chg_pct": 7.9
+    },
+    {
+     "ticker": "MU",
+     "name": "Micron Technology",
+     "chg_pct": 7.6
+    }
+   ],
+   "top_losers": [
+    {
+     "ticker": "VRTX",
+     "name": "Vertex Pharmaceuticals",
+     "chg_pct": -5.24
+    },
+    {
+     "ticker": "PODD",
+     "name": "Insulet Corporation",
+     "chg_pct": -2.65
+    },
+    {
+     "ticker": "SJM",
+     "name": "J.M. Smucker Company (The)",
+     "chg_pct": -2.46
+    },
+    {
+     "ticker": "DLTR",
+     "name": "Dollar Tree",
+     "chg_pct": -2.42
+    },
+    {
+     "ticker": "GDDY",
+     "name": "GoDaddy",
+     "chg_pct": -1.97
+    }
+   ]
+  }
+ },
+ "ai": {
+  "headline": "미국 증시 3대 지수 동반 상승, 나스닥 2.31% 오르고 VIX 11.16% 하락",
+  "summary": "S&P 500은 1.6%, 나스닥은 2.31%, 다우는 1.18% 상승했다. VIX는 23.81로 11.16% 내렸고, 반도체와 기술주가 상승을 주도했다. 금·은·구리 등 원자재도 큰 폭으로 올랐다.",
+  "sections": [
+   {
+    "title": "지수·변동성",
+    "body": "S&P 500은 7297.49로 1.6%, 나스닥은 24129.5로 2.31%, 다우존스는 50774.94로 1.18% 올랐다. 나스닥의 상승률이 가장 컸다. VIX는 23.81로 11.16% 하락했다. 미국 10년물 금리는 4.94로 1.82% 상승했다."
+   },
+   {
+    "title": "섹터",
+    "body": "11개 섹터 ETF가 모두 상승했다. 기술·반도체(XLK)가 2.8%로 가장 많이 올랐고 경기소비재(XLY) 2.11%, 커뮤니케이션(XLC) 1.99%, 소재·화학(XLB) 1.84%가 뒤를 이었다. 헬스케어(XLV)와 유틸리티·원전(XLU)은 각각 0.28%로 상승폭이 가장 작았다. XLK는 5일 기준으로는 -0.34%여서 이날 반등이 두드러졌다."
+   },
+   {
+    "title": "시장 폭·테마",
+    "body": "S&P 500 종목 500개 중 406개가 올랐고 93개가 내렸으며, 중간 등락률은 0.91%였다. 상승 상위에는 Sandisk 15.96%, Coherent 14.07%, Lumentum 7.98%, Seagate 7.9%, Micron 7.6%가 올라 메모리·반도체 관련주가 많았다. DRAM ETF는 7.87%, EWY는 5.16% 상승했다. 하락 상위는 Vertex Pharmaceuticals -5.24%, Insulet -2.65%, J.M. Smucker -2.46% 등이었으며, 개별 하락 원인은 데이터상 확인되지 않는다."
+   },
+   {
+    "title": "체크포인트",
+    "body": "원자재는 은 9.11%, 금 3.75%, 구리 5.03%가 올랐고 WTI는 83.08로 0.72% 내렸다. 비트코인은 1.28%, 이더리움은 1.49% 하락해 위험자산 가운데 흐름이 갈렸다. USD/KRW는 1333.2로 0.73% 내렸다. 원자재 급등의 원인은 데이터상 확인되지 않는다."
+   }
+  ]
+ },
+ "meta": {
+  "model": "claude-sonnet-5-5",
+  "attempts": [
+   {
+    "ungrounded": []
+   }
+  ],
+  "usage": [
+   {
+    "in": 2662,
+    "out": 953,
+    "model": "claude-sonnet-5-5",
+    "stop": "end_turn"
+   }
+  ],
+  "generated": "2026-11-28 06:50"
+ }
+}
